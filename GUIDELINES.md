@@ -154,7 +154,7 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 - **Letter spacing**: **Never add letter-spacing as a style.** Use default browser/system letter-spacing at all times. This is a hard brand rule.
 - **Size**: Scale freely — large display type is encouraged for impact. Small type for secondary info is fine.
 - **Type scale**: Use only these sizes (px): `6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128` — never pick an arbitrary size outside this scale
-- **Case**: Standard headlines and body copy use normal sentence or title case — **all caps is reserved exclusively for** the project header label (`LISTEN LABS / TITLE`) and very sparse detail areas (e.g. small metadata labels, category tags). Never default to all caps for headings or general copy.
+- **Case**: Standard headlines and body copy use normal sentence or title case — **Title Case is used for** the project header label (`Listen Labs / Title`) and very sparse detail areas (e.g. small metadata labels, category tags). Never default to all caps for headings or general copy.
 
 ```css
 body {
@@ -171,14 +171,14 @@ body {
 Most Listen Labs outputs include a branded header at the top center:
 
 ```
-LISTEN LABS / PROJECT TITLE
+Listen Labs / Project Title
 ```
 
 Rules:
 - Positioned **top center**, **24px from the top**
-- All caps always
-- `LISTEN LABS /` is in **secondary content color** (60% opacity)
-- `PROJECT TITLE` is in **primary content color**
+- Title Case always
+- `Listen Labs /` is in **secondary content color** (60% opacity)
+- `Project Title` is in **primary content color**
 - Both use the same font size — **default is 10px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
 - No letter-spacing added
 - Single line, space-separated with a `/` divider
@@ -186,8 +186,8 @@ Rules:
 HTML example:
 ```html
 <div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:10px;">
-  <span style="color: var(--content-secondary)">LISTEN LABS /</span>
-  <span style="color: var(--content-primary)"> PROJECT TITLE</span>
+  <span style="color: var(--content-secondary)">Listen Labs /</span>
+  <span style="color: var(--content-primary)"> Project Title</span>
 </div>
 ```
 
@@ -368,4 +368,4 @@ Acceptable values only: `0, 2, 4, 8, 12, 16` — no arbitrary values.
 | Component heights | 12, 16, 20, 24, 32px |
 | Border radius | 0, 2, 4, 8, 12, 16px — button default 8px |
 | Shadows | None |
-| Header format | `LISTEN LABS / TITLE` — top center, 24px from top |
+| Header format | `Listen Labs / Title` — top center, 24px from top |

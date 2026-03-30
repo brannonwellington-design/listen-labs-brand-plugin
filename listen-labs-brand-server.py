@@ -104,7 +104,7 @@ TYPOGRAPHY = {
     "font_weight": "400 (Regular only — never bold, never thin/light)",
     "letter_spacing": "Default only — never override letter-spacing",
     "type_scale_px": [6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128],
-    "case_rules": "Standard sentence/title case for headlines and body. ALL CAPS reserved exclusively for the project header (LISTEN LABS / TITLE) and sparse metadata labels.",
+    "case_rules": "Standard sentence/title case for headlines and body. Title Case is used for the project header (Listen Labs / Title) and sparse metadata labels.",
     "css": "body {\n  font-family: 'Inter', sans-serif;\n  font-weight: 400;\n  /* never add letter-spacing */\n}",
 }
 
@@ -147,16 +147,16 @@ ICONS = {
 }
 
 HEADER = {
-    "format": "LISTEN LABS / PROJECT TITLE",
+    "format": "Listen Labs / Project Title",
     "position": "Top center, 24px from top",
-    "case": "All caps always",
+    "case": "Title Case always",
     "listen_labs_color": "content-secondary (60% opacity)",
     "project_title_color": "content-primary",
     "default_font_size": "10px",
     "notes": "Both parts use the same font size. Default 10px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.",
     "html_example": '''<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:10px;">
-  <span style="color: var(--content-secondary)">LISTEN LABS /</span>
-  <span style="color: var(--content-primary)"> PROJECT TITLE</span>
+  <span style="color: var(--content-secondary)">Listen Labs /</span>
+  <span style="color: var(--content-primary)"> Project Title</span>
 </div>''',
 }
 
@@ -313,7 +313,7 @@ TOOLS = [
     },
     {
         "name": "get_header_convention",
-        "description": "Get the Listen Labs branded header format (LISTEN LABS / PROJECT TITLE), positioning, color rules, and an HTML example.",
+        "description": "Get the Listen Labs branded header format (Listen Labs / Project Title), positioning, color rules, and an HTML example.",
         "inputSchema": {"type": "object", "properties": {}},
     },
     {
