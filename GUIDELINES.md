@@ -124,7 +124,7 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 --surface-negative-primary: #CF2617;
 --surface-negative-secondary: rgba(207, 38, 23, 0.10);
 --surface-positive-primary: #14B84B;
---surface-positive-secondary: rgba(20, 184, 75, 0.10);
+--surface-positive-secondary: rgba(20, 184, 75, 0.20);
 
 /* Paper - Dark (override these in dark mode) */
 --content-primary: #F9F4EB;
@@ -149,18 +149,20 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 
 ## Typography
 
-- **Font**: Inter, loaded from Google Fonts (`https://fonts.googleapis.com/css2?family=Inter&display=swap`)
-- **Weight**: Regular (400) only — **never bold, never thin/light**
+- **Font**: Inter only — loaded from Google Fonts (`https://fonts.googleapis.com/css2?family=Inter&display=swap`). Never use any other typeface. Serif fonts are strictly prohibited — this includes Georgia, Times New Roman, Playfair Display, and any other serif or slab-serif typeface, whether system-default or explicitly set.
+- **Weight**: Regular (400) only — **never bold, never semi-bold, never thin, never light, never any weight other than 400**. This applies to every element without exception: headings, labels, body copy, captions, buttons, and any other text.
 - **Letter spacing**: **Never add letter-spacing as a style.** Use default browser/system letter-spacing at all times. This is a hard brand rule.
 - **Size**: Scale freely — large display type is encouraged for impact. Small type for secondary info is fine.
-- **Type scale**: Use only these sizes (px): `6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128` — never pick an arbitrary size outside this scale
-- **Case**: Standard headlines and body copy use normal sentence or title case — **Title Case is used for** the project header label (`Listen Labs / Title`) and very sparse detail areas (e.g. small metadata labels, category tags). Never default to all caps for headings or general copy.
+- **Type scale**: Use only these sizes (px): `6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128` — never pick an arbitrary size outside this scale.
+- **Case**: Use sentence case or title case only. **Never use all caps under any circumstances** — not for headings, labels, metadata, tags, buttons, headers, or any other element. This is a hard rule with no exceptions.
 
 ```css
 body {
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   /* never add letter-spacing */
+  /* never use bold, semi-bold, light, or thin weights */
+  /* never use serif or any non-Inter typeface */
 }
 ```
 
@@ -176,7 +178,7 @@ Listen Labs / Project Title
 
 Rules:
 - Positioned **top center**, **24px from the top**
-- Title Case always
+- Sentence or title case — never all caps
 - `Listen Labs /` is in **secondary content color** (60% opacity)
 - `Project Title` is in **primary content color**
 - Both use the same font size — **default is 10px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
@@ -339,12 +341,12 @@ Acceptable values only: `0, 2, 4, 8, 12, 16` — no arbitrary values.
 - Slide background: `#F9F4EB` (`surface-primary`)
 - Primary text: `#120F08`
 - Accent: `#0021CC` for key callouts only
-- Use Inter throughout; Regular weight only
-- Header slide: large all-caps title, centered, branded header convention at top
+- Use Inter throughout; Regular weight only; never serif, never bold
+- Header slide: large title in title case, centered, branded header convention at top
 
 ### Word Documents (DOCX)
 - Page background or header area should evoke the warm palette
-- Inter Regular throughout
+- Inter Regular throughout; never serif, never bold
 - Use `#0021CC` for links or key highlights only
 
 ---
@@ -362,10 +364,11 @@ Acceptable values only: `0, 2, 4, 8, 12, 16` — no arbitrary values.
 | Content secondary | 60% opacity of content primary |
 | Content disabled | 30% opacity of content primary |
 | Brand | `#0021CC` |
-| Font | Inter, 400 only |
+| Font | Inter only, 400 Regular only — never serif, never bold |
 | Letter spacing | Default (never override) |
+| Text case | Sentence or title case only — never all caps |
 | Spacing unit | 4px base, even numbers only |
 | Component heights | 12, 16, 20, 24, 32px |
 | Border radius | 0, 2, 4, 8, 12, 16px — button default 8px |
 | Shadows | None |
-| Header format | `Listen Labs / Title` — top center, 24px from top |
+| Header format | `Listen Labs / Title` — top center, 24px from top, title case |
