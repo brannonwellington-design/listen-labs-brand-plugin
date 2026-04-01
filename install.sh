@@ -22,6 +22,18 @@ fi
 
 chmod +x "$INSTALL_DIR/run.sh"
 
+# Install pre-commit hook so GUIDELINES.md auto-generates from server data
+HOOK_FILE="$INSTALL_DIR/.git/hooks/pre-commit"
+cat > "$HOOK_FILE" << 'HOOK'
+#!/bin/sh
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+if git diff --cached --name-only | grep -q "listen-labs-brand-server.py"; then
+    python3 "$REPO_ROOT/generate_guidelines.py"
+    git add "$REPO_ROOT/GUIDELINES.md"
+fi
+HOOK
+chmod +x "$HOOK_FILE"
+
 # Ensure ~/.claude directory exists
 mkdir -p "$HOME/.claude"
 
