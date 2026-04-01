@@ -246,6 +246,7 @@ Listen Labs designs simulate the sensibility of **Dieter Rams** — the German i
 
 All spacing, sizing, and layout values use **even numbers only**, building up from a **4px base unit**. Odd numbers are avoided across the entire system.
 
+- **Responsive rule**: All elements must flex horizontally without skewing or scaling improperly — circles stay circular, squares stay square, aspect-locked shapes never distort regardless of container width.
 - Minimum unit: **4px**
 - Maximum common unit: **96px**
 - All padding, margin, gap, width, height, offset, and positioning values should land on even numbers
@@ -333,7 +334,6 @@ Reserved tokens:
 - `emotion-fear-primary / secondary`
 
 ### General Rules
-- All chart elements must flex horizontally without skewing or scaling improperly — circles stay circular, squares stay square, aspect-locked shapes never distort regardless of container width.
 - Use even-number spacing values consistent with the brand spacing system (4px base unit).
 - Labels and annotations follow brand typography rules — Inter Regular 400, no letter-spacing overrides.
 - Grid lines use content-disabled opacity (30%) to stay subordinate to data.
