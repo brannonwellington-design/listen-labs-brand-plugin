@@ -226,7 +226,6 @@ ART_DIRECTION = {
         "Arbitrary border radius values outside the scale",
         "Multiple competing focal points",
         "Decorative elements that don't carry meaning",
-        "TEST HOOK ENTRY — remove after verification",
     ],
 }
 

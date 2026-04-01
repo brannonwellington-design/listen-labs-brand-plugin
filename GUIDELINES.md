@@ -242,7 +242,6 @@ Listen Labs designs simulate the sensibility of **Dieter Rams** — the German i
 - Arbitrary border radius values outside the scale
 - Multiple competing focal points
 - Decorative elements that don't carry meaning
-- TEST HOOK ENTRY — remove after verification
 
 ---
 
