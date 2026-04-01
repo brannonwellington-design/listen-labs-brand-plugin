@@ -111,6 +111,7 @@ TYPOGRAPHY = {
 SPACING = {
     "base_unit": "4px",
     "rule": "All spacing, sizing, and layout values use even numbers only. Minimum 4px, maximum common 96px.",
+    "responsive_rule": "All elements must flex horizontally without skewing or scaling improperly — circles stay circular, squares stay square, aspect-locked shapes never distort regardless of container width.",
     "component_heights": {
         "XL": "32px",
         "L": "24px",
@@ -189,7 +190,6 @@ DATA_VISUALIZATION = {
         ],
     },
     "general_rules": [
-        "All chart elements must flex horizontally without skewing or scaling improperly — circles stay circular, squares stay square, aspect-locked shapes never distort regardless of container width.",
         "Use even-number spacing values consistent with the brand spacing system (4px base unit).",
         "Labels and annotations follow brand typography rules — Inter Regular 400, no letter-spacing overrides.",
         "Grid lines use content-disabled opacity (30%) to stay subordinate to data.",
