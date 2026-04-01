@@ -64,17 +64,17 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 | Token | Light & Dark |
 |-------|-------------|
 | `emotion-anger-primary` | `#BF4040` |
-| `emotion-anger-secondary` | `#BF4040` at 10% |
+| `emotion-anger-secondary` | `rgba(191, 64, 64, 0.10)` |
 | `emotion-happiness-primary` | `#D99E26` |
-| `emotion-happiness-secondary` | `#D99E26` at 10% |
+| `emotion-happiness-secondary` | `rgba(217, 158, 38, 0.10)` |
 | `emotion-disgust-primary` | `#80BF40` |
-| `emotion-disgust-secondary` | `#80BF40` at 10% |
+| `emotion-disgust-secondary` | `rgba(128, 191, 64, 0.10)` |
 | `emotion-surprise-primary` | `#40BFAA` |
-| `emotion-surprise-secondary` | `#40BFAA` at 10% |
+| `emotion-surprise-secondary` | `rgba(64, 191, 170, 0.10)` |
 | `emotion-sadness-primary` | `#406ABF` |
-| `emotion-sadness-secondary` | `#406ABF` at 10% |
+| `emotion-sadness-secondary` | `rgba(64, 106, 191, 0.10)` |
 | `emotion-fear-primary` | `#9540BF` |
-| `emotion-fear-secondary` | `#9540BF` at 10% |
+| `emotion-fear-secondary` | `rgba(149, 64, 191, 0.10)` |
 
 ```css
 --emotion-anger-primary: #BF4040;
@@ -124,9 +124,23 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 --surface-negative-primary: #CF2617;
 --surface-negative-secondary: rgba(207, 38, 23, 0.10);
 --surface-positive-primary: #14B84B;
---surface-positive-secondary: rgba(20, 184, 75, 0.20);
+--surface-positive-secondary: rgba(20, 184, 75, 0.10);
 
-/* Paper - Dark (override these in dark mode) */
+/* Emotion tokens */
+--emotion-anger-primary: #BF4040;
+--emotion-anger-secondary: rgba(191, 64, 64, 0.10);
+--emotion-happiness-primary: #D99E26;
+--emotion-happiness-secondary: rgba(217, 158, 38, 0.10);
+--emotion-disgust-primary: #80BF40;
+--emotion-disgust-secondary: rgba(128, 191, 64, 0.10);
+--emotion-surprise-primary: #40BFAA;
+--emotion-surprise-secondary: rgba(64, 191, 170, 0.10);
+--emotion-sadness-primary: #406ABF;
+--emotion-sadness-secondary: rgba(64, 106, 191, 0.10);
+--emotion-fear-primary: #9540BF;
+--emotion-fear-secondary: rgba(149, 64, 191, 0.10);
+
+/* Paper - Dark */
 --content-primary: #F9F4EB;
 --content-secondary: rgba(249, 244, 235, 0.6);
 --content-inverse-primary: #120F08;
@@ -150,19 +164,17 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 ## Typography
 
 - **Font**: Inter only — loaded from Google Fonts (`https://fonts.googleapis.com/css2?family=Inter&display=swap`). Never use any other typeface. Serif fonts are strictly prohibited — this includes Georgia, Times New Roman, Playfair Display, and any other serif or slab-serif typeface, whether system-default or explicitly set.
-- **Weight**: Regular (400) only — **never bold, never semi-bold, never thin, never light, never any weight other than 400**. This applies to every element without exception: headings, labels, body copy, captions, buttons, and any other text.
+- **Weight**: 400 (Regular only — never bold, never thin/light). This applies to every element without exception: headings, labels, body copy, captions, buttons, and any other text.
 - **Letter spacing**: **Never add letter-spacing as a style.** Use default browser/system letter-spacing at all times. This is a hard brand rule.
 - **Size**: Scale freely — large display type is encouraged for impact. Small type for secondary info is fine.
 - **Type scale**: Use only these sizes (px): `6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128` — never pick an arbitrary size outside this scale.
-- **Case**: Use sentence case or title case only. **Never use all caps under any circumstances** — not for headings, labels, metadata, tags, buttons, headers, or any other element. This is a hard rule with no exceptions.
+- **Case**: Standard sentence/title case for headlines and body. Title Case is used for the project header (Listen Labs / Title) and sparse metadata labels. **Never use all caps under any circumstances** — not for headings, labels, metadata, tags, buttons, headers, or any other element. This is a hard rule with no exceptions.
 
 ```css
 body {
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   /* never add letter-spacing */
-  /* never use bold, semi-bold, light, or thin weights */
-  /* never use serif or any non-Inter typeface */
 }
 ```
 
@@ -177,8 +189,8 @@ Listen Labs / Project Title
 ```
 
 Rules:
-- Positioned **top center**, **24px from the top**
-- Sentence or title case — never all caps
+- Positioned **top center**, **24px from top from the top**
+- Title Case always
 - `Listen Labs /` is in **secondary content color** (60% opacity)
 - `Project Title` is in **primary content color**
 - Both use the same font size — **default is 10px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
@@ -201,55 +213,32 @@ Listen Labs designs simulate the sensibility of **Dieter Rams** — the German i
 
 ### Core POV
 
-- **Less, but better.** Every element must earn its place. If it doesn't serve a clear function in the hierarchy, remove it. Decoration is not a function.
-- **Radical reduction.** Strip the design down until removing one more thing would break comprehension. Stop there. That's the design.
-- **Stillness.** A resolved layout doesn't feel restless or busy. White space is load-bearing — it creates calm, frames content, and signals confidence. It is never leftover.
-- **Neutral confidence.** The design doesn't try to impress. It simply works — and that's what makes it impressive.
-
-### Hierarchy & Composition
-
-- **Scale contrast is the primary compositional tool** — not color, not decoration. A very large element next to a very small one creates tension, focus, and visual interest without adding noise. Think: a massive numeral next to a tiny label. A wide rule next to a narrow caption.
-- **One dominant element per composition.** Everything else is subordinate. The eye should never be confused about where to look first.
-- **Grid discipline.** Elements align to a felt-but-invisible structure. Nothing floats arbitrarily. Alignment is how you signal intention.
-- **Functional hierarchy.** The most important thing is the most visually dominant thing — always. If the hierarchy is ambiguous, the design isn't finished.
-
-### What This Looks Like in Practice
-
-- Prefer one large typographic element over several medium ones
-- Use empty space actively — position it, don't just leave it
-- Combine simple large shapes with fine text or thin lines for contrast
-- Let a single brand blue element do all the accent work — don't introduce more
-- Avoid anything that would make Rams ask "why is that there?"
-
-### What to Avoid (Rams Lens)
-
-- Layouts that feel "designed" rather than resolved
-- Multiple competing focal points
-- Decorative elements that don't carry meaning
-- Busyness mistaken for richness
-- Anything that requires explanation to justify its presence
+- **Radical reduction.** strip down until removing one more thing would break comprehension
+- **Stillness.** white space is load-bearing, not leftover
+- **Neutral confidence.** the design doesn't try to impress, it simply works
+- **Scale contrast is the primary compositional tool.** not color, not decoration
+- **One dominant element per composition.** everything else is subordinate
+- **Grid discipline.** nothing floats arbitrarily
+- **Functional hierarchy.** most important = most visually dominant
 
 ### The Listen Labs Feel
-- **Minimal editorial** — lots of breathing room, nothing cluttered
-- **Technical precision** — clean alignment, deliberate spacing, nothing accidental
-- **Bold simplicity** — big shapes, large type, graphic confidence. Impact comes from scale and composition, not decoration.
-- **Warm, not cold** — the warm off-white canvas and near-black text give a human, analog quality even in technical contexts
-
-### Layout
-- **Generous whitespace** — let elements breathe. Margins and padding should feel intentional and spacious.
-- **No drop shadows** — avoid `box-shadow` for depth. Use borders, spacing, and contrast instead.
-- **No heavy decorative elements** — no gradients, no textures, no stock imagery aesthetic
+- **Minimal editorial** — lots of breathing room
+- **Technical precision** — clean alignment, deliberate spacing
+- **Bold simplicity** — big shapes, large type, graphic confidence
+- **Warm, not cold** — warm off-white canvas and near-black text
 
 ### What to Avoid
 - Drop shadows or heavy depth effects
-- Rounded, bubbly UI (respect the border radius scale)
-- Bright or saturated accent colors beyond `#0021CC`
+- Rounded, bubbly UI
+- Bright/saturated accent colors beyond #0021CC
 - Bold or light font weights
 - Letter-spacing overrides
 - Cluttered layouts
 - Generic or decorative imagery
 - Odd numbers for spacing or sizing
 - Arbitrary border radius values outside the scale
+- Multiple competing focal points
+- Decorative elements that don't carry meaning
 
 ---
 
@@ -292,18 +281,14 @@ Components (buttons, inputs, tags, etc.) snap to these heights:
 ### Border Radius Scale
 Acceptable values only: `0, 2, 4, 8, 12, 16` — no arbitrary values.
 
-- **Button default**: `8px`
-- **Concentric nesting rule**: when an element is nested inside a container, the inner radius should be smaller to maintain a natural concentric look:
-  - Inner element at `8px` → container typically `12px` or `16px`
-  - Inner element at `4px` → container typically `8px`
-  - A container holding an `8px` radius button is usually `12px` or `16px` outer radius
+Button default: 8px. Concentric nesting: inner element radius < container radius (e.g., 8px inner → 12px or 16px container).
 
 ---
 
 ## Icons
 
 - **Library**: Lucide only
-- **Principle**: Icon line weight should visually match the weight of nearby typography — since we only use Inter Regular, icons should feel similarly refined, never chunky
+- **Principle**: Icon line weight should visually match the weight of nearby typography (Inter Regular).
 - **Sizing scale**: Match icon size and stroke to the text size it's paired with:
 
 | Text size | Icon size | Stroke width |
@@ -317,8 +302,42 @@ Acceptable values only: `0, 2, 4, 8, 12, 16` — no arbitrary values.
 | 20px | 22x22px | 1.75px |
 | 24px+ | 24x24px | 2px |
 
-- When in doubt, interpolate linearly: icon size = text size + 2px, stroke = scaled proportionally from 0.75px (at 8px text) to 2px (at 24px text)
-- Icons should use the same color as the text they accompany (primary or secondary content color)
+- icon size ≈ text size + 2px, stroke ≈ scaled proportionally from 0.75px (at 8px text) to 2px (at 24px text)
+- Icons use the same color as accompanying text (primary or secondary content color).
+
+---
+
+## Data Visualization
+
+### Chart Types
+- **Preferred**: bar, line — Bar and line charts work for almost anything and are very flexible. Default to these unless the data specifically demands another format.
+- **Bar chart rules**: 2px rounded corners on bar sections. 1px padding gap between bars that are in-line with each other.
+
+### Color Usage
+- **Monochromatic by default. Use the primary brand color (#0021CC) as the base, then increase or decrease the Lightness (HSL) to produce additional shades for multi-series data.**
+- Adjust L value in HSL while keeping H and S constant for a cohesive, monochromatic palette. Prefer fewer distinct hues — lean on lightness variation before introducing new colors.
+
+### Stroke Weight
+- **1px consistent stroke on all chart elements — axes, grid lines, data lines, borders**
+- Opt for fewer lines rather than more. Minimalism without sacrificing function — remove any line that doesn't aid comprehension.
+
+### Emotion Color Mapping
+Emotion color tokens are exclusively reserved for the 6 core Ekman emotions (anger, happiness, disgust, surprise, sadness, fear). Never use emotion tokens for general data series, categories, or any purpose outside of Listen Labs emotional intelligence features.
+
+Reserved tokens:
+- `emotion-anger-primary / secondary`
+- `emotion-happiness-primary / secondary`
+- `emotion-disgust-primary / secondary`
+- `emotion-surprise-primary / secondary`
+- `emotion-sadness-primary / secondary`
+- `emotion-fear-primary / secondary`
+
+### General Rules
+- All chart elements must flex horizontally without skewing or scaling improperly — circles stay circular, squares stay square, aspect-locked shapes never distort regardless of container width.
+- Use even-number spacing values consistent with the brand spacing system (4px base unit).
+- Labels and annotations follow brand typography rules — Inter Regular 400, no letter-spacing overrides.
+- Grid lines use content-disabled opacity (30%) to stay subordinate to data.
+- One dominant data story per chart — avoid overloading a single visualization with competing narratives.
 
 ---
 
