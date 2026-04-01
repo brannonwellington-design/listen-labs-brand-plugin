@@ -160,6 +160,43 @@ HEADER = {
 </div>''',
 }
 
+DATA_VISUALIZATION = {
+    "chart_types": {
+        "preferred": ["bar", "line"],
+        "notes": "Bar and line charts work for almost anything and are very flexible. Default to these unless the data specifically demands another format.",
+        "bar_chart_rules": {
+            "corner_radius": "2px rounded corners on bar sections",
+            "inline_gap": "1px padding gap between bars that are in-line with each other",
+        },
+    },
+    "color_usage": {
+        "principle": "Monochromatic by default. Use the primary brand color (#0021CC) as the base, then increase or decrease the Lightness (HSL) to produce additional shades for multi-series data.",
+        "approach": "Adjust L value in HSL while keeping H and S constant for a cohesive, monochromatic palette. Prefer fewer distinct hues — lean on lightness variation before introducing new colors.",
+    },
+    "line_stroke_weight": {
+        "default": "1px consistent stroke on all chart elements — axes, grid lines, data lines, borders",
+        "principle": "Opt for fewer lines rather than more. Minimalism without sacrificing function — remove any line that doesn't aid comprehension.",
+    },
+    "emotion_color_mapping": {
+        "rule": "Emotion color tokens are exclusively reserved for the 6 core Ekman emotions (anger, happiness, disgust, surprise, sadness, fear). Never use emotion tokens for general data series, categories, or any purpose outside of Listen Labs emotional intelligence features.",
+        "tokens": [
+            "emotion-anger-primary / secondary",
+            "emotion-happiness-primary / secondary",
+            "emotion-disgust-primary / secondary",
+            "emotion-surprise-primary / secondary",
+            "emotion-sadness-primary / secondary",
+            "emotion-fear-primary / secondary",
+        ],
+    },
+    "general_rules": [
+        "All chart elements must flex horizontally without skewing or scaling improperly — circles stay circular, squares stay square, aspect-locked shapes never distort regardless of container width.",
+        "Use even-number spacing values consistent with the brand spacing system (4px base unit).",
+        "Labels and annotations follow brand typography rules — Inter Regular 400, no letter-spacing overrides.",
+        "Grid lines use content-disabled opacity (30%) to stay subordinate to data.",
+        "One dominant data story per chart — avoid overloading a single visualization with competing narratives.",
+    ],
+}
+
 ART_DIRECTION = {
     "philosophy": "Dieter Rams — less, but better. Every element must earn its place.",
     "core_principles": [
@@ -317,13 +354,18 @@ TOOLS = [
         "inputSchema": {"type": "object", "properties": {}},
     },
     {
+        "name": "get_data_visualization",
+        "description": "Get Listen Labs data visualization rules: chart type preferences, color usage (monochromatic brand shades), stroke weights, emotion color restrictions, and responsive/flexing rules.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
         "name": "get_art_direction",
         "description": "Get Listen Labs art direction principles: Dieter Rams philosophy, composition rules, the brand feel, and what to avoid.",
         "inputSchema": {"type": "object", "properties": {}},
     },
     {
         "name": "get_full_guidelines",
-        "description": "Get the complete Listen Labs brand guidelines in one call — colors, typography, spacing, icons, header, art direction, and CSS variables. Use this when you need everything at once.",
+        "description": "Get the complete Listen Labs brand guidelines in one call — colors, typography, spacing, icons, header, data visualization, art direction, and CSS variables. Use this when you need everything at once.",
         "inputSchema": {"type": "object", "properties": {}},
     },
 ]
@@ -384,6 +426,10 @@ def handle_get_header_convention(_args):
     return json.dumps(HEADER, indent=2)
 
 
+def handle_get_data_visualization(_args):
+    return json.dumps(DATA_VISUALIZATION, indent=2)
+
+
 def handle_get_art_direction(_args):
     return json.dumps(ART_DIRECTION, indent=2)
 
@@ -395,6 +441,7 @@ def handle_get_full_guidelines(_args):
         "spacing": SPACING,
         "icons": ICONS,
         "header": HEADER,
+        "data_visualization": DATA_VISUALIZATION,
         "art_direction": ART_DIRECTION,
         "css_variables": CSS_VARIABLES,
     }, indent=2)
@@ -407,6 +454,7 @@ HANDLERS = {
     "get_spacing": handle_get_spacing,
     "get_icon_guidelines": handle_get_icon_guidelines,
     "get_header_convention": handle_get_header_convention,
+    "get_data_visualization": handle_get_data_visualization,
     "get_art_direction": handle_get_art_direction,
     "get_full_guidelines": handle_get_full_guidelines,
 }
