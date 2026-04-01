@@ -1,3 +1,6 @@
+<!-- AUTO-GENERATED from listen-labs-brand-server.py — do not edit manually -->
+<!-- Run: python3 generate_guidelines.py -->
+
 # Listen Labs Brand Guidelines
 
 Apply these guidelines to **every** visual or document output. No exceptions unless the user explicitly overrides.
@@ -387,7 +390,7 @@ Reserved tokens:
 | Letter spacing | Default (never override) |
 | Text case | Sentence or title case only — never all caps |
 | Spacing unit | 4px base, even numbers only |
-| Component heights | 12, 16, 20, 24, 32px |
+| Component heights | 12px, 16px, 20px, 24px, 32px |
 | Border radius | 0, 2, 4, 8, 12, 16px — button default 8px |
 | Shadows | None |
 | Header format | `Listen Labs / Title` — top center, 24px from top, title case |
