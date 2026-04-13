@@ -22,6 +22,11 @@ fi
 
 chmod +x "$INSTALL_DIR/run.sh"
 
+# Copy skills directory
+if [ -d "$INSTALL_DIR/skills" ]; then
+  echo "Skills directory updated."
+fi
+
 # Install pre-commit hook so GUIDELINES.md auto-generates from server data
 HOOK_FILE="$INSTALL_DIR/.git/hooks/pre-commit"
 cat > "$HOOK_FILE" << 'HOOK'
@@ -91,3 +96,5 @@ echo "Done! Restart Claude Code to start using the Listen Labs brand tools."
 echo "Available tools: get_brand_colors, get_typography, get_spacing, get_icon_guidelines,"
 echo "  get_header_convention, get_data_visualization, get_art_direction, get_css_variables,"
 echo "  get_full_guidelines"
+echo ""
+echo "Available skills: /data-viz (brand-compliant Chart.js visualizations)"

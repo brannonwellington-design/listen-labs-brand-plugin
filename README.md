@@ -28,6 +28,32 @@ The plugin adds these tools to Claude:
 | `get_art_direction` | Design philosophy, composition principles |
 | `get_full_guidelines` | Everything above in one call |
 
+## Skills
+
+### `/data-viz` — Data Visualization
+
+Generate professional, brand-compliant data visualizations as self-contained HTML files. Uses Chart.js with full Listen Labs brand enforcement.
+
+```
+/data-viz
+```
+
+Or just ask Claude to chart, graph, or visualize any data — the skill auto-triggers.
+
+**What it enforces:**
+- Monochromatic brand blue (`#0021CC`) shading for data series
+- 1px strokes on all chart elements
+- 2px rounded corners on bars, 1px gap between inline bars
+- Inter 400 for all labels — no bold, no other fonts
+- Emotion color tokens restricted to Ekman emotion data only
+- Responsive flex — no distortion at any width
+- Branded header on every output
+- Light/dark mode via `prefers-color-scheme`
+
+**Output:** A single self-contained `.html` file that opens in your browser.
+
+---
+
 ## Auto-Updates
 
 The plugin auto-updates every time Claude starts a new session. When brand guidelines change in this repo, everyone gets the latest version automatically.

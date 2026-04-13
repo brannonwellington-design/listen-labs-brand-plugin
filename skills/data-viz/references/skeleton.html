@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listen Labs / Chart Title</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── Paper Theme — Light ──────────────────────────────── */
+    :root {
+      --content-primary: #120F08;
+      --content-secondary: rgba(18, 15, 8, 0.6);
+      --content-inverse-primary: #F9F4EB;
+      --content-inverse-secondary: rgba(249, 244, 235, 0.6);
+      --content-disabled: rgba(18, 15, 8, 0.3);
+      --content-inverse-disabled: rgba(249, 244, 235, 0.3);
+      --content-brand: #0021CC;
+      --content-brand-contrast: #F9F4EB;
+      --content-complimentary: #E5A119;
+      --content-warning: #CF6317;
+      --content-negative: #CF2617;
+      --content-positive: #0F8A38;
+
+      --surface-highlight: #FCFBF7;
+      --surface-primary: #F9F4EB;
+      --surface-secondary: #EEE8DD;
+      --surface-tertiary: #E2DCCF;
+      --surface-inverse-primary: #120F08;
+      --surface-inverse-secondary: #1F1B14;
+      --surface-brand-primary: #0021CC;
+      --surface-brand-secondary: rgba(0, 33, 204, 0.10);
+      --surface-complimentary-primary: #E5A119;
+      --surface-complimentary-secondary: rgba(229, 161, 25, 0.10);
+      --surface-warning-primary: #CF6317;
+      --surface-warning-secondary: rgba(207, 99, 23, 0.10);
+      --surface-negative-primary: #CF2617;
+      --surface-negative-secondary: rgba(207, 38, 23, 0.10);
+      --surface-positive-primary: #14B84B;
+      --surface-positive-secondary: rgba(20, 184, 75, 0.10);
+
+      --emotion-anger-primary: #BF4040;
+      --emotion-anger-secondary: rgba(191, 64, 64, 0.10);
+      --emotion-happiness-primary: #D99E26;
+      --emotion-happiness-secondary: rgba(217, 158, 38, 0.10);
+      --emotion-disgust-primary: #80BF40;
+      --emotion-disgust-secondary: rgba(128, 191, 64, 0.10);
+      --emotion-surprise-primary: #40BFAA;
+      --emotion-surprise-secondary: rgba(64, 191, 170, 0.10);
+      --emotion-sadness-primary: #406ABF;
+      --emotion-sadness-secondary: rgba(64, 106, 191, 0.10);
+      --emotion-fear-primary: #9540BF;
+      --emotion-fear-secondary: rgba(149, 64, 191, 0.10);
+    }
+
+    /* ── Paper Theme — Dark ───────────────────────────────── */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --content-primary: #F9F4EB;
+        --content-secondary: rgba(249, 244, 235, 0.6);
+        --content-inverse-primary: #120F08;
+        --content-inverse-secondary: rgba(18, 15, 8, 0.6);
+        --content-disabled: rgba(249, 244, 235, 0.3);
+        --content-inverse-disabled: rgba(18, 15, 8, 0.3);
+
+        --surface-highlight: #080603;
+        --surface-primary: #130F06;
+        --surface-secondary: #201C13;
+        --surface-tertiary: #30291D;
+        --surface-inverse-primary: #F9F4EB;
+        --surface-inverse-secondary: #F0E9DB;
+        --surface-brand-secondary: rgba(0, 33, 204, 0.30);
+        --surface-negative-secondary: rgba(207, 38, 23, 0.20);
+        --surface-positive-secondary: rgba(20, 184, 75, 0.20);
+      }
+    }
+
+    /* ── Base ──────────────────────────────────────────────── */
+    body {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      background: var(--surface-primary);
+      color: var(--content-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Branded Header ───────────────────────────────────── */
+    .ll-header {
+      text-align: center;
+      position: absolute;
+      top: 24px;
+      left: 0;
+      right: 0;
+      font-size: 12px;
+      font-weight: 400;
+    }
+    .ll-header .ll-brand { color: var(--content-secondary); }
+    .ll-header .ll-title { color: var(--content-primary); }
+
+    /* ── Chart Container ──────────────────────────────────── */
+    main {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 80px 24px 48px;
+    }
+
+    figure {
+      position: relative;
+      width: 100%;
+      height: 400px;
+    }
+
+    figcaption {
+      font-size: 10px;
+      color: var(--content-secondary);
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ── Print ─────────────────────────────────────────────── */
+    @media print {
+      body { background: #fff; }
+      .ll-header { position: static; margin-bottom: 24px; }
+      main { padding-top: 0; }
+    }
+
+    /* ── Reduced Motion ────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0s !important; transition-duration: 0s !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Branded header -->
+  <div class="ll-header">
+    <span class="ll-brand">Listen Labs /</span>
+    <span class="ll-title"> Chart Title</span>
+  </div>
+
+  <main>
+    <figure>
+      <canvas id="chart" role="img" aria-label="Description of the chart data"></canvas>
+      <figcaption><!-- Optional caption --></figcaption>
+    </figure>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script>
+    // ── Disable animations globally ────────────────────────
+    Chart.defaults.animation = false;
+
+    // ── Read brand tokens from CSS variables ───────────────
+    var style = getComputedStyle(document.documentElement);
+    var brandBlue = style.getPropertyValue('--surface-brand-primary').trim();
+    var contentPrimary = style.getPropertyValue('--content-primary').trim();
+    var contentSecondary = style.getPropertyValue('--content-secondary').trim();
+    var contentDisabled = style.getPropertyValue('--content-disabled').trim();
+
+    // ── Global Chart.js defaults ───────────────────────────
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.weight = 400;
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = contentPrimary;
+
+    // ── Monochromatic shade generator ──────────────────────
+    // Base: hsl(229, 100%, 40%) = #0021CC
+    function brandShades(count) {
+      var shades = [];
+      var step = 50 / (count + 1);
+      for (var i = 0; i < count; i++) {
+        var lightness = 30 + (step * (i + 1));
+        shades.push('hsl(229, 100%, ' + lightness + '%)');
+      }
+      return shades;
+    }
+
+    // ── Chart ──────────────────────────────────────────────
+    var ctx = document.getElementById('chart').getContext('2d');
+    var chart = new Chart(ctx, {
+      type: 'bar', // or 'line'
+      data: {
+        labels: ['Label 1', 'Label 2', 'Label 3', 'Label 4'],
+        datasets: [{
+          label: 'Series 1',
+          data: [10, 20, 30, 40],
+          backgroundColor: brandBlue,
+          borderColor: brandBlue,
+          borderWidth: 1,
+          borderRadius: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              font: { family: "'Inter', sans-serif", weight: 400, size: 12 },
+              color: contentPrimary,
+              padding: 16,
+              boxWidth: 12,
+              boxHeight: 12,
+              useBorderRadius: true,
+              borderRadius: 2,
+            }
+          },
+          tooltip: {
+            backgroundColor: contentPrimary,
+            titleColor: contentSecondary,
+            bodyFont: { family: "'Inter', sans-serif", weight: 400, size: 12 },
+            titleFont: { family: "'Inter', sans-serif", weight: 400, size: 10 },
+            padding: 12,
+            cornerRadius: 4,
+            displayColors: true,
+            boxWidth: 8,
+            boxHeight: 8,
+            boxPadding: 4,
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            border: { display: false },
+            ticks: {
+              font: { family: "'Inter', sans-serif", weight: 400, size: 10 },
+              color: contentSecondary,
+              padding: 8,
+            }
+          },
+          y: {
+            grid: {
+              color: contentDisabled,
+              lineWidth: 1,
+              drawTicks: false,
+            },
+            border: { display: false },
+            ticks: {
+              font: { family: "'Inter', sans-serif", weight: 400, size: 10 },
+              color: contentSecondary,
+              padding: 8,
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
