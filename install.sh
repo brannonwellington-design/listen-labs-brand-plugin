@@ -98,4 +98,5 @@ echo "  get_header_convention, get_data_visualization, get_art_direction, get_cs
 echo "  get_full_guidelines"
 echo ""
 echo "Available skills: /data-viz (brand-compliant Chart.js visualizations),"
-echo "  /pptx (brand-compliant PowerPoint presentations)"
+echo "  /pptx (brand-compliant PowerPoint presentations),"
+echo "  /typography (editorial-quality typographic layout and hierarchy)"

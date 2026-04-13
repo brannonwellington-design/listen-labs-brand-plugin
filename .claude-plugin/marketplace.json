@@ -3,8 +3,8 @@
     {
       "id": "listen-labs-brand",
       "name": "Listen Labs Brand",
-      "description": "Exposes Listen Labs brand guidelines (colors, typography, spacing, icons, art direction, data visualization, presentations) as MCP tools and skills so Claude can apply them to any design or code output.",
-      "version": "1.2.0",
+      "description": "Exposes Listen Labs brand guidelines (colors, typography, spacing, icons, art direction, data visualization, presentations, typographic layout) as MCP tools and skills so Claude can apply them to any design or code output.",
+      "version": "1.3.0",
       "mcpServers": {
         "listen-labs-brand": {
           "command": "python3",

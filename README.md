@@ -76,6 +76,24 @@ Or just ask Claude to create a deck, slides, or presentation — the skill auto-
 
 **Additional dependencies:** `npm install pptxgenjs` and `pip install "markitdown[pptx]" Pillow`
 
+### `/typography` — Typographic Layout
+
+Foundation skill for creating premium, editorial-quality hierarchy using only Inter Regular 400. Auto-triggers when laying out type-heavy content.
+
+```
+/typography
+```
+
+**What it provides:**
+- Size hierarchy table mapping every text role to specific sizes, line heights, and opacity tiers
+- Three-tier opacity system (100% / 60% / 30%) that replaces bold for visual weight
+- Spacing rhythm rules — heading space, paragraph spacing, section breaks, 4px vertical grid
+- 7 pre-built typographic lockups (title blocks, stat blocks, metadata clusters, pull quotes, cards, section headers, asymmetric editorial layouts)
+- Fluid responsive type scale using CSS `clamp()` with pre-calculated values
+- Contrast minimums, alignment rules, and the "tiny next to huge" editorial technique
+
+**Philosophy:** Swiss International Style and modern editorial design (Kinfolk, Cereal, Monocle) translated for responsive digital interfaces.
+
 ---
 
 ## Auto-Updates
