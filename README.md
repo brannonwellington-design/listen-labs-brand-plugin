@@ -94,6 +94,25 @@ Foundation skill for creating premium, editorial-quality hierarchy using only In
 
 **Philosophy:** Swiss International Style and modern editorial design (Kinfolk, Cereal, Monocle) translated for responsive digital interfaces.
 
+### `/report` — Research Reports
+
+Generate professional, brand-compliant research reports as self-contained HTML files. The flagship Listen Labs deliverable.
+
+```
+/report
+```
+
+Or just ask Claude to create a report, summary, brief, or write-up — the skill auto-triggers.
+
+**What it provides:**
+- Full report structure: cover, executive summary, methodology, findings, emotional analysis, recommendations, appendix
+- Emotion-coded callouts for the 6 Ekman emotions — anger, happiness, disgust, surprise, sadness, fear
+- Participant quote blocks, stat blocks, data tables, embedded Chart.js visualizations
+- Print-ready `@media print` stylesheet for clean PDF export
+- Light/dark mode via `prefers-color-scheme`
+
+**Output:** A single self-contained `.html` file that opens in any browser and prints cleanly to PDF.
+
 ---
 
 ## Auto-Updates

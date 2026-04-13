@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listen Labs / Report Title</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── Paper Theme — Light ──────────────────────────────── */
+    :root {
+      --content-primary: #120F08;
+      --content-secondary: rgba(18, 15, 8, 0.6);
+      --content-inverse-primary: #F9F4EB;
+      --content-inverse-secondary: rgba(249, 244, 235, 0.6);
+      --content-disabled: rgba(18, 15, 8, 0.3);
+      --content-inverse-disabled: rgba(249, 244, 235, 0.3);
+      --content-brand: #0021CC;
+      --content-brand-contrast: #F9F4EB;
+
+      --surface-highlight: #FCFBF7;
+      --surface-primary: #F9F4EB;
+      --surface-secondary: #EEE8DD;
+      --surface-tertiary: #E2DCCF;
+      --surface-inverse-primary: #120F08;
+      --surface-inverse-secondary: #1F1B14;
+      --surface-brand-primary: #0021CC;
+      --surface-brand-secondary: rgba(0, 33, 204, 0.10);
+
+      --emotion-anger-primary: #BF4040;
+      --emotion-anger-secondary: rgba(191, 64, 64, 0.10);
+      --emotion-happiness-primary: #D99E26;
+      --emotion-happiness-secondary: rgba(217, 158, 38, 0.10);
+      --emotion-disgust-primary: #80BF40;
+      --emotion-disgust-secondary: rgba(128, 191, 64, 0.10);
+      --emotion-surprise-primary: #40BFAA;
+      --emotion-surprise-secondary: rgba(64, 191, 170, 0.10);
+      --emotion-sadness-primary: #406ABF;
+      --emotion-sadness-secondary: rgba(64, 106, 191, 0.10);
+      --emotion-fear-primary: #9540BF;
+      --emotion-fear-secondary: rgba(149, 64, 191, 0.10);
+    }
+
+    /* ── Paper Theme — Dark ───────────────────────────────── */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --content-primary: #F9F4EB;
+        --content-secondary: rgba(249, 244, 235, 0.6);
+        --content-inverse-primary: #120F08;
+        --content-inverse-secondary: rgba(18, 15, 8, 0.6);
+        --content-disabled: rgba(249, 244, 235, 0.3);
+        --content-inverse-disabled: rgba(18, 15, 8, 0.3);
+
+        --surface-highlight: #080603;
+        --surface-primary: #130F06;
+        --surface-secondary: #201C13;
+        --surface-tertiary: #30291D;
+        --surface-inverse-primary: #F9F4EB;
+        --surface-inverse-secondary: #F0E9DB;
+        --surface-brand-secondary: rgba(0, 33, 204, 0.30);
+      }
+    }
+
+    /* ── Base ──────────────────────────────────────────────── */
+    body {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      background: var(--surface-primary);
+      color: var(--content-secondary);
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    /* ── Report Container ─────────────────────────────────── */
+    .report {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    @media (max-width: 768px) {
+      .report { padding: 0 24px; }
+    }
+
+    /* ── Branded Header ───────────────────────────────────── */
+    .ll-header {
+      text-align: center;
+      position: fixed;
+      top: 24px;
+      left: 0;
+      right: 0;
+      font-size: 12px;
+      z-index: 10;
+    }
+    .ll-header .ll-brand { color: var(--content-secondary); }
+    .ll-header .ll-title { color: var(--content-primary); }
+
+    /* ── Cover Section ────────────────────────────────────── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .cover .overline {
+      font-size: 10px;
+      line-height: 16px;
+      color: var(--content-disabled);
+      margin-bottom: 8px;
+    }
+    .cover .title {
+      font-size: 48px;
+      line-height: 52px;
+      color: var(--content-primary);
+      margin-bottom: 12px;
+    }
+    .cover .subtitle {
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--content-secondary);
+      margin-bottom: 24px;
+      max-width: 600px;
+    }
+    .cover .meta {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--content-disabled);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .cover .meta .divider { color: var(--content-disabled); }
+
+    @media (max-width: 768px) {
+      .cover .title { font-size: 32px; line-height: 36px; }
+    }
+
+    /* ── Section ──────────────────────────────────────────── */
+    .section {
+      padding-top: 96px;
+    }
+    .section-heading {
+      font-size: 32px;
+      line-height: 36px;
+      color: var(--content-primary);
+      margin-bottom: 16px;
+    }
+    .section-intro {
+      font-size: 18px;
+      line-height: 28px;
+      color: var(--content-secondary);
+      margin-bottom: 32px;
+      max-width: 720px;
+    }
+
+    @media (max-width: 768px) {
+      .section { padding-top: 64px; }
+      .section-heading { font-size: 24px; line-height: 28px; }
+      .section-intro { font-size: 16px; line-height: 24px; }
+    }
+
+    /* ── Subsection / Finding ─────────────────────────────── */
+    .finding {
+      padding-top: 48px;
+    }
+    .finding-heading {
+      font-size: 24px;
+      line-height: 28px;
+      color: var(--content-primary);
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .finding { padding-top: 32px; }
+      .finding-heading { font-size: 20px; line-height: 24px; }
+    }
+
+    /* ── Body Text ────────────────────────────────────────── */
+    p {
+      margin-bottom: 16px;
+      max-width: 720px;
+    }
+
+    /* ── Participant Quote ─────────────────────────────────── */
+    .participant-quote {
+      margin: 24px 0;
+      padding-left: 24px;
+      border-left: 2px solid var(--surface-brand-primary);
+      max-width: 720px;
+    }
+    .participant-quote .text {
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--content-primary);
+    }
+    .participant-quote .attribution {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--content-disabled);
+      margin-top: 8px;
+    }
+
+    /* ── Stat Block ───────────────────────────────────────── */
+    .stat-block {
+      background: var(--surface-brand-secondary);
+      border-radius: 8px;
+      padding: 32px;
+      margin: 24px 0;
+      max-width: 720px;
+    }
+    .stat-block .number {
+      font-size: 48px;
+      line-height: 52px;
+      color: var(--content-brand);
+      margin-bottom: 4px;
+    }
+    .stat-block .label {
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--content-secondary);
+    }
+
+    /* ── Emotion Callout ──────────────────────────────────── */
+    .emotion-callout {
+      margin: 24px 0;
+      padding: 20px 24px;
+      border-radius: 8px;
+      max-width: 720px;
+    }
+    .emotion-callout .emotion-label {
+      font-size: 10px;
+      line-height: 16px;
+      margin-bottom: 8px;
+    }
+    .emotion-callout .emotion-text {
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--content-primary);
+    }
+    .emotion-callout .emotion-attribution {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--content-disabled);
+      margin-top: 8px;
+    }
+
+    /* Emotion variants */
+    .emotion-callout.anger     { background: var(--emotion-anger-secondary); border-left: 2px solid var(--emotion-anger-primary); }
+    .emotion-callout.anger     .emotion-label { color: var(--emotion-anger-primary); }
+    .emotion-callout.happiness { background: var(--emotion-happiness-secondary); border-left: 2px solid var(--emotion-happiness-primary); }
+    .emotion-callout.happiness .emotion-label { color: var(--emotion-happiness-primary); }
+    .emotion-callout.disgust   { background: var(--emotion-disgust-secondary); border-left: 2px solid var(--emotion-disgust-primary); }
+    .emotion-callout.disgust   .emotion-label { color: var(--emotion-disgust-primary); }
+    .emotion-callout.surprise  { background: var(--emotion-surprise-secondary); border-left: 2px solid var(--emotion-surprise-primary); }
+    .emotion-callout.surprise  .emotion-label { color: var(--emotion-surprise-primary); }
+    .emotion-callout.sadness   { background: var(--emotion-sadness-secondary); border-left: 2px solid var(--emotion-sadness-primary); }
+    .emotion-callout.sadness   .emotion-label { color: var(--emotion-sadness-primary); }
+    .emotion-callout.fear      { background: var(--emotion-fear-secondary); border-left: 2px solid var(--emotion-fear-primary); }
+    .emotion-callout.fear      .emotion-label { color: var(--emotion-fear-primary); }
+
+    /* ── Data Table ───────────────────────────────────────── */
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      line-height: 20px;
+      margin: 24px 0;
+      max-width: 720px;
+    }
+    .report-table th {
+      text-align: left;
+      color: var(--content-primary);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--content-disabled);
+    }
+    .report-table td {
+      color: var(--content-secondary);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--surface-tertiary);
+    }
+
+    /* ── Chart Container ──────────────────────────────────── */
+    .chart-container {
+      width: 100%;
+      height: 320px;
+      margin: 24px 0;
+      max-width: 720px;
+    }
+    .chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .chart-caption {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--content-disabled);
+      margin-top: 8px;
+    }
+
+    /* ── Key Findings List (Exec Summary) ─────────────────── */
+    .key-findings {
+      list-style: none;
+      padding: 0;
+      margin: 24px 0;
+      max-width: 720px;
+    }
+    .key-findings li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--surface-tertiary);
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--content-secondary);
+    }
+    .key-findings li:last-child { border-bottom: none; }
+    .key-findings .finding-number {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--content-disabled);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* ── Print ─────────────────────────────────────────────── */
+    @media print {
+      body { background: #fff; color: #120F08; }
+      .ll-header { position: static; margin-bottom: 24px; }
+      .cover { min-height: auto; page-break-after: always; padding: 96px 0; }
+      .section { page-break-before: auto; }
+      .finding { page-break-inside: avoid; }
+      .stat-block { page-break-inside: avoid; }
+      .participant-quote { page-break-inside: avoid; }
+      .emotion-callout { page-break-inside: avoid; }
+      .chart-container { page-break-inside: avoid; }
+      .report-table { page-break-inside: avoid; }
+      .no-print { display: none; }
+    }
+
+    /* ── Reduced Motion ────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0s !important; transition-duration: 0s !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Branded header -->
+  <div class="ll-header">
+    <span class="ll-brand">Listen Labs /</span>
+    <span class="ll-title"> Report Title</span>
+  </div>
+
+  <div class="report">
+
+    <!-- ── Cover ──────────────────────────────────────────── -->
+    <section class="cover">
+      <div class="overline">Study Type</div>
+      <h1 class="title">Report Title</h1>
+      <p class="subtitle">A one-line subtitle describing the scope or focus of this research.</p>
+      <div class="meta">
+        <span>January 2026</span>
+        <span class="divider">&middot;</span>
+        <span>Author Name</span>
+        <span class="divider">&middot;</span>
+        <span>12 Participants</span>
+      </div>
+    </section>
+
+    <!-- ── Executive Summary ──────────────────────────────── -->
+    <section class="section">
+      <h2 class="section-heading">Executive Summary</h2>
+      <p class="section-intro">A concise overview of the research purpose and top-line findings.</p>
+
+      <ol class="key-findings">
+        <li>
+          <span class="finding-number">Finding 1</span>
+          Summary of the first key finding.
+        </li>
+        <li>
+          <span class="finding-number">Finding 2</span>
+          Summary of the second key finding.
+        </li>
+        <li>
+          <span class="finding-number">Finding 3</span>
+          Summary of the third key finding.
+        </li>
+      </ol>
+    </section>
+
+    <!-- ── Findings ───────────────────────────────────────── -->
+    <section class="section">
+      <h2 class="section-heading">Findings</h2>
+      <p class="section-intro">Detailed findings from the research, each supported by participant evidence.</p>
+
+      <div class="finding">
+        <h3 class="finding-heading">Finding Title</h3>
+        <p>Description of the finding with supporting context and analysis.</p>
+
+        <div class="participant-quote">
+          <div class="text">"Participant quote that supports this finding."</div>
+          <div class="attribution">Participant 7, Senior Designer</div>
+        </div>
+
+        <p>Additional analysis or context following the quote.</p>
+      </div>
+
+      <!-- Example stat block -->
+      <div class="stat-block">
+        <div class="number">73%</div>
+        <div class="label">of participants reported this experience</div>
+      </div>
+
+      <!-- Example emotion callout -->
+      <div class="emotion-callout surprise">
+        <div class="emotion-label">Surprise</div>
+        <div class="emotion-text">"I didn't expect the system to respond that way — it was actually delightful."</div>
+        <div class="emotion-attribution">Participant 3, Product Manager</div>
+      </div>
+
+    </section>
+
+    <!-- ── Recommendations ────────────────────────────────── -->
+    <section class="section">
+      <h2 class="section-heading">Recommendations</h2>
+      <p class="section-intro">What to do with these findings.</p>
+      <p>Recommendation content goes here.</p>
+    </section>
+
+  </div>
+
+  <!-- Chart.js CDN (include only if charts are embedded) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script>
+    // ── Chart.js setup (if charts are used) ────────────────
+    Chart.defaults.animation = false;
+    var style = getComputedStyle(document.documentElement);
+    var brandBlue = style.getPropertyValue('--surface-brand-primary').trim();
+    var contentPrimary = style.getPropertyValue('--content-primary').trim();
+    var contentSecondary = style.getPropertyValue('--content-secondary').trim();
+    var contentDisabled = style.getPropertyValue('--content-disabled').trim();
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.weight = 400;
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = contentPrimary;
+
+    function brandShades(count) {
+      var shades = [];
+      var step = 50 / (count + 1);
+      for (var i = 0; i < count; i++) {
+        var lightness = 30 + (step * (i + 1));
+        shades.push('hsl(229, 100%, ' + lightness + '%)');
+      }
+      return shades;
+    }
+
+    // ── Add chart instances below ──────────────────────────
+  </script>
+
+</body>
+</html>
