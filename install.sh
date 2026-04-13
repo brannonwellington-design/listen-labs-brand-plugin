@@ -97,4 +97,5 @@ echo "Available tools: get_brand_colors, get_typography, get_spacing, get_icon_g
 echo "  get_header_convention, get_data_visualization, get_art_direction, get_css_variables,"
 echo "  get_full_guidelines"
 echo ""
-echo "Available skills: /data-viz (brand-compliant Chart.js visualizations)"
+echo "Available skills: /data-viz (brand-compliant Chart.js visualizations),"
+echo "  /pptx (brand-compliant PowerPoint presentations)"

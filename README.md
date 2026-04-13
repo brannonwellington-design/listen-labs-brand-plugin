@@ -52,6 +52,30 @@ Or just ask Claude to chart, graph, or visualize any data — the skill auto-tri
 
 **Output:** A single self-contained `.html` file that opens in your browser.
 
+### `/pptx` — Presentations
+
+Generate professional, brand-compliant PowerPoint presentations using PptxGenJS. Composes with the built-in Anthropic PPTX skill for full API coverage.
+
+```
+/pptx
+```
+
+Or just ask Claude to create a deck, slides, or presentation — the skill auto-triggers.
+
+**What it enforces:**
+- Paper theme colors only — warm off-white (`#F9F4EB`) and near-black (`#120F08`) backgrounds
+- Brand blue (`#0021CC`) used sparingly as accent
+- Inter 400 for everything — no bold, no serif, no other fonts
+- Dark title/closing slides with light content slides ("sandwich" structure)
+- Branded header on every content slide
+- No drop shadows, no gradients, no accent lines under titles
+- Mandatory visual QA loop with subagent inspection
+- 8 pre-built slide templates (title, section, bullets, two-column, stat, cards, quote, closing)
+
+**Output:** A `.pptx` file generated via PptxGenJS.
+
+**Additional dependencies:** `npm install pptxgenjs` and `pip install "markitdown[pptx]" Pillow`
+
 ---
 
 ## Auto-Updates
