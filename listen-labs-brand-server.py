@@ -153,9 +153,9 @@ HEADER = {
     "case": "Title Case always",
     "listen_labs_color": "content-secondary (60% opacity)",
     "project_title_color": "content-primary",
-    "default_font_size": "10px",
-    "notes": "Both parts use the same font size. Default 10px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.",
-    "html_example": '''<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:10px;">
+    "default_font_size": "12px",
+    "notes": "Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.",
+    "html_example": '''<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:12px;">
   <span style="color: var(--content-secondary)">Listen Labs /</span>
   <span style="color: var(--content-primary)"> Project Title</span>
 </div>''',
