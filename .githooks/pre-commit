@@ -6,7 +6,7 @@ REPO_DIR="$(git rev-parse --show-toplevel)"
 
 if git diff --cached --name-only | grep -q "listen-labs-brand-server.py"; then
     echo "Server changed — regenerating GUIDELINES.md..."
-    python3 "$REPO_DIR/sync-guidelines.py"
+    python3 "$REPO_DIR/generate_guidelines.py"
     git add "$REPO_DIR/GUIDELINES.md"
     echo "GUIDELINES.md synced and staged."
 fi
