@@ -197,7 +197,7 @@ Listen Labs / Project Title
 Rules:
 - Positioned **top center**, **24px from top from the top**
 - Title Case always
-- `Listen Labs /` is in **secondary content color** (60% opacity)
+- `Listen Labs /` is in **secondary content color**
 - `Project Title` is in **primary content color**
 - Both use the same font size — **default is 12px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
 - No letter-spacing added
@@ -342,7 +342,7 @@ Reserved tokens:
 ### General Rules
 - Use even-number spacing values consistent with the brand spacing system (4px base unit).
 - Labels and annotations follow brand typography rules — Inter Regular 400, no letter-spacing overrides.
-- Grid lines use content-disabled opacity (30%) to stay subordinate to data.
+- Grid lines use content-disabled to stay subordinate to data.
 - One dominant data story per chart — avoid overloading a single visualization with competing narratives.
 
 ---
@@ -382,13 +382,16 @@ Reserved tokens:
 |----------|-------|
 | Canvas / default bg (light) | `#F9F4EB` (surface-primary) |
 | Canvas / default bg (dark) | `#130F06` (surface-primary) |
-| Surface highlight (light) | `#FCFBF7` — elevated elements only |
+| Surface highlight (light) | `#FBF9F4` — elevated elements only |
 | Surface highlight (dark) | `#080603` — elevated elements only |
 | Content primary (light) | `#120F08` |
 | Content primary (dark) | `#F9F4EB` |
-| Content secondary | 60% opacity of content primary |
-| Content disabled | 30% opacity of content primary |
-| Brand | `#0021CC` |
+| Content secondary (light) | `#6B6861` |
+| Content secondary (dark) | `#9E9B94` |
+| Content disabled (light) | `#B6B4AF` |
+| Content disabled (dark) | `#504E49` |
+| Brand (light) | `#0021CC` |
+| Brand (dark) | `#3354FF` |
 | Font | Inter only, 400 Regular only — never serif, never bold |
 | Letter spacing | Default (never override) |
 | Text case | Sentence or title case only — never all caps |

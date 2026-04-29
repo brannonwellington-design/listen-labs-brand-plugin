@@ -155,7 +155,7 @@ HEADER = {
     "format": "Listen Labs / Project Title",
     "position": "Top center, 24px from top",
     "case": "Title Case always",
-    "listen_labs_color": "content-secondary (60% opacity)",
+    "listen_labs_color": "content-secondary",
     "project_title_color": "content-primary",
     "default_font_size": "12px",
     "notes": "Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.",
@@ -196,7 +196,7 @@ DATA_VISUALIZATION = {
     "general_rules": [
         "Use even-number spacing values consistent with the brand spacing system (4px base unit).",
         "Labels and annotations follow brand typography rules — Inter Regular 400, no letter-spacing overrides.",
-        "Grid lines use content-disabled opacity (30%) to stay subordinate to data.",
+        "Grid lines use content-disabled to stay subordinate to data.",
         "One dominant data story per chart — avoid overloading a single visualization with competing narratives.",
     ],
 }
