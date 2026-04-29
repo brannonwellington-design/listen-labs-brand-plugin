@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
 """
-Generates GUIDELINES.md from the brand data in listen-labs-brand-server.py.
+Generates GUIDELINES.md from the brand data in brand_data.py.
 
 Run directly:  python3 generate_guidelines.py
 Also runs automatically via the pre-commit hook.
 """
 
-import importlib.util
 import os
 import re
+import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-SERVER_PATH = os.path.join(SCRIPT_DIR, "listen-labs-brand-server.py")
 OUTPUT_PATH = os.path.join(SCRIPT_DIR, "GUIDELINES.md")
 
-
-def load_server_data():
-    spec = importlib.util.spec_from_file_location("brand_server", SERVER_PATH)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+sys.path.insert(0, SCRIPT_DIR)
+import brand_data as data
 
 
 def fmt_rgba(val):
@@ -43,22 +38,47 @@ def color_display(val):
     return f"`{val}`"
 
 
-def build_content_token_table(light_content, dark_content):
+def build_token_table(colors, themes, section):
+    """Build a markdown table with one column per theme/mode combination.
+
+    colors: data.COLORS dict.
+    themes: list of theme names (e.g. ["paper", "whisp"]).
+    section: "content" or "surface".
+    """
+    headers = ["Token"]
+    for theme in themes:
+        for mode in ("light", "dark"):
+            headers.append(f"{theme.title()} {mode.title()}")
+    sep = ["---"] * len(headers)
+
+    tokens = list(colors[themes[0]]["light"][section].keys())
     rows = []
-    for token in light_content:
-        light_val = color_display(light_content[token])
-        dark_val = color_display(dark_content[token])
-        rows.append(f"| `{token}` | {light_val} | {dark_val} |")
-    return "\n".join(rows)
+    for token in tokens:
+        cells = [f"`{token}`"]
+        for theme in themes:
+            for mode in ("light", "dark"):
+                cells.append(color_display(colors[theme][mode][section][token]))
+        rows.append("| " + " | ".join(cells) + " |")
+
+    return "\n".join([
+        "| " + " | ".join(headers) + " |",
+        "|" + "|".join(sep) + "|",
+        *rows,
+    ])
 
 
-def build_surface_token_table(light_surface, dark_surface):
-    rows = []
-    for token in light_surface:
-        light_val = color_display(light_surface[token])
-        dark_val = color_display(dark_surface[token])
-        rows.append(f"| `{token}` | {light_val} | {dark_val} |")
-    return "\n".join(rows)
+def build_css_variable_section(css_vars, themes):
+    blocks = []
+    for theme in themes:
+        blocks.append(
+            f"#### {theme.title()}\n"
+            "```css\n"
+            f"{css_vars[theme]['light']}\n"
+            "\n"
+            f"{css_vars[theme]['dark']}\n"
+            "```"
+        )
+    return "\n\n".join(blocks)
 
 
 def build_emotion_token_table(emotions):
@@ -113,6 +133,12 @@ def generate(data):
     D = data.DATA_VISUALIZATION
     A = data.ART_DIRECTION
     V = data.CSS_VARIABLES
+    THEMES = data.THEMES
+    DEFAULT_THEME = data.DEFAULT_THEME
+    default_light_surface = C[DEFAULT_THEME]["light"]["surface"]
+    default_dark_surface = C[DEFAULT_THEME]["dark"]["surface"]
+    default_light_content = C[DEFAULT_THEME]["light"]["content"]
+    default_dark_content = C[DEFAULT_THEME]["dark"]["content"]
 
     type_scale_str = ", ".join(str(s) for s in T["type_scale_px"])
     radius_str = ", ".join(str(r) for r in S["border_radius_scale"])
@@ -125,7 +151,7 @@ def generate(data):
     dataviz_general = "\n".join(f"- {rule}" for rule in D["general_rules"])
     emotion_tokens_list = "\n".join(f"- `{t}`" for t in D["emotion_color_mapping"]["tokens"])
 
-    return f"""<!-- AUTO-GENERATED from listen-labs-brand-server.py — do not edit manually -->
+    return f"""<!-- AUTO-GENERATED from brand_data.py — do not edit manually -->
 <!-- Run: python3 generate_guidelines.py -->
 
 # Listen Labs Brand Guidelines
@@ -134,18 +160,16 @@ Apply these guidelines to **every** visual or document output. No exceptions unl
 
 ---
 
-## Color Tokens — Theme: Paper
+## Color Tokens
 
-The theme is called **Paper** and has light and dark modes. Tokens are split into two categories: **content** (text and icons) and **surface** (backgrounds, fills, strokes, outlines, containers).
+There are two themes: **Paper** (default — warm cream and brown) and **Whisp** (neutral grayscale). Both have light and dark modes. Use **Paper** unless the user or context calls for Whisp. Tokens are split into two categories: **content** (text and icons) and **surface** (backgrounds, fills, strokes, outlines, containers). Token names are identical across themes — only the values change.
 
 ---
 
 ### Content Tokens
 *Used for text and icons only.*
 
-| Token | Light (Paper) | Dark (Paper) |
-|-------|--------------|-------------|
-{build_content_token_table(C["light"]["content"], C["dark"]["content"])}
+{build_token_table(C, THEMES, "content")}
 
 ---
 
@@ -154,14 +178,12 @@ The theme is called **Paper** and has light and dark modes. Tokens are split int
 
 **Surface hierarchy:** `surface-primary` is the default canvas background. `surface-highlight` sits above the canvas and is reserved for elevated elements — active dropdown menus, chat input fields, and emphasis surfaces. It is used sparingly.
 
-| Token | Light (Paper) | Dark (Paper) |
-|-------|--------------|-------------|
-{build_surface_token_table(C["light"]["surface"], C["dark"]["surface"])}
+{build_token_table(C, THEMES, "surface")}
 
 ---
 
 ### Emotion Tokens
-*Used exclusively for emotion-tagged data in interview/research contexts. Not for general UI.*
+*Used exclusively for emotion-tagged data in interview/research contexts. Not for general UI. Shared across both themes.*
 
 All emotion secondary tokens are 10% opacity in both light and dark mode.
 
@@ -176,11 +198,8 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 ---
 
 ### CSS Variables
-```css
-{V["light"]}
 
-{V["dark"]}
-```
+{build_css_variable_section(V, THEMES)}
 
 ---
 
@@ -324,23 +343,25 @@ Reserved tokens:
 - Use `surface-primary` as the default canvas background
 - `surface-highlight` reserved for elevated elements (dropdowns, inputs, emphasis)
 
+*All values below reference the default theme ({DEFAULT_THEME.title()}). For {", ".join(t.title() for t in THEMES if t != DEFAULT_THEME)}, see the Color Tokens section above.*
+
 ### Canvas / Visualizations
-- Background fill: `#F9F4EB` (light) or `#130F06` (dark) — i.e. `surface-primary`
+- Background fill: `{default_light_surface["surface-primary"]}` (light) or `{default_dark_surface["surface-primary"]}` (dark) — i.e. `surface-primary`
 - Draw text using Inter where possible (load as web font or use system fallback)
-- Use `#0021CC` sparingly for highlighted data points or accents
-- **Multi-series data using brand blue**: when `#0021CC` is used to fill data objects (bars, pie slices, lines, etc.), additional data series can use the same blue at descending opacity stops rather than introducing new colors. Choose stops that are visually distinct — e.g. 100%, 60%, 30% for three series, or 100%, 70%, 45%, 20% for four. Avoid stops so close together they're hard to tell apart.
+- Use `{default_light_content["content-brand"]}` sparingly for highlighted data points or accents
+- **Multi-series data using brand blue**: when `{default_light_content["content-brand"]}` is used to fill data objects (bars, pie slices, lines, etc.), additional data series can use the same blue at descending opacity stops rather than introducing new colors. Choose stops that are visually distinct — e.g. 100%, 60%, 30% for three series, or 100%, 70%, 45%, 20% for four. Avoid stops so close together they're hard to tell apart.
 
 ### Presentations (PPTX)
-- Slide background: `#F9F4EB` (`surface-primary`)
-- Primary text: `#120F08`
-- Accent: `#0021CC` for key callouts only
+- Slide background: `{default_light_surface["surface-primary"]}` (`surface-primary`)
+- Primary text: `{default_light_content["content-primary"]}`
+- Accent: `{default_light_content["content-brand"]}` for key callouts only
 - Use Inter throughout; Regular weight only; never serif, never bold
 - Header slide: large title in title case, centered, branded header convention at top
 
 ### Word Documents (DOCX)
-- Page background or header area should evoke the warm palette
+- Page background or header area should evoke the default theme palette
 - Inter Regular throughout; never serif, never bold
-- Use `#0021CC` for links or key highlights only
+- Use `{default_light_content["content-brand"]}` for links or key highlights only
 
 ---
 
@@ -348,18 +369,20 @@ Reserved tokens:
 
 | Property | Value |
 |----------|-------|
-| Canvas / default bg (light) | `#F9F4EB` (surface-primary) |
-| Canvas / default bg (dark) | `#130F06` (surface-primary) |
-| Surface highlight (light) | `#FBF9F4` — elevated elements only |
-| Surface highlight (dark) | `#080603` — elevated elements only |
-| Content primary (light) | `#120F08` |
-| Content primary (dark) | `#F9F4EB` |
-| Content secondary (light) | `#6B6861` |
-| Content secondary (dark) | `#9E9B94` |
-| Content disabled (light) | `#B6B4AF` |
-| Content disabled (dark) | `#504E49` |
-| Brand (light) | `#0021CC` |
-| Brand (dark) | `#3354FF` |
+| Default theme | {DEFAULT_THEME.title()} |
+| Available themes | {", ".join(t.title() for t in THEMES)} |
+| Canvas / default bg (light) | `{default_light_surface["surface-primary"]}` (surface-primary) |
+| Canvas / default bg (dark) | `{default_dark_surface["surface-primary"]}` (surface-primary) |
+| Surface highlight (light) | `{default_light_surface["surface-highlight"]}` — elevated elements only |
+| Surface highlight (dark) | `{default_dark_surface["surface-highlight"]}` — elevated elements only |
+| Content primary (light) | `{default_light_content["content-primary"]}` |
+| Content primary (dark) | `{default_dark_content["content-primary"]}` |
+| Content secondary (light) | `{default_light_content["content-secondary"]}` |
+| Content secondary (dark) | `{default_dark_content["content-secondary"]}` |
+| Content disabled (light) | `{default_light_content["content-disabled"]}` |
+| Content disabled (dark) | `{default_dark_content["content-disabled"]}` |
+| Brand (light) | `{default_light_content["content-brand"]}` |
+| Brand (dark) | `{default_dark_content["content-brand"]}` |
 | Font | Inter only, 400 Regular only — never serif, never bold |
 | Letter spacing | Default (never override) |
 | Text case | Sentence or title case only — never all caps |
@@ -372,7 +395,6 @@ Reserved tokens:
 
 
 if __name__ == "__main__":
-    data = load_server_data()
     md = generate(data)
     with open(OUTPUT_PATH, "w") as f:
         f.write(md)

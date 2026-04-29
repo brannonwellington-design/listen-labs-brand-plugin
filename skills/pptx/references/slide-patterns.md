@@ -10,17 +10,27 @@ let pres = new pptxgen();
 pres.layout = "LAYOUT_16x9"; // 10" x 5.625"
 
 // ── Listen Labs Brand Tokens ───────────────────────────────
+// IMPORTANT: Populate these from `get_brand_colors(theme=<paper|whisp>)` at
+// generation time. PptxGenJS needs literal 6-char hex without the `#` prefix.
+// Example below shows Paper light values — substitute Whisp values if Whisp
+// is the selected theme.
 const BRAND = {
-  bg:          "F9F4EB",  // surface-primary (light)
-  bgDark:      "120F08",  // surface-inverse-primary (dark)
-  bgSecondary: "EEE8DD",  // surface-secondary
-  bgTertiary:  "E2DCCF",  // surface-tertiary
-  text:        "120F08",  // content-primary
-  textInverse: "F9F4EB",  // content-inverse-primary
-  textMuted:   "120F08",  // at 60% opacity → content-secondary
-  textDisabled:"120F08",  // at 30% opacity → content-disabled
-  accent:      "0021CC",  // surface-brand-primary
-  accentLight: "0021CC",  // at 10% opacity → surface-brand-secondary
+  // Light-slide colors
+  bg:                "F9F4EB",  // surface-primary
+  bgSecondary:       "EEE8DD",  // surface-secondary
+  bgTertiary:        "E2DCCF",  // surface-tertiary
+  text:              "120F08",  // content-primary
+  textMuted:         "6B6861",  // content-secondary (opaque)
+  textDisabled:      "B6B4AF",  // content-disabled (opaque)
+
+  // Dark-slide colors (used on title/section/closing slides)
+  bgDark:            "120F08",  // surface-inverse-primary
+  textInverse:       "F9F4EB",  // content-inverse-primary
+  textInverseMuted:  "9E9B94",  // content-inverse-secondary (opaque)
+
+  // Brand accents
+  accent:            "0021CC",  // surface-brand-primary
+  accentLight:       "D9DDF2",  // surface-brand-secondary (opaque)
 };
 
 // ── Factory Functions (never reuse option objects) ──────────
@@ -34,7 +44,7 @@ const makeBody = () => ({
   fontFace: "Inter", fontSize: 16, color: BRAND.text, margin: 0,
 });
 const makeCaption = () => ({
-  fontFace: "Inter", fontSize: 10, color: BRAND.text, opacity: 0.6, margin: 0,
+  fontFace: "Inter", fontSize: 10, color: BRAND.textMuted, margin: 0,
 });
 const makeHeader = () => ({
   fontFace: "Inter", fontSize: 10, margin: 0,
@@ -42,10 +52,11 @@ const makeHeader = () => ({
 
 // ── Branded Header Helper ──────────────────────────────────
 function addHeader(slide, title, dark) {
-  var textColor = dark ? BRAND.textInverse : BRAND.text;
+  var prefixColor = dark ? BRAND.textInverseMuted : BRAND.textMuted;
+  var titleColor  = dark ? BRAND.textInverse      : BRAND.text;
   slide.addText([
-    { text: "Listen Labs / ", options: { color: textColor, opacity: 0.6 } },
-    { text: title, options: { color: textColor } }
+    { text: "Listen Labs / ", options: { color: prefixColor } },
+    { text: title, options: { color: titleColor } }
   ], {
     x: 0, y: 0.2, w: 10, h: 0.3,
     align: "center",
@@ -82,22 +93,18 @@ function addTitleSlide(pres, title, subtitle) {
       align: "center",
       fontFace: "Inter",
       fontSize: 16,
-      color: BRAND.textInverse,
-      opacity: 0.6,
+      color: BRAND.textInverseMuted,
       margin: 0,
     });
   }
 
-  // Branded header
-  addHeader(slide, "", true);
-  // Override: just "Listen Labs" on title slide
+  // Branded header — title slide gets just "Listen Labs" (no project title yet)
   slide.addText("Listen Labs", {
     x: 0, y: 0.2, w: 10, h: 0.3,
     align: "center",
     fontFace: "Inter",
     fontSize: 10,
-    color: BRAND.textInverse,
-    opacity: 0.6,
+    color: BRAND.textInverseMuted,
     margin: 0,
   });
 
@@ -258,7 +265,7 @@ function addStatSlide(pres, statValue, statLabel, context, projectTitle) {
     slide.addText(context, {
       x: 1.5, y: 3.6, w: 7.0, h: 0.6,
       align: "center",
-      fontFace: "Inter", fontSize: 14, color: BRAND.text, opacity: 0.6, margin: 0,
+      fontFace: "Inter", fontSize: 14, color: BRAND.textMuted, margin: 0,
     });
   }
 
@@ -351,7 +358,7 @@ function addQuoteSlide(pres, quote, attribution, projectTitle) {
     slide.addText(attribution, {
       x: 1.2, y: 3.6, w: 7.6, h: 0.4,
       align: "left",
-      fontFace: "Inter", fontSize: 12, color: BRAND.text, opacity: 0.6, margin: 0,
+      fontFace: "Inter", fontSize: 12, color: BRAND.textMuted, margin: 0,
     });
   }
 
@@ -383,7 +390,7 @@ function addClosingSlide(pres, closingText, contactInfo) {
     slide.addText(contactInfo, {
       x: 0.6, y: 3.2, w: 8.8, h: 0.6,
       align: "center",
-      fontFace: "Inter", fontSize: 14, color: BRAND.textInverse, opacity: 0.6, margin: 0,
+      fontFace: "Inter", fontSize: 14, color: BRAND.textInverseMuted, margin: 0,
     });
   }
 
@@ -391,7 +398,7 @@ function addClosingSlide(pres, closingText, contactInfo) {
   slide.addText("Listen Labs", {
     x: 0, y: 4.8, w: 10, h: 0.4,
     align: "center",
-    fontFace: "Inter", fontSize: 10, color: BRAND.textInverse, opacity: 0.6, margin: 0,
+    fontFace: "Inter", fontSize: 10, color: BRAND.textInverseMuted, margin: 0,
   });
 
   return slide;
@@ -402,9 +409,34 @@ function addClosingSlide(pres, closingText, contactInfo) {
 
 ## Chart Slides
 
-For embedded charts, use PptxGenJS native chart support with brand colors:
+For embedded charts, use PptxGenJS native chart support with brand colors. The series-color helper mirrors the `/data-viz` `brandShades` formula and emits hex strings without the `#` prefix that PptxGenJS expects.
 
 ```javascript
+// Monochromatic brand-blue series colors. Mirrors /data-viz brandShades.
+function brandShadesHex(count) {
+  var shades = [];
+  var step = 50 / (count + 1);
+  for (var i = 0; i < count; i++) {
+    shades.push(hslToHex(229, 100, 30 + step * (i + 1)));
+  }
+  return shades;
+}
+
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  var c = (1 - Math.abs(2 * l - 1)) * s;
+  var x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  var m = l - c / 2, r = 0, g = 0, b = 0;
+  if      (h < 60)  { r = c; g = x; }
+  else if (h < 120) { r = x; g = c; }
+  else if (h < 180) { g = c; b = x; }
+  else if (h < 240) { g = x; b = c; }
+  else if (h < 300) { r = x; b = c; }
+  else              { r = c; b = x; }
+  var to = function(n) { return Math.round((n + m) * 255).toString(16).padStart(2, "0").toUpperCase(); };
+  return to(r) + to(g) + to(b);
+}
+
 function addChartSlide(pres, title, chartType, chartData, projectTitle) {
   var slide = pres.addSlide();
   slide.background = { color: BRAND.bg };
@@ -418,15 +450,6 @@ function addChartSlide(pres, title, chartType, chartData, projectTitle) {
     fontSize: 24,
   });
 
-  // Monochromatic brand shades
-  var shadeCount = chartData.length;
-  var chartColors = [];
-  var step = 50 / (shadeCount + 1);
-  for (var i = 0; i < shadeCount; i++) {
-    // HSL to approximate hex — use pre-computed stops
-    chartColors.push(BRAND.accent); // single-series default
-  }
-
   slide.addChart(chartType, chartData, {
     x: 0.6, y: 1.5, w: 8.8, h: 3.6,
     showTitle: false,
@@ -435,7 +458,7 @@ function addChartSlide(pres, title, chartType, chartData, projectTitle) {
     legendFontFace: "Inter",
     legendFontSize: 10,
     legendColor: BRAND.text,
-    chartColors: [BRAND.accent, "3355DD", "6688EE", "99BBFF"],
+    chartColors: brandShadesHex(chartData.length),
     border: { pt: 0 },
     catAxisLabelFontFace: "Inter",
     catAxisLabelFontSize: 10,
@@ -444,7 +467,7 @@ function addChartSlide(pres, title, chartType, chartData, projectTitle) {
     valAxisLabelFontSize: 10,
     valAxisLabelColor: BRAND.textMuted,
     catGridLine: { style: "none" },
-    valGridLine: { color: "E2DCCF", style: "solid", size: 1 },
+    valGridLine: { color: BRAND.bgTertiary, style: "solid", size: 1 },
   });
 
   return slide;

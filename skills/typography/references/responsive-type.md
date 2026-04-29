@@ -281,7 +281,7 @@ On very wide screens (1440px+), the body column stays at 720px with increasing m
 
 1. **All text must scale with browser zoom.** Use `px` inside `clamp()` — browser zoom scales pixel values. Never use `vw` alone.
 2. **Minimum text size: 10px.** Nothing in the Listen Labs scale goes below 10px for readable content (6px and 8px are reserved for decorative micro-text only).
-3. **Color contrast:** `content-primary` on `surface-primary` must meet WCAG AA (4.5:1 for body, 3:1 for large text). The Listen Labs Paper theme passes this — `#120F08` on `#F9F4EB` is ~15:1 contrast.
-4. **`content-secondary` (60% opacity)** on `surface-primary` must also meet AA for body text. Verify in dark mode as well.
-5. **`content-disabled` (30% opacity)** does NOT meet AA contrast. Use only for non-essential metadata that is supplementary, never for actionable or required content.
+3. **Color contrast:** `content-primary` on `surface-primary` must meet WCAG AA (4.5:1 for body, 3:1 for large text). Both Listen Labs themes pass this comfortably — verify your active theme/mode combination if in doubt.
+4. **`content-secondary` on `surface-primary`** must also meet AA for body text. Verify in dark mode and across themes.
+5. **`content-disabled`** does NOT meet AA contrast. Use only for non-essential supplementary metadata, never for actionable or required content.
 6. **Reduced motion:** Wrap any type animations in `@media (prefers-reduced-motion: no-preference)`.

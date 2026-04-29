@@ -1,4 +1,4 @@
-<!-- AUTO-GENERATED from listen-labs-brand-server.py — do not edit manually -->
+<!-- AUTO-GENERATED from brand_data.py — do not edit manually -->
 <!-- Run: python3 generate_guidelines.py -->
 
 # Listen Labs Brand Guidelines
@@ -7,31 +7,31 @@ Apply these guidelines to **every** visual or document output. No exceptions unl
 
 ---
 
-## Color Tokens — Theme: Paper
+## Color Tokens
 
-The theme is called **Paper** and has light and dark modes. Tokens are split into two categories: **content** (text and icons) and **surface** (backgrounds, fills, strokes, outlines, containers).
+There are two themes: **Paper** (default — warm cream and brown) and **Whisp** (neutral grayscale). Both have light and dark modes. Use **Paper** unless the user or context calls for Whisp. Tokens are split into two categories: **content** (text and icons) and **surface** (backgrounds, fills, strokes, outlines, containers). Token names are identical across themes — only the values change.
 
 ---
 
 ### Content Tokens
 *Used for text and icons only.*
 
-| Token | Light (Paper) | Dark (Paper) |
-|-------|--------------|-------------|
-| `content-primary` | `#120F08` | `#F9F4EB` |
-| `content-secondary` | `#6B6861` | `#9E9B94` |
-| `content-inverse-primary` | `#F9F4EB` | `#120F08` |
-| `content-inverse-secondary` | `#9E9B94` | `#6B6861` |
-| `content-disabled` | `#B6B4AF` | `#504E49` |
-| `content-inverse-disabled` | `#504E49` | `#B6B4AF` |
-| `content-brand` | `#0021CC` | `#3354FF` |
-| `content-brand-secondary` | `#7A85B8` | `#7A85B8` |
-| `content-brand-contrast` | `#F9F4EB` | `#F9F4EB` |
-| `content-brand-contrast-secondary` | `#9CA3C9` | `#9CA3C9` |
-| `content-complimentary` | `#B88114` | `#B88114` |
-| `content-warning` | `#B85814` | `#B85814` |
-| `content-negative` | `#B82214` | `#B82214` |
-| `content-positive` | `#0F8A38` | `#0F8A38` |
+| Token | Paper Light | Paper Dark | Whisp Light | Whisp Dark |
+|---|---|---|---|---|
+| `content-primary` | `#120F08` | `#F9F4EB` | `#1A1A1A` | `#E5E5E5` |
+| `content-secondary` | `#6B6861` | `#9E9B94` | `#666666` | `#999999` |
+| `content-inverse-primary` | `#F9F4EB` | `#120F08` | `#E5E5E5` | `#1A1A1A` |
+| `content-inverse-secondary` | `#9E9B94` | `#6B6861` | `#999999` | `#666666` |
+| `content-disabled` | `#B6B4AF` | `#504E49` | `#B2B2B2` | `#4D4D4D` |
+| `content-inverse-disabled` | `#504E49` | `#B6B4AF` | `#4D4D4D` | `#B2B2B2` |
+| `content-brand` | `#0021CC` | `#3354FF` | `#0021CC` | `#3354FF` |
+| `content-brand-secondary` | `#7A85B8` | `#7A85B8` | `#7A85B8` | `#7A85B8` |
+| `content-brand-contrast` | `#F9F4EB` | `#F9F4EB` | `#E5E5E5` | `#E5E5E5` |
+| `content-brand-contrast-secondary` | `#9CA3C9` | `#9CA3C9` | `#9CA3C9` | `#9CA3C9` |
+| `content-complimentary` | `#B88114` | `#B88114` | `#B88114` | `#B88114` |
+| `content-warning` | `#B85814` | `#B85814` | `#B85814` | `#B85814` |
+| `content-negative` | `#B82214` | `#B82214` | `#B82214` | `#B82214` |
+| `content-positive` | `#0F8A38` | `#0F8A38` | `#0F8A38` | `#0F8A38` |
 
 ---
 
@@ -40,29 +40,29 @@ The theme is called **Paper** and has light and dark modes. Tokens are split int
 
 **Surface hierarchy:** `surface-primary` is the default canvas background. `surface-highlight` sits above the canvas and is reserved for elevated elements — active dropdown menus, chat input fields, and emphasis surfaces. It is used sparingly.
 
-| Token | Light (Paper) | Dark (Paper) |
-|-------|--------------|-------------|
-| `surface-highlight` | `#FBF9F4` | `#080603` |
-| `surface-primary` | `#F9F4EB` | `#130F06` |
-| `surface-secondary` | `#EEE8DD` | `#201C13` |
-| `surface-tertiary` | `#E2DCCF` | `#30291D` |
-| `surface-inverse-primary` | `#120F08` | `#F9F4EB` |
-| `surface-inverse-secondary` | `#1F1B14` | `#F0E9DB` |
-| `surface-brand-primary` | `#0021CC` | `#0021CC` |
-| `surface-brand-secondary` | `#D9DDF2` | `#131939` |
-| `surface-complimentary-primary` | `#E5A119` | `#E5A119` |
-| `surface-complimentary-secondary` | `#F5EBD6` | `#F5EBD6` |
-| `surface-warning-primary` | `#CF6317` | `#CF6317` |
-| `surface-warning-secondary` | `#F5E3D6` | `#F5E3D6` |
-| `surface-negative-primary` | `#CF2617` | `#CF2617` |
-| `surface-negative-secondary` | `#F5D9D6` | `#F5D9D6` |
-| `surface-positive-primary` | `#14B84B` | `#14B84B` |
-| `surface-positive-secondary` | `#D6F5E0` | `#D6F5E0` |
+| Token | Paper Light | Paper Dark | Whisp Light | Whisp Dark |
+|---|---|---|---|---|
+| `surface-highlight` | `#FBF9F4` | `#080603` | `#FFFFFF` | `#000000` |
+| `surface-primary` | `#F9F4EB` | `#130F06` | `#FAFAFA` | `#1A1A1A` |
+| `surface-secondary` | `#EEE8DD` | `#201C13` | `#F0F0F0` | `#262626` |
+| `surface-tertiary` | `#E2DCCF` | `#30291D` | `#E0E0E0` | `#333333` |
+| `surface-inverse-primary` | `#120F08` | `#F9F4EB` | `#1A1A1A` | `#FAFAFA` |
+| `surface-inverse-secondary` | `#1F1B14` | `#F0E9DB` | `#262626` | `#F0F0F0` |
+| `surface-brand-primary` | `#0021CC` | `#0021CC` | `#0021CC` | `#0021CC` |
+| `surface-brand-secondary` | `#D9DDF2` | `#131939` | `#D9DDF2` | `#131939` |
+| `surface-complimentary-primary` | `#E5A119` | `#E5A119` | `#E5A119` | `#E5A119` |
+| `surface-complimentary-secondary` | `#F5EBD6` | `#F5EBD6` | `#F5EBD6` | `#F5EBD6` |
+| `surface-warning-primary` | `#CF6317` | `#CF6317` | `#CF6317` | `#CF6317` |
+| `surface-warning-secondary` | `#F5E3D6` | `#F5E3D6` | `#F5E3D6` | `#F5E3D6` |
+| `surface-negative-primary` | `#CF2617` | `#CF2617` | `#CF2617` | `#CF2617` |
+| `surface-negative-secondary` | `#F5D9D6` | `#F5D9D6` | `#F5D9D6` | `#F5D9D6` |
+| `surface-positive-primary` | `#14B84B` | `#14B84B` | `#14B84B` | `#14B84B` |
+| `surface-positive-secondary` | `#D6F5E0` | `#D6F5E0` | `#D6F5E0` | `#D6F5E0` |
 
 ---
 
 ### Emotion Tokens
-*Used exclusively for emotion-tagged data in interview/research contexts. Not for general UI.*
+*Used exclusively for emotion-tagged data in interview/research contexts. Not for general UI. Shared across both themes.*
 
 All emotion secondary tokens are 10% opacity in both light and dark mode.
 
@@ -99,6 +99,8 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 ---
 
 ### CSS Variables
+
+#### Paper
 ```css
 /* Paper - Light */
 --content-primary: #120F08;
@@ -162,6 +164,73 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 --surface-tertiary: #30291D;
 --surface-inverse-primary: #F9F4EB;
 --surface-inverse-secondary: #F0E9DB;
+--surface-brand-secondary: #131939;
+```
+
+#### Whisp
+```css
+/* Whisp - Light */
+--content-primary: #1A1A1A;
+--content-secondary: #666666;
+--content-inverse-primary: #E5E5E5;
+--content-inverse-secondary: #999999;
+--content-disabled: #B2B2B2;
+--content-inverse-disabled: #4D4D4D;
+--content-brand: #0021CC;
+--content-brand-secondary: #7A85B8;
+--content-brand-contrast: #E5E5E5;
+--content-brand-contrast-secondary: #9CA3C9;
+--content-complimentary: #B88114;
+--content-warning: #B85814;
+--content-negative: #B82214;
+--content-positive: #0F8A38;
+
+--surface-highlight: #FFFFFF;
+--surface-primary: #FAFAFA;
+--surface-secondary: #F0F0F0;
+--surface-tertiary: #E0E0E0;
+--surface-inverse-primary: #1A1A1A;
+--surface-inverse-secondary: #262626;
+--surface-brand-primary: #0021CC;
+--surface-brand-secondary: #D9DDF2;
+--surface-complimentary-primary: #E5A119;
+--surface-complimentary-secondary: #F5EBD6;
+--surface-warning-primary: #CF6317;
+--surface-warning-secondary: #F5E3D6;
+--surface-negative-primary: #CF2617;
+--surface-negative-secondary: #F5D9D6;
+--surface-positive-primary: #14B84B;
+--surface-positive-secondary: #D6F5E0;
+
+/* Emotion tokens */
+--emotion-anger-primary: #BF4040;
+--emotion-anger-secondary: rgba(191, 64, 64, 0.10);
+--emotion-happiness-primary: #D99E26;
+--emotion-happiness-secondary: rgba(217, 158, 38, 0.10);
+--emotion-disgust-primary: #80BF40;
+--emotion-disgust-secondary: rgba(128, 191, 64, 0.10);
+--emotion-surprise-primary: #40BFAA;
+--emotion-surprise-secondary: rgba(64, 191, 170, 0.10);
+--emotion-sadness-primary: #406ABF;
+--emotion-sadness-secondary: rgba(64, 106, 191, 0.10);
+--emotion-fear-primary: #9540BF;
+--emotion-fear-secondary: rgba(149, 64, 191, 0.10);
+
+/* Whisp - Dark */
+--content-primary: #E5E5E5;
+--content-secondary: #999999;
+--content-inverse-primary: #1A1A1A;
+--content-inverse-secondary: #666666;
+--content-disabled: #4D4D4D;
+--content-inverse-disabled: #B2B2B2;
+--content-brand: #3354FF;
+
+--surface-highlight: #000000;
+--surface-primary: #1A1A1A;
+--surface-secondary: #262626;
+--surface-tertiary: #333333;
+--surface-inverse-primary: #FAFAFA;
+--surface-inverse-secondary: #F0F0F0;
 --surface-brand-secondary: #131939;
 ```
 
@@ -356,6 +425,8 @@ Reserved tokens:
 - Use `surface-primary` as the default canvas background
 - `surface-highlight` reserved for elevated elements (dropdowns, inputs, emphasis)
 
+*All values below reference the default theme (Paper). For Whisp, see the Color Tokens section above.*
+
 ### Canvas / Visualizations
 - Background fill: `#F9F4EB` (light) or `#130F06` (dark) — i.e. `surface-primary`
 - Draw text using Inter where possible (load as web font or use system fallback)
@@ -370,7 +441,7 @@ Reserved tokens:
 - Header slide: large title in title case, centered, branded header convention at top
 
 ### Word Documents (DOCX)
-- Page background or header area should evoke the warm palette
+- Page background or header area should evoke the default theme palette
 - Inter Regular throughout; never serif, never bold
 - Use `#0021CC` for links or key highlights only
 
@@ -380,6 +451,8 @@ Reserved tokens:
 
 | Property | Value |
 |----------|-------|
+| Default theme | Paper |
+| Available themes | Paper, Whisp |
 | Canvas / default bg (light) | `#F9F4EB` (surface-primary) |
 | Canvas / default bg (dark) | `#130F06` (surface-primary) |
 | Surface highlight (light) | `#FBF9F4` — elevated elements only |

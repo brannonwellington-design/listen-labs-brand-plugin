@@ -18,7 +18,7 @@ The plugin adds these tools to Claude:
 
 | Tool | Returns |
 |------|---------|
-| `get_brand_colors` | Color tokens (light/dark/emotion) for the Paper theme |
+| `get_brand_colors` | Color tokens (content/surface/emotion) for the Paper or Whisp theme |
 | `get_css_variables` | Ready-to-use CSS custom properties |
 | `get_typography` | Font family, weight, type scale, case rules |
 | `get_spacing` | Base unit, component heights, border radius, grid presets |
@@ -63,8 +63,8 @@ Generate professional, brand-compliant PowerPoint presentations using PptxGenJS.
 Or just ask Claude to create a deck, slides, or presentation — the skill auto-triggers.
 
 **What it enforces:**
-- Paper theme colors only — warm off-white (`#F9F4EB`) and near-black (`#120F08`) backgrounds
-- Brand blue (`#0021CC`) used sparingly as accent
+- One Listen Labs theme per deck (Paper default, Whisp if specified) — values pulled from the brand MCP at generation time
+- Brand blue used sparingly as accent — one accent element per slide maximum
 - Inter 400 for everything — no bold, no serif, no other fonts
 - Dark title/closing slides with light content slides ("sandwich" structure)
 - Branded header on every content slide

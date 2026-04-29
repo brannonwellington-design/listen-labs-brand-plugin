@@ -27,17 +27,9 @@ if [ -d "$INSTALL_DIR/skills" ]; then
   echo "Skills directory updated."
 fi
 
-# Install pre-commit hook so GUIDELINES.md auto-generates from server data
-HOOK_FILE="$INSTALL_DIR/.git/hooks/pre-commit"
-cat > "$HOOK_FILE" << 'HOOK'
-#!/bin/sh
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-if git diff --cached --name-only | grep -q "listen-labs-brand-server.py"; then
-    python3 "$REPO_ROOT/generate_guidelines.py"
-    git add "$REPO_ROOT/GUIDELINES.md"
-fi
-HOOK
-chmod +x "$HOOK_FILE"
+# Point git at the tracked .githooks directory so GUIDELINES.md auto-regenerates
+# from brand data on commit. Single source of truth — the hook lives in the repo.
+git -C "$INSTALL_DIR" config core.hooksPath .githooks
 
 # Ensure ~/.claude directory exists
 mkdir -p "$HOME/.claude"
