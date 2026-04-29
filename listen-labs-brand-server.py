@@ -22,9 +22,11 @@ from brand_data import (
     COLORS,
     CSS_VARIABLES,
     DATA_VISUALIZATION,
+    DEFAULT_THEME,
     HEADER,
     ICONS,
     SPACING,
+    THEMES,
     TYPOGRAPHY,
 )
 
@@ -33,10 +35,16 @@ from brand_data import (
 TOOLS = [
     {
         "name": "get_brand_colors",
-        "description": "Get Listen Labs color tokens for the Paper theme. Returns content tokens (text/icons), surface tokens (backgrounds/fills/strokes), and emotion tokens. Specify mode for light or dark, or 'all' for both plus emotions.",
+        "description": "Get Listen Labs color tokens. Returns content tokens (text/icons), surface tokens (backgrounds/fills/strokes), and emotion tokens. Themes: 'paper' (default, warm cream/brown) and 'whisp' (neutral grayscale). Specify theme, mode (light/dark), and category to filter.",
         "inputSchema": {
             "type": "object",
             "properties": {
+                "theme": {
+                    "type": "string",
+                    "enum": THEMES + ["all"],
+                    "description": "Theme to return. 'all' returns every theme.",
+                    "default": DEFAULT_THEME,
+                },
                 "mode": {
                     "type": "string",
                     "enum": ["light", "dark", "all"],
@@ -54,10 +62,16 @@ TOOLS = [
     },
     {
         "name": "get_css_variables",
-        "description": "Get ready-to-use CSS custom property declarations for Listen Labs Paper theme. Returns CSS variable blocks for light mode, dark mode, or both.",
+        "description": "Get ready-to-use CSS custom property declarations. Themes: 'paper' (default) and 'whisp'. Returns CSS variable blocks for the requested theme and mode.",
         "inputSchema": {
             "type": "object",
             "properties": {
+                "theme": {
+                    "type": "string",
+                    "enum": THEMES + ["all"],
+                    "description": "Theme to return. 'all' returns every theme.",
+                    "default": DEFAULT_THEME,
+                },
                 "mode": {
                     "type": "string",
                     "enum": ["light", "dark", "both"],
@@ -107,26 +121,34 @@ TOOLS = [
 
 # ─── Tool Handlers ────────────────────────────────────────────────────────────
 
+def _theme_colors(theme, mode, category):
+    out = {}
+    if mode in ("light", "all"):
+        light = {}
+        if category in ("content", "all"):
+            light["content"] = COLORS[theme]["light"]["content"]
+        if category in ("surface", "all"):
+            light["surface"] = COLORS[theme]["light"]["surface"]
+        out["light"] = light
+    if mode in ("dark", "all"):
+        dark = {}
+        if category in ("content", "all"):
+            dark["content"] = COLORS[theme]["dark"]["content"]
+        if category in ("surface", "all"):
+            dark["surface"] = COLORS[theme]["dark"]["surface"]
+        out["dark"] = dark
+    return out
+
+
 def handle_get_brand_colors(args):
+    theme = args.get("theme", DEFAULT_THEME)
     mode = args.get("mode", "all")
     category = args.get("category", "all")
     result = {}
 
-    if mode in ("light", "all"):
-        light = {}
-        if category in ("content", "all"):
-            light["content"] = COLORS["light"]["content"]
-        if category in ("surface", "all"):
-            light["surface"] = COLORS["light"]["surface"]
-        result["light"] = light
-
-    if mode in ("dark", "all"):
-        dark = {}
-        if category in ("content", "all"):
-            dark["content"] = COLORS["dark"]["content"]
-        if category in ("surface", "all"):
-            dark["surface"] = COLORS["dark"]["surface"]
-        result["dark"] = dark
+    themes = THEMES if theme == "all" else [theme]
+    for t in themes:
+        result[t] = _theme_colors(t, mode, category)
 
     if mode == "all" and category in ("emotion", "all"):
         result["emotion"] = COLORS["emotion"]
@@ -135,13 +157,16 @@ def handle_get_brand_colors(args):
 
 
 def handle_get_css_variables(args):
+    theme = args.get("theme", DEFAULT_THEME)
     mode = args.get("mode", "both")
-    if mode == "light":
-        return CSS_VARIABLES["light"]
-    elif mode == "dark":
-        return CSS_VARIABLES["dark"]
-    else:
-        return CSS_VARIABLES["light"] + "\n\n" + CSS_VARIABLES["dark"]
+
+    def block(t, m):
+        if m == "both":
+            return CSS_VARIABLES[t]["light"] + "\n\n" + CSS_VARIABLES[t]["dark"]
+        return CSS_VARIABLES[t][m]
+
+    themes = THEMES if theme == "all" else [theme]
+    return "\n\n".join(block(t, mode) for t in themes)
 
 
 def handle_get_typography(_args):
