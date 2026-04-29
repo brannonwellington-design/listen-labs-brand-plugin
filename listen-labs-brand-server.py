@@ -17,50 +17,54 @@ COLORS = {
     "light": {
         "content": {
             "content-primary": "#120F08",
-            "content-secondary": "rgba(18, 15, 8, 0.6)",
+            "content-secondary": "#6B6861",
             "content-inverse-primary": "#F9F4EB",
-            "content-inverse-secondary": "rgba(249, 244, 235, 0.6)",
-            "content-disabled": "rgba(18, 15, 8, 0.3)",
-            "content-inverse-disabled": "rgba(249, 244, 235, 0.3)",
+            "content-inverse-secondary": "#9E9B94",
+            "content-disabled": "#B6B4AF",
+            "content-inverse-disabled": "#504E49",
             "content-brand": "#0021CC",
+            "content-brand-secondary": "#7A85B8",
             "content-brand-contrast": "#F9F4EB",
-            "content-complimentary": "#E5A119",
-            "content-warning": "#CF6317",
-            "content-negative": "#CF2617",
+            "content-brand-contrast-secondary": "#9CA3C9",
+            "content-complimentary": "#B88114",
+            "content-warning": "#B85814",
+            "content-negative": "#B82214",
             "content-positive": "#0F8A38",
         },
         "surface": {
-            "surface-highlight": "#FCFBF7",
+            "surface-highlight": "#FBF9F4",
             "surface-primary": "#F9F4EB",
             "surface-secondary": "#EEE8DD",
             "surface-tertiary": "#E2DCCF",
             "surface-inverse-primary": "#120F08",
             "surface-inverse-secondary": "#1F1B14",
             "surface-brand-primary": "#0021CC",
-            "surface-brand-secondary": "rgba(0, 33, 204, 0.10)",
+            "surface-brand-secondary": "#D9DDF2",
             "surface-complimentary-primary": "#E5A119",
-            "surface-complimentary-secondary": "rgba(229, 161, 25, 0.10)",
+            "surface-complimentary-secondary": "#F5EBD6",
             "surface-warning-primary": "#CF6317",
-            "surface-warning-secondary": "rgba(207, 99, 23, 0.10)",
+            "surface-warning-secondary": "#F5E3D6",
             "surface-negative-primary": "#CF2617",
-            "surface-negative-secondary": "rgba(207, 38, 23, 0.10)",
+            "surface-negative-secondary": "#F5D9D6",
             "surface-positive-primary": "#14B84B",
-            "surface-positive-secondary": "rgba(20, 184, 75, 0.10)",
+            "surface-positive-secondary": "#D6F5E0",
         },
     },
     "dark": {
         "content": {
             "content-primary": "#F9F4EB",
-            "content-secondary": "rgba(249, 244, 235, 0.6)",
+            "content-secondary": "#9E9B94",
             "content-inverse-primary": "#120F08",
-            "content-inverse-secondary": "rgba(18, 15, 8, 0.6)",
-            "content-disabled": "rgba(249, 244, 235, 0.3)",
-            "content-inverse-disabled": "rgba(18, 15, 8, 0.3)",
-            "content-brand": "#0021CC",
+            "content-inverse-secondary": "#6B6861",
+            "content-disabled": "#504E49",
+            "content-inverse-disabled": "#B6B4AF",
+            "content-brand": "#3354FF",
+            "content-brand-secondary": "#7A85B8",
             "content-brand-contrast": "#F9F4EB",
-            "content-complimentary": "#E5A119",
-            "content-warning": "#CF6317",
-            "content-negative": "#CF2617",
+            "content-brand-contrast-secondary": "#9CA3C9",
+            "content-complimentary": "#B88114",
+            "content-warning": "#B85814",
+            "content-negative": "#B82214",
             "content-positive": "#0F8A38",
         },
         "surface": {
@@ -71,15 +75,15 @@ COLORS = {
             "surface-inverse-primary": "#F9F4EB",
             "surface-inverse-secondary": "#F0E9DB",
             "surface-brand-primary": "#0021CC",
-            "surface-brand-secondary": "rgba(0, 33, 204, 0.30)",
+            "surface-brand-secondary": "#131939",
             "surface-complimentary-primary": "#E5A119",
-            "surface-complimentary-secondary": "rgba(229, 161, 25, 0.10)",
+            "surface-complimentary-secondary": "#F5EBD6",
             "surface-warning-primary": "#CF6317",
-            "surface-warning-secondary": "rgba(207, 99, 23, 0.10)",
+            "surface-warning-secondary": "#F5E3D6",
             "surface-negative-primary": "#CF2617",
-            "surface-negative-secondary": "rgba(207, 38, 23, 0.20)",
+            "surface-negative-secondary": "#F5D9D6",
             "surface-positive-primary": "#14B84B",
-            "surface-positive-secondary": "rgba(20, 184, 75, 0.20)",
+            "surface-positive-secondary": "#D6F5E0",
         },
     },
     "emotion": {
@@ -151,7 +155,7 @@ HEADER = {
     "format": "Listen Labs / Project Title",
     "position": "Top center, 24px from top",
     "case": "Title Case always",
-    "listen_labs_color": "content-secondary (60% opacity)",
+    "listen_labs_color": "content-secondary",
     "project_title_color": "content-primary",
     "default_font_size": "12px",
     "notes": "Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.",
@@ -192,7 +196,7 @@ DATA_VISUALIZATION = {
     "general_rules": [
         "Use even-number spacing values consistent with the brand spacing system (4px base unit).",
         "Labels and annotations follow brand typography rules — Inter Regular 400, no letter-spacing overrides.",
-        "Grid lines use content-disabled opacity (30%) to stay subordinate to data.",
+        "Grid lines use content-disabled to stay subordinate to data.",
         "One dominant data story per chart — avoid overloading a single visualization with competing narratives.",
     ],
 }
@@ -232,34 +236,36 @@ ART_DIRECTION = {
 CSS_VARIABLES = {
     "light": """/* Paper - Light */
 --content-primary: #120F08;
---content-secondary: rgba(18, 15, 8, 0.6);
+--content-secondary: #6B6861;
 --content-inverse-primary: #F9F4EB;
---content-inverse-secondary: rgba(249, 244, 235, 0.6);
---content-disabled: rgba(18, 15, 8, 0.3);
---content-inverse-disabled: rgba(249, 244, 235, 0.3);
+--content-inverse-secondary: #9E9B94;
+--content-disabled: #B6B4AF;
+--content-inverse-disabled: #504E49;
 --content-brand: #0021CC;
+--content-brand-secondary: #7A85B8;
 --content-brand-contrast: #F9F4EB;
---content-complimentary: #E5A119;
---content-warning: #CF6317;
---content-negative: #CF2617;
+--content-brand-contrast-secondary: #9CA3C9;
+--content-complimentary: #B88114;
+--content-warning: #B85814;
+--content-negative: #B82214;
 --content-positive: #0F8A38;
 
---surface-highlight: #FCFBF7;
+--surface-highlight: #FBF9F4;
 --surface-primary: #F9F4EB;
 --surface-secondary: #EEE8DD;
 --surface-tertiary: #E2DCCF;
 --surface-inverse-primary: #120F08;
 --surface-inverse-secondary: #1F1B14;
 --surface-brand-primary: #0021CC;
---surface-brand-secondary: rgba(0, 33, 204, 0.10);
+--surface-brand-secondary: #D9DDF2;
 --surface-complimentary-primary: #E5A119;
---surface-complimentary-secondary: rgba(229, 161, 25, 0.10);
+--surface-complimentary-secondary: #F5EBD6;
 --surface-warning-primary: #CF6317;
---surface-warning-secondary: rgba(207, 99, 23, 0.10);
+--surface-warning-secondary: #F5E3D6;
 --surface-negative-primary: #CF2617;
---surface-negative-secondary: rgba(207, 38, 23, 0.10);
+--surface-negative-secondary: #F5D9D6;
 --surface-positive-primary: #14B84B;
---surface-positive-secondary: rgba(20, 184, 75, 0.10);
+--surface-positive-secondary: #D6F5E0;
 
 /* Emotion tokens */
 --emotion-anger-primary: #BF4040;
@@ -276,11 +282,12 @@ CSS_VARIABLES = {
 --emotion-fear-secondary: rgba(149, 64, 191, 0.10);""",
     "dark": """/* Paper - Dark */
 --content-primary: #F9F4EB;
---content-secondary: rgba(249, 244, 235, 0.6);
+--content-secondary: #9E9B94;
 --content-inverse-primary: #120F08;
---content-inverse-secondary: rgba(18, 15, 8, 0.6);
---content-disabled: rgba(249, 244, 235, 0.3);
---content-inverse-disabled: rgba(18, 15, 8, 0.3);
+--content-inverse-secondary: #6B6861;
+--content-disabled: #504E49;
+--content-inverse-disabled: #B6B4AF;
+--content-brand: #3354FF;
 
 --surface-highlight: #080603;
 --surface-primary: #130F06;
@@ -288,9 +295,7 @@ CSS_VARIABLES = {
 --surface-tertiary: #30291D;
 --surface-inverse-primary: #F9F4EB;
 --surface-inverse-secondary: #F0E9DB;
---surface-brand-secondary: rgba(0, 33, 204, 0.30);
---surface-negative-secondary: rgba(207, 38, 23, 0.20);
---surface-positive-secondary: rgba(20, 184, 75, 0.20);""",
+--surface-brand-secondary: #131939;""",
 }
 
 
