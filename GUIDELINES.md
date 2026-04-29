@@ -19,16 +19,18 @@ The theme is called **Paper** and has light and dark modes. Tokens are split int
 | Token | Light (Paper) | Dark (Paper) |
 |-------|--------------|-------------|
 | `content-primary` | `#120F08` | `#F9F4EB` |
-| `content-secondary` | `#120F08` at 60% | `#F9F4EB` at 60% |
+| `content-secondary` | `#6B6861` | `#9E9B94` |
 | `content-inverse-primary` | `#F9F4EB` | `#120F08` |
-| `content-inverse-secondary` | `#F9F4EB` at 60% | `#120F08` at 60% |
-| `content-disabled` | `#120F08` at 30% | `#F9F4EB` at 30% |
-| `content-inverse-disabled` | `#F9F4EB` at 30% | `#120F08` at 30% |
-| `content-brand` | `#0021CC` | `#0021CC` |
+| `content-inverse-secondary` | `#9E9B94` | `#6B6861` |
+| `content-disabled` | `#B6B4AF` | `#504E49` |
+| `content-inverse-disabled` | `#504E49` | `#B6B4AF` |
+| `content-brand` | `#0021CC` | `#3354FF` |
+| `content-brand-secondary` | `#7A85B8` | `#7A85B8` |
 | `content-brand-contrast` | `#F9F4EB` | `#F9F4EB` |
-| `content-complimentary` | `#E5A119` | `#E5A119` |
-| `content-warning` | `#CF6317` | `#CF6317` |
-| `content-negative` | `#CF2617` | `#CF2617` |
+| `content-brand-contrast-secondary` | `#9CA3C9` | `#9CA3C9` |
+| `content-complimentary` | `#B88114` | `#B88114` |
+| `content-warning` | `#B85814` | `#B85814` |
+| `content-negative` | `#B82214` | `#B82214` |
 | `content-positive` | `#0F8A38` | `#0F8A38` |
 
 ---
@@ -40,22 +42,22 @@ The theme is called **Paper** and has light and dark modes. Tokens are split int
 
 | Token | Light (Paper) | Dark (Paper) |
 |-------|--------------|-------------|
-| `surface-highlight` | `#FCFBF7` | `#080603` |
+| `surface-highlight` | `#FBF9F4` | `#080603` |
 | `surface-primary` | `#F9F4EB` | `#130F06` |
 | `surface-secondary` | `#EEE8DD` | `#201C13` |
 | `surface-tertiary` | `#E2DCCF` | `#30291D` |
 | `surface-inverse-primary` | `#120F08` | `#F9F4EB` |
 | `surface-inverse-secondary` | `#1F1B14` | `#F0E9DB` |
 | `surface-brand-primary` | `#0021CC` | `#0021CC` |
-| `surface-brand-secondary` | `#0021CC` at 10% | `#0021CC` at 30% |
+| `surface-brand-secondary` | `#D9DDF2` | `#131939` |
 | `surface-complimentary-primary` | `#E5A119` | `#E5A119` |
-| `surface-complimentary-secondary` | `#E5A119` at 10% | `#E5A119` at 10% |
+| `surface-complimentary-secondary` | `#F5EBD6` | `#F5EBD6` |
 | `surface-warning-primary` | `#CF6317` | `#CF6317` |
-| `surface-warning-secondary` | `#CF6317` at 10% | `#CF6317` at 10% |
+| `surface-warning-secondary` | `#F5E3D6` | `#F5E3D6` |
 | `surface-negative-primary` | `#CF2617` | `#CF2617` |
-| `surface-negative-secondary` | `#CF2617` at 10% | `#CF2617` at 20% |
+| `surface-negative-secondary` | `#F5D9D6` | `#F5D9D6` |
 | `surface-positive-primary` | `#14B84B` | `#14B84B` |
-| `surface-positive-secondary` | `#14B84B` at 10% | `#14B84B` at 20% |
+| `surface-positive-secondary` | `#D6F5E0` | `#D6F5E0` |
 
 ---
 
@@ -100,34 +102,36 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 ```css
 /* Paper - Light */
 --content-primary: #120F08;
---content-secondary: rgba(18, 15, 8, 0.6);
+--content-secondary: #6B6861;
 --content-inverse-primary: #F9F4EB;
---content-inverse-secondary: rgba(249, 244, 235, 0.6);
---content-disabled: rgba(18, 15, 8, 0.3);
---content-inverse-disabled: rgba(249, 244, 235, 0.3);
+--content-inverse-secondary: #9E9B94;
+--content-disabled: #B6B4AF;
+--content-inverse-disabled: #504E49;
 --content-brand: #0021CC;
+--content-brand-secondary: #7A85B8;
 --content-brand-contrast: #F9F4EB;
---content-complimentary: #E5A119;
---content-warning: #CF6317;
---content-negative: #CF2617;
+--content-brand-contrast-secondary: #9CA3C9;
+--content-complimentary: #B88114;
+--content-warning: #B85814;
+--content-negative: #B82214;
 --content-positive: #0F8A38;
 
---surface-highlight: #FCFBF7;
+--surface-highlight: #FBF9F4;
 --surface-primary: #F9F4EB;
 --surface-secondary: #EEE8DD;
 --surface-tertiary: #E2DCCF;
 --surface-inverse-primary: #120F08;
 --surface-inverse-secondary: #1F1B14;
 --surface-brand-primary: #0021CC;
---surface-brand-secondary: rgba(0, 33, 204, 0.10);
+--surface-brand-secondary: #D9DDF2;
 --surface-complimentary-primary: #E5A119;
---surface-complimentary-secondary: rgba(229, 161, 25, 0.10);
+--surface-complimentary-secondary: #F5EBD6;
 --surface-warning-primary: #CF6317;
---surface-warning-secondary: rgba(207, 99, 23, 0.10);
+--surface-warning-secondary: #F5E3D6;
 --surface-negative-primary: #CF2617;
---surface-negative-secondary: rgba(207, 38, 23, 0.10);
+--surface-negative-secondary: #F5D9D6;
 --surface-positive-primary: #14B84B;
---surface-positive-secondary: rgba(20, 184, 75, 0.10);
+--surface-positive-secondary: #D6F5E0;
 
 /* Emotion tokens */
 --emotion-anger-primary: #BF4040;
@@ -145,11 +149,12 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 
 /* Paper - Dark */
 --content-primary: #F9F4EB;
---content-secondary: rgba(249, 244, 235, 0.6);
+--content-secondary: #9E9B94;
 --content-inverse-primary: #120F08;
---content-inverse-secondary: rgba(18, 15, 8, 0.6);
---content-disabled: rgba(249, 244, 235, 0.3);
---content-inverse-disabled: rgba(18, 15, 8, 0.3);
+--content-inverse-secondary: #6B6861;
+--content-disabled: #504E49;
+--content-inverse-disabled: #B6B4AF;
+--content-brand: #3354FF;
 
 --surface-highlight: #080603;
 --surface-primary: #130F06;
@@ -157,9 +162,7 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 --surface-tertiary: #30291D;
 --surface-inverse-primary: #F9F4EB;
 --surface-inverse-secondary: #F0E9DB;
---surface-brand-secondary: rgba(0, 33, 204, 0.30);
---surface-negative-secondary: rgba(207, 38, 23, 0.20);
---surface-positive-secondary: rgba(20, 184, 75, 0.20);
+--surface-brand-secondary: #131939;
 ```
 
 ---
@@ -196,13 +199,13 @@ Rules:
 - Title Case always
 - `Listen Labs /` is in **secondary content color** (60% opacity)
 - `Project Title` is in **primary content color**
-- Both use the same font size — **default is 10px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
+- Both use the same font size — **default is 12px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
 - No letter-spacing added
 - Single line, space-separated with a `/` divider
 
 HTML example:
 ```html
-<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:10px;">
+<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:12px;">
   <span style="color: var(--content-secondary)">Listen Labs /</span>
   <span style="color: var(--content-primary)"> Project Title</span>
 </div>
