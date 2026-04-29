@@ -8,19 +8,20 @@ allowed-tools: Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__lis
 
 Generate professional, brand-compliant research reports as self-contained HTML files. Reports open in any browser and print cleanly to PDF. This is the flagship Listen Labs deliverable — every element must meet editorial-quality standards.
 
-This skill composes with `/typography` (hierarchy and layout), `/data-viz` (embedded charts), and the Listen Labs brand MCP tools (live tokens).
+**Brand compliance is universal.** See `skills/_shared/brand-compliance.md` for the brand-wide rules every output must satisfy. This skill adds report-specific rules below. It composes with `/typography` (hierarchy and layout), `/data-viz` (embedded charts), and the Listen Labs brand MCP.
 
 ---
 
 ## Workflow
 
-1. **Load brand tokens** — call `get_css_variables`, `get_typography`, `get_spacing`, and `get_art_direction` from the brand MCP. Never hardcode tokens.
-2. **Copy the skeleton** — start from `skills/report/references/skeleton.html`. Copy completely, then modify.
-3. **Plan the structure** — outline all sections before writing content. Every report needs at minimum: cover, executive summary, and findings. Reference `skills/report/references/section-patterns.md`.
-4. **Apply emotion coding** — when findings reference emotional data, use emotion callouts from `skills/report/references/emotion-callouts.md`. Emotion tokens are reserved exclusively for Ekman emotion data.
-5. **Embed visualizations** — embed Chart.js charts inline using `/data-viz` patterns. Charts inherit the report's CSS variables automatically.
-6. **Audit** — run the self-audit checklist. No report ships without passing every item.
-7. **Write and open** — save as a single `.html` file and open in browser.
+1. **Read brand-compliance** — read `skills/_shared/brand-compliance.md` for universal rules.
+2. **Load brand tokens** — call `get_css_variables`, `get_typography`, `get_spacing`, `get_header_convention`, and `get_art_direction` from the brand MCP. Never hardcode tokens.
+3. **Copy the skeleton** — start from `skills/report/references/skeleton.html`. Copy completely, then modify.
+4. **Plan the structure** — outline all sections before writing content. Every report needs at minimum: cover, executive summary, and findings. Reference `skills/report/references/section-patterns.md`.
+5. **Apply emotion coding** — when findings reference emotional data, use emotion callouts from `skills/report/references/emotion-callouts.md`. Emotion tokens are reserved exclusively for Ekman emotion data.
+6. **Embed visualizations** — embed Chart.js charts inline using `/data-viz` patterns. Charts inherit the report's CSS variables automatically.
+7. **Audit** — run the self-audit checklist. No report ships without passing every item.
+8. **Write and open** — save as a single `.html` file and open in browser.
 
 ---
 
@@ -50,7 +51,7 @@ Every report follows this section order. Sections can be omitted if irrelevant, 
 - **Page padding:** 48px horizontal on desktop, 24px on mobile
 - **Section spacing:** 96px between major sections (cover, exec summary, findings, etc.)
 - **Subsection spacing:** 48px between subsections within a major section
-- **Background:** `surface-primary` (`#F9F4EB` light, `#130F06` dark)
+- **Background:** `surface-primary` — values resolve from the active theme's CSS variables
 
 ### The Cover Section
 
@@ -89,17 +90,17 @@ Follow the `/typography` skill hierarchy table. For reports specifically:
 
 ### Colors
 
-- **Body text at secondary opacity (60%).** Not primary. The secondary tier is the workhorse for reading text.
-- **Headings at primary opacity (100%).** Headings are the only elements that use full opacity.
-- **Metadata and captions at disabled opacity (30%).**
-- **Brand blue (`#0021CC`) sparingly** — for key stat numbers, linked text, and one-per-section accent elements only.
-- **Emotion tokens** — exclusively for Ekman emotion-coded content. See emotion callouts reference.
+- **Body text uses `content-secondary`.** Not primary. The secondary tier is the workhorse for reading text.
+- **Headings use `content-primary`.** Headings are the only elements that use the strongest tier.
+- **Metadata and captions use `content-disabled`.**
+- **Brand blue sparingly** — for key stat numbers, linked text, and one-per-section accent elements only. Use `var(--content-brand)` so the value tracks the active theme.
+- **Emotion tokens** — exclusively for Ekman emotion-coded content. See `skills/report/references/emotion-callouts.md`.
 
 ### Section Dividers
 
 Major sections are separated by either:
 - **96px of vertical whitespace** (preferred — cleaner), or
-- **A full-width 1px rule** in `content-disabled` (30% opacity) with 48px above and 48px below
+- **A full-width 1px rule** in `content-disabled` with 48px above and 48px below
 
 Never use both. Pick one style and use it consistently throughout a report.
 
@@ -168,7 +169,7 @@ Inline stat callouts that break up narrative text:
 └──────────────────────────────────────────────────┘
 ```
 
-Background: `surface-brand-secondary` (brand blue at 10% opacity). Padding: 32px. Border-radius: 8px. One stat block per finding maximum.
+Background: `surface-brand-secondary`. Padding: 32px. Border-radius: 8px. One stat block per finding maximum.
 
 ### Embedded Charts
 
@@ -182,14 +183,7 @@ Charts are embedded inline using Chart.js (same patterns as `/data-viz`). They i
 
 ## Emotion-Coded Content
 
-When report findings reference emotional data from Listen Labs research, use emotion callouts. See `skills/report/references/emotion-callouts.md` for the full pattern library.
-
-**Rules:**
-- Emotion tokens are used ONLY for the 6 Ekman emotions: anger, happiness, disgust, surprise, sadness, fear
-- Each emotion has a primary color (for accents) and a secondary color (10% opacity background)
-- Never use emotion colors for general-purpose highlighting, status indicators, or decoration
-- An emotion callout pairs a colored left border with the emotion's secondary background
-- Emotion callouts include the emotion label as metadata
+When report findings reference emotional data, use emotion callouts. See `skills/report/references/emotion-callouts.md` for the canonical pattern library, rules, and emotion-chart guidance.
 
 ---
 
@@ -215,43 +209,32 @@ Every report must print cleanly. The skeleton includes these print rules:
 
 ---
 
-## Prohibited
+## Report-Specific Prohibitions
 
-1. Bold or light font weights
-2. Italic text (including for quotes — use the left-border pattern instead)
-3. Any typeface other than Inter
-4. Letter-spacing overrides
-5. ALL CAPS text
-6. Decorative dividers, ornaments, or flourishes
-7. Gradient backgrounds or fills
-8. Drop shadows
-9. Colors outside the Paper theme palette
-10. Emotion tokens used for non-emotion purposes
-11. Multiple accent colors on one page (brand blue only, emotion colors only for emotion data)
-12. Centered body text (center only the cover title block)
-13. Odd-number spacing values
-14. Charts without captions
-15. Participant quotes without attribution
-16. Findings without supporting evidence (quotes, data, or both)
+Universal brand prohibitions (no bold/light/italic, no serif, no letter-spacing, no all-caps, no shadows, no gradients, no decoration without purpose, even-number spacing only, etc.) come from `skills/_shared/brand-compliance.md`. Report adds:
+
+1. Italic text — including for quotes; use the left-border pattern instead
+2. Multiple accent colors on one page (brand blue only; emotion colors only for emotion data)
+3. Centered body text — center only the cover title block
+4. Charts without captions
+5. Participant quotes without attribution
+6. Findings without supporting evidence (quotes, data, or both)
 
 ---
 
 ## Self-Audit Checklist
 
-Before delivering any report:
+Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` PLUS the report-specific items below:
 
-- [ ] Brand MCP was called for live tokens
 - [ ] Skeleton was used as starting point
 - [ ] Cover section has: branded header, title, subtitle, date, metadata
-- [ ] Executive summary is present and contains 3-5 key findings
+- [ ] Executive summary is present and contains 3–5 key findings
 - [ ] All sections follow the fixed order (cover → exec summary → findings → recommendations)
 - [ ] Section spacing is consistent (96px between sections OR 1px rules — not both)
 - [ ] Typography hierarchy matches the report hierarchy table
-- [ ] Body text uses secondary opacity (60%), headings use primary (100%)
-- [ ] All spacing values are multiples of 4px
+- [ ] Body text uses `content-secondary`, headings use `content-primary`
 - [ ] Participant quotes use left-border pattern with attribution
-- [ ] Emotion callouts used ONLY for Ekman emotion data
-- [ ] Stat blocks use brand-secondary background (10% opacity)
+- [ ] Stat blocks use `surface-brand-secondary` background
 - [ ] Embedded charts follow /data-viz rules
 - [ ] Tables use minimal styling (no zebra stripes, no heavy borders)
 - [ ] Print stylesheet works (cover on own page, no split sections)

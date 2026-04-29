@@ -6,7 +6,9 @@ allowed-tools: mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-bran
 
 # Listen Labs Typography Skill
 
-Achieve premium, editorial-quality hierarchy using only Inter Regular 400. No bold. No light. No italic. No other typeface. Hierarchy comes from size, opacity, spacing, and composition — never from weight.
+Achieve premium, editorial-quality hierarchy using only Inter Regular 400. Hierarchy comes from size, tier (visual weight), spacing, and composition — never from font weight.
+
+**Brand compliance is universal.** See `skills/_shared/brand-compliance.md` for the brand-wide rules every output must satisfy. This skill adds typography-specific layout rules below.
 
 This skill encodes the typographic philosophy of Swiss International Style and modern editorial design (Kinfolk, Cereal, Monocle) translated for responsive digital interfaces. Every rule works within the Listen Labs brand constraints.
 
@@ -14,12 +16,13 @@ This skill encodes the typographic philosophy of Swiss International Style and m
 
 ## Workflow
 
-1. **Load brand tokens** — call `get_typography`, `get_spacing`, and `get_css_variables` from the Listen Labs brand MCP. Never hardcode values from memory.
-2. **Establish hierarchy** — assign roles from the hierarchy table below. Every text element must have a clear role.
-3. **Apply spacing rhythm** — use the spacing rules to create vertical rhythm. Space above headings > space below.
-4. **Compose lockups** — reference `skills/typography/references/lockups.md` for pre-built title blocks, stat blocks, and metadata patterns.
-5. **Scale responsively** — reference `skills/typography/references/responsive-type.md` for fluid type patterns.
-6. **Audit** — run the self-audit checklist before delivering.
+1. **Read brand-compliance** — read `skills/_shared/brand-compliance.md` for universal rules.
+2. **Load brand tokens** — call `get_typography`, `get_spacing`, and `get_css_variables` from the Listen Labs brand MCP. Never hardcode values from memory.
+3. **Establish hierarchy** — assign roles from the hierarchy table below. Every text element must have a clear role.
+4. **Apply spacing rhythm** — use the spacing rules to create vertical rhythm. Space above headings > space below.
+5. **Compose lockups** — reference `skills/typography/references/lockups.md` for pre-built title blocks, stat blocks, and metadata patterns.
+6. **Scale responsively** — reference `skills/typography/references/responsive-type.md` for fluid type patterns.
+7. **Audit** — run the self-audit checklist before delivering.
 
 ---
 
@@ -28,7 +31,7 @@ This skill encodes the typographic philosophy of Swiss International Style and m
 With one font weight, you have four tools for creating hierarchy. Use them in this priority order:
 
 1. **Size** — the primary tool. Scale contrast does the heavy lifting.
-2. **Opacity** — replaces bold. Three tiers create clear visual weight.
+2. **Tier** — replaces bold. Three visual-weight tiers (primary / secondary / disabled) create clear differentiation.
 3. **Spacing** — whitespace groups, separates, and elevates.
 4. **Case** — Title Case for headings/labels, sentence case for body.
 
@@ -40,17 +43,17 @@ These four tools used together produce hierarchy indistinguishable from multi-we
 
 Every text element in a layout must map to one of these roles. No arbitrary sizes — use only values from the Listen Labs type scale.
 
-| Role | Desktop | Mobile | Line Height | Opacity | Case |
-|------|---------|--------|-------------|---------|------|
-| Display / Hero | 64-96px | 40-56px | 1.05-1.1 | primary (100%) | Title Case |
-| Page Title (H1) | 48px | 32px | 1.1 | primary (100%) | Title Case |
-| Section Title (H2) | 32px | 24px | 1.15 | primary (100%) | Title Case |
-| Subsection (H3) | 24px | 20px | 1.2 | primary (100%) | Title Case |
-| Body Lead | 18px | 16px | 1.6 | secondary (60%) | Sentence case |
-| Body Default | 16px | 16px | 1.6 | secondary (60%) | Sentence case |
-| Body Small | 14px | 14px | 1.5 | secondary (60%) | Sentence case |
-| Caption / Metadata | 12px | 12px | 1.4 | disabled (30%) | Sentence case |
-| Micro / Overline | 10px | 10px | 1.4 | disabled (30%) | Title Case |
+| Role | Desktop | Mobile | Line Height | Tier | Case |
+|------|---------|--------|-------------|------|------|
+| Display / Hero | 64-96px | 40-56px | 1.05-1.1 | primary | Title Case |
+| Page Title (H1) | 48px | 32px | 1.1 | primary | Title Case |
+| Section Title (H2) | 32px | 24px | 1.15 | primary | Title Case |
+| Subsection (H3) | 24px | 20px | 1.2 | primary | Title Case |
+| Body Lead | 18px | 16px | 1.6 | secondary | Sentence case |
+| Body Default | 16px | 16px | 1.6 | secondary | Sentence case |
+| Body Small | 14px | 14px | 1.5 | secondary | Sentence case |
+| Caption / Metadata | 12px | 12px | 1.4 | disabled | Sentence case |
+| Micro / Overline | 10px | 10px | 1.4 | disabled | Title Case |
 
 ### Line Height Rules
 
@@ -71,22 +74,22 @@ Line height has an inverse relationship with font size. Large text needs tight l
 
 ---
 
-## The Three-Tier Opacity System
+## The Three-Tier Visual Weight System
 
-Opacity replaces bold. These three tiers create the same visual weight differentiation that bold/regular/light would provide.
+A three-tier system replaces bold. Each tier is a distinct opaque token chosen to deliver the same visual differentiation that bold/regular/light would provide — without the actual weight change.
 
-| Tier | Token | Opacity | Use For |
-|------|-------|---------|---------|
-| Primary | `content-primary` | 100% | Headlines, titles, the single most important element per section |
-| Secondary | `content-secondary` | 60% | Body text, descriptions, supporting content — the workhorse tier |
-| Disabled | `content-disabled` | 30% | Metadata, timestamps, captions, divider lines, grid lines |
+| Tier | Token | Use For |
+|------|-------|---------|
+| Primary | `content-primary` | Headlines, titles, the single most important element per section |
+| Secondary | `content-secondary` | Body text, descriptions, supporting content — the workhorse tier |
+| Disabled | `content-disabled` | Metadata, timestamps, captions, divider lines, grid lines |
 
 ### Rules
 
 - A heading in `content-primary` paired with body in `content-secondary` produces the same visual contrast as a bold/regular pairing at the same size.
-- **Most running text lives at 60% (secondary).** Primary opacity is reserved for headings and the most important content. Do not use primary opacity for body text when it appears alongside headings.
-- Captions and timestamps get the triple reduction: smaller size + lower opacity + generous surrounding space. This makes them clearly subordinate without needing a lighter font weight.
-- **If two text elements are within 1.2x size of each other, they MUST differ in opacity.** Same size + same opacity = no hierarchy = a failure.
+- **Most running text lives in the secondary tier.** The primary tier is reserved for headings and the most important content. Do not use primary for body text when it appears alongside headings.
+- Captions and timestamps get the triple reduction: smaller size + lower tier + generous surrounding space. This makes them clearly subordinate without needing a lighter font weight.
+- **If two text elements are within 1.2x size of each other, they MUST differ in tier.** Same size + same tier = no hierarchy = a failure.
 
 ---
 
@@ -113,7 +116,7 @@ Space above a heading is always greater than space below it. This groups the hea
 
 ### Section Breaks
 
-Major sections are separated by 64-96px of vertical space — or a full-width 1px rule in `content-disabled` (30% opacity). This breathing room is the editorial technique that gives layouts their premium, unhurried feel.
+Major sections are separated by 64-96px of vertical space — or a full-width 1px rule in `content-disabled`. This breathing room is the editorial technique that gives layouts their premium, unhurried feel.
 
 ### The 4px Vertical Rhythm Grid
 
@@ -168,9 +171,9 @@ This asymmetry creates visual sophistication. The right margin is active whitesp
 | Body → Subsection | 1.5x+ | 16px → 24px (1.5x) |
 | Body Small → Body Default | 1.1x | 14px → 16px (differentiate with opacity) |
 
-**Below 1.5x size ratio:** elements MUST differ in opacity tier. Size alone is not enough.
+**Below 1.5x size ratio:** elements MUST differ in tier. Size alone is not enough.
 
-**Below 1.2x size ratio:** elements MUST differ in both opacity AND case (e.g., 14px sentence case secondary vs 16px Title Case primary).
+**Below 1.2x size ratio:** elements MUST differ in both tier AND case (e.g., 14px sentence case secondary vs 16px Title Case primary).
 
 ### The Tiny-Next-to-Huge Technique
 
@@ -193,41 +196,34 @@ With no all-caps allowed, the distinction between Title Case and sentence case i
 
 ---
 
-## Prohibited
+## Typography-Specific Prohibitions
 
-1. Bold or light font weights of any kind
-2. Italic for emphasis (use opacity differentiation instead)
-3. Any typeface other than Inter
-4. Letter-spacing overrides
-5. ALL CAPS on any element
-6. Justified text alignment
-7. Centered body text or paragraph blocks (center only isolated headlines)
-8. Line lengths exceeding 75 characters (~720px)
-9. Odd-number spacing values
-10. Line heights that don't approximate multiples of 4px
-11. Adjacent same-size, same-opacity text elements (no hierarchy = failure)
-12. Decorative type treatments (outlines, shadows, gradients on text)
+Universal brand prohibitions (no bold/light/italic, no serif, no letter-spacing, no all-caps, etc.) come from `skills/_shared/brand-compliance.md`. Typography adds:
+
+1. Italic for emphasis — use tier differentiation instead
+2. Justified text alignment
+3. Centered body text or paragraph blocks (center only isolated headlines)
+4. Line lengths exceeding 75 characters (~720px)
+5. Line heights that don't approximate multiples of 4px
+6. Adjacent same-size, same-tier text elements — no hierarchy = failure
+7. Decorative type treatments (outlines, shadows, gradients on text)
 
 ---
 
 ## Self-Audit Checklist
 
-Before delivering any layout:
+Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` PLUS the typography-specific items below:
 
 - [ ] Every text element maps to a role in the hierarchy table
-- [ ] Font sizes are from the Listen Labs type scale only
 - [ ] Line heights follow the inverse rule (large text tight, small text generous)
 - [ ] Line heights snap to multiples of 4px
-- [ ] Opacity tiers are correct: primary for headings, secondary for body, disabled for metadata
-- [ ] Elements within 1.2x size of each other differ in opacity
+- [ ] Tiers are correct: primary for headings, secondary for body, disabled for metadata
+- [ ] Elements within 1.2x size of each other differ in tier
 - [ ] Space above headings > space below (2:1 minimum ratio)
 - [ ] Paragraph spacing = body font size (16px)
-- [ ] All spacing values are multiples of 4px
 - [ ] Body text measure does not exceed 720px / 75 characters
 - [ ] Text is left-aligned ragged right (not justified, not centered body)
 - [ ] Title Case used for headings and labels, sentence case for body
-- [ ] No bold, no italic, no letter-spacing, no all-caps
 - [ ] Responsive: headings scale between mobile and desktop sizes
-- [ ] Branded header present where required
 
 If ANY item fails, fix it before delivering. Do not mention the audit to the user.

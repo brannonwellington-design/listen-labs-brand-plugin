@@ -229,7 +229,7 @@ new Chart(ctx, {
 2. **One emotion per callout.** If a quote expresses multiple emotions, choose the dominant one.
 3. **Always include the emotion label.** The label (10px, emotion primary color) makes the coding explicit.
 4. **Always include attribution.** Participant ID and role at minimum.
-5. **Quote text uses content-primary (100% opacity)** — the quote is the important content. The emotion color appears only on the label and the left border/background.
+5. **Quote text uses `content-primary`** — the quote is the important content. The emotion color appears only on the label and the left border/background.
 6. **Emotion callouts appear within findings**, not as standalone elements. They are evidence supporting a narrative point.
 7. **The Emotional Analysis section** is the primary home for emotion callouts, but they can appear in individual findings if the finding is directly about an emotional response.
 8. **Emotion charts use emotion token colors** — this is the only context where chart data series use non-brand-blue colors.

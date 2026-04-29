@@ -8,37 +8,41 @@ allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_gui
 
 Generate self-contained, brand-compliant HTML files with Chart.js visualizations that meet Listen Labs design standards. Output should be indistinguishable from hand-crafted professional work.
 
+**Brand compliance is universal.** See `skills/_shared/brand-compliance.md` for the brand-wide rules every output must satisfy (themes, typography, spacing, header, emotion tokens). This skill adds chart-specific rules below.
+
 ---
 
 ## Workflow
 
 Every visualization follows this exact sequence:
 
-1. **Load brand tokens** — call `get_css_variables` and `get_data_visualization` from the Listen Labs brand MCP to get live token values. Never hardcode tokens from memory.
-2. **Copy the skeleton** — start from `skills/data-viz/references/skeleton.html`. Copy it completely, then modify. Never build from scratch.
-3. **Reference chart patterns** — check `skills/data-viz/references/chart-patterns.md` for the correct Chart.js configuration for your chart type.
-4. **Populate with data** — insert the user's data into the Chart.js config. Apply brand color rules.
-5. **Run self-audit** — check every item in the audit checklist below before delivering.
-6. **Write and open** — save as a single `.html` file and open in the browser.
+1. **Read brand-compliance** — read `skills/_shared/brand-compliance.md` for universal rules.
+2. **Load brand tokens** — call `get_css_variables` and `get_data_visualization` from the Listen Labs brand MCP for live token values. Never hardcode from memory.
+3. **Copy the skeleton** — start from `skills/data-viz/references/skeleton.html`. Copy it completely, then modify. Never build from scratch.
+4. **Reference chart patterns** — check `skills/data-viz/references/chart-patterns.md` for the correct Chart.js configuration for your chart type.
+5. **Populate with data** — insert the user's data into the Chart.js config. Apply brand color rules.
+6. **Run self-audit** — check every item in the audit checklist below before delivering.
+7. **Write and open** — save as a single `.html` file and open in the browser.
 
 ---
 
-## Non-Negotiable Rules
+## Chart-Specific Rules
+
+These rules add to the universal brand compliance rules.
 
 ### Colors
-- **All colors via CSS custom properties.** Never use raw hex values in chart configuration. Reference CSS variables through a JavaScript helper that reads computed styles.
-- **Monochromatic data series.** Use `#0021CC` (brand blue) as the base. Generate additional shades by adjusting HSL Lightness only — keep Hue and Saturation constant. Example stops for multi-series: 100%, 70%, 45%, 20% lightness variation.
-- **Emotion tokens are restricted.** Only use `--emotion-anger-*`, `--emotion-happiness-*`, `--emotion-disgust-*`, `--emotion-surprise-*`, `--emotion-sadness-*`, `--emotion-fear-*` when the data explicitly represents one of the 6 Ekman emotions. Never use emotion colors for general categories, status indicators, or decoration.
+- **All colors via CSS custom properties.** Never write raw hex into chart config. Use a JavaScript helper that reads computed styles from the active CSS variables.
+- **Monochromatic data series.** Use `--surface-brand-primary` as the base (this token is theme-stable). Generate additional shades by adjusting HSL Lightness only — keep Hue and Saturation constant. Example stops for multi-series: 100%, 70%, 45%, 20% lightness.
+- **Emotion data only.** `--emotion-*` tokens are reserved for the six Ekman emotions. See `skills/report/references/emotion-callouts.md` for the canonical emotion rules.
 
-### Typography
-- **Inter 400 only.** Every label, annotation, axis title, legend entry, and tooltip uses `'Inter', sans-serif` at weight 400. No bold. No light. No other font.
-- **No letter-spacing.** Never set `letterSpacing` on any Chart.js element.
-- **Sizes from the type scale only.** Axis labels: 10px or 12px. Chart title: 14px or 16px. Annotations: 10px. Never pick arbitrary sizes.
+### Typography sizing (chart-specific)
+- Axis labels: 10px or 12px. Chart title: 14px or 16px. Annotations: 10px.
+- All other typography rules (Inter 400 only, no letter-spacing, no all-caps) come from the universal compliance file.
 
 ### Strokes and Lines
 - **1px everywhere.** Axis lines, grid lines, data line strokes, bar borders — all 1px. No exceptions.
 - **Fewer lines, not more.** Remove grid lines that don't aid comprehension. Default: show horizontal grid only, hide vertical grid. Hide axis lines when grid lines are present.
-- **Grid line color**: `content-disabled` (30% opacity of content-primary). Grid lines must be subordinate to data.
+- **Grid line color: `--content-disabled`.** Grid lines must be subordinate to data.
 
 ### Bar Charts
 - **2px border radius** on all bar sections (`borderRadius: 2`).
@@ -53,10 +57,9 @@ Every visualization follows this exact sequence:
 ### Layout and Responsiveness
 - **All elements must flex horizontally** without distortion. Circles stay circular, squares stay square. Use `maintainAspectRatio: false` with a constrained container height.
 - **Chart container**: `width: 100%; max-width: 800px; margin: 0 auto;` with a fixed height (400px default, adjustable).
-- **Even-number spacing only.** All padding, margin, and gap values use multiples of 4px.
 
 ### Structure
-- **Branded header** at top of every output: `Listen Labs / [Chart Title]` — 12px, top center, 24px from top. "Listen Labs /" in `content-secondary`, title in `content-primary`.
+- **Branded header** at top of every output. Call `get_header_convention` for the canonical spec.
 - **Light mode default.** Dark mode via `prefers-color-scheme: dark` media query.
 - **Semantic HTML.** Use `<main>`, `<section>`, `<figure>`, `<figcaption>`.
 - **Accessible canvas.** Every `<canvas>` gets `role="img"` and a descriptive `aria-label`.
@@ -112,22 +115,16 @@ function brandShades(count) {
 
 ## Self-Audit Checklist
 
-Before delivering ANY output, verify every item:
+Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` PLUS the chart-specific items below:
 
-- [ ] Brand MCP was called for live tokens (not hardcoded from memory)
 - [ ] Skeleton was used as the starting point
-- [ ] All colors use CSS custom properties, no raw hex in JS/chart config
-- [ ] Data series use monochromatic brand blue shades (unless emotion data)
-- [ ] Emotion tokens used ONLY for Ekman emotion data
-- [ ] Font is Inter 400 everywhere — no bold, no other font
-- [ ] No letter-spacing set anywhere
-- [ ] Font sizes are from the type scale (10, 12, 14, 16, etc.)
+- [ ] All colors via CSS custom properties — no raw hex in JS/chart config
+- [ ] Data series use monochromatic brand-blue shades (unless emotion data)
+- [ ] Chart-specific font sizes (axis 10–12px, title 14–16px, annotations 10px)
 - [ ] All strokes are 1px
 - [ ] Bar corners are 2px radius
-- [ ] Grid lines use content-disabled (30% opacity)
-- [ ] Spacing uses even numbers only (multiples of 4px)
+- [ ] Grid lines use `--content-disabled`
 - [ ] Chart flexes horizontally without distortion
-- [ ] Branded header present: "Listen Labs / Title" at top center
 - [ ] Dark mode works via prefers-color-scheme
 - [ ] Canvas has role="img" and aria-label
 - [ ] Output is a single self-contained HTML file
