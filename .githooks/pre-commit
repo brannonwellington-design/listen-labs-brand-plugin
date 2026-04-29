@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Auto-sync GUIDELINES.md from server data before every commit.
-# If the server changed, regenerate the markdown and stage it.
+# Auto-sync GUIDELINES.md from brand data before every commit.
+# Regenerate and stage it whenever the data or generator changes.
 
 REPO_DIR="$(git rev-parse --show-toplevel)"
 
-if git diff --cached --name-only | grep -q "listen-labs-brand-server.py"; then
-    echo "Server changed — regenerating GUIDELINES.md..."
+if git diff --cached --name-only | grep -qE "^(brand_data\.py|generate_guidelines\.py)$"; then
+    echo "Brand data or generator changed — regenerating GUIDELINES.md..."
     python3 "$REPO_DIR/generate_guidelines.py"
     git add "$REPO_DIR/GUIDELINES.md"
     echo "GUIDELINES.md synced and staged."

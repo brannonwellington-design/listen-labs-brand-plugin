@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
 """
-Generates GUIDELINES.md from the brand data in listen-labs-brand-server.py.
+Generates GUIDELINES.md from the brand data in brand_data.py.
 
 Run directly:  python3 generate_guidelines.py
 Also runs automatically via the pre-commit hook.
 """
 
-import importlib.util
 import os
 import re
+import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-SERVER_PATH = os.path.join(SCRIPT_DIR, "listen-labs-brand-server.py")
 OUTPUT_PATH = os.path.join(SCRIPT_DIR, "GUIDELINES.md")
 
-
-def load_server_data():
-    spec = importlib.util.spec_from_file_location("brand_server", SERVER_PATH)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+sys.path.insert(0, SCRIPT_DIR)
+import brand_data as data
 
 
 def fmt_rgba(val):
@@ -372,7 +367,6 @@ Reserved tokens:
 
 
 if __name__ == "__main__":
-    data = load_server_data()
     md = generate(data)
     with open(OUTPUT_PATH, "w") as f:
         f.write(md)
