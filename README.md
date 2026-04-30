@@ -10,7 +10,13 @@ Once installed, Claude automatically applies brand standards when generating des
 curl -sL https://raw.githubusercontent.com/brannonwellington-design/listen-labs-brand-plugin/main/install.sh | bash
 ```
 
-Then restart Claude Code. That's it.
+Then **fully quit** (Cmd+Q on Mac) and reopen your Claude app.
+
+The installer configures both apps that read local MCP config:
+- **Claude Code** (the coding assistant — CLI / Desktop / IDE extensions)
+- **Claude Desktop** (the general chat app with Chat / Cowork / Code tabs)
+
+If you only have one of the two installed, the other config file just sits idle until you install that app — no harm done.
 
 ## What It Does
 
@@ -129,22 +135,29 @@ If you prefer to set things up manually:
    git clone https://github.com/brannonwellington-design/listen-labs-brand-plugin.git ~/.listen-labs-brand-plugin
    ```
 
-2. Add to `~/.claude/settings.json`:
+2. Add this MCP entry to **whichever** app's config file matches the Claude app you use:
+
+   **Claude Code** (coding assistant) — `~/.claude/settings.json`
+
+   **Claude Desktop** (general chat app) — `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS, `~/.config/Claude/claude_desktop_config.json` on Linux
+
    ```json
    {
      "mcpServers": {
        "listen-labs-brand": {
          "command": "bash",
-         "args": ["~/.listen-labs-brand-plugin/run.sh"]
+         "args": ["/Users/YOUR_USERNAME/.listen-labs-brand-plugin/run.sh"]
        }
      }
    }
    ```
 
-3. Restart Claude Code.
+   Use the absolute path to `run.sh` — `~` is not expanded by the MCP launcher in either app.
+
+3. Fully quit (Cmd+Q on Mac) and reopen your Claude app.
 
 ## Requirements
 
 - Python 3 (no additional packages needed)
 - Git
-- Claude Code (CLI, Desktop, or Web)
+- Either Claude Code (CLI / Desktop / IDE extensions) or Claude Desktop (general chat app)

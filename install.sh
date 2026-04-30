@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
-# Listen Labs Brand Plugin — One-line installer for Claude Code
+# Listen Labs Brand Plugin — One-line installer
+#
+# Configures the Listen Labs MCP server for both Claude apps that read
+# local MCP config:
+#   - Claude Code (CLI / Desktop / IDE extensions): ~/.claude/settings.json
+#   - Claude Desktop (general chat app):
+#       macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
+#       Linux: ~/.config/Claude/claude_desktop_config.json
+#
+# Writing both is harmless — if you don't have one of the apps installed,
+# the unused config file just sits idle until that app picks it up later.
 #
 # Usage:
 #   curl -sL https://raw.githubusercontent.com/brannonwellington-design/listen-labs-brand-plugin/main/install.sh | bash
@@ -7,7 +17,6 @@
 set -e
 
 INSTALL_DIR="$HOME/.listen-labs-brand-plugin"
-SETTINGS_FILE="$HOME/.claude/settings.json"
 
 echo "Installing Listen Labs Brand Plugin..."
 
@@ -22,7 +31,6 @@ fi
 
 chmod +x "$INSTALL_DIR/run.sh"
 
-# Copy skills directory
 if [ -d "$INSTALL_DIR/skills" ]; then
   echo "Skills directory updated."
 fi
@@ -31,60 +39,48 @@ fi
 # from brand data on commit. Single source of truth — the hook lives in the repo.
 git -C "$INSTALL_DIR" config core.hooksPath .githooks
 
-# Ensure ~/.claude directory exists
-mkdir -p "$HOME/.claude"
+# ─── Configure MCP entries for both Claude apps ─────────────────────────
+# Settings file paths
+CLAUDE_CODE_SETTINGS="$HOME/.claude/settings.json"
+case "$OSTYPE" in
+  darwin*)  CLAUDE_DESKTOP_SETTINGS="$HOME/Library/Application Support/Claude/claude_desktop_config.json" ;;
+  *)        CLAUDE_DESKTOP_SETTINGS="$HOME/.config/Claude/claude_desktop_config.json" ;;
+esac
 
-# Add MCP server config to Claude Code settings
-if [ -f "$SETTINGS_FILE" ]; then
-  # Check if already configured
-  if python3 -c "
-import json, sys
-with open('$SETTINGS_FILE') as f:
-    data = json.load(f)
-servers = data.get('mcpServers', {})
-if 'listen-labs-brand' in servers:
-    sys.exit(0)
-else:
-    sys.exit(1)
-" 2>/dev/null; then
-    echo "Plugin already configured in Claude Code settings."
-  else
-    # Add the MCP server entry
-    python3 -c "
-import json
-with open('$SETTINGS_FILE') as f:
-    data = json.load(f)
-if 'mcpServers' not in data:
-    data['mcpServers'] = {}
-data['mcpServers']['listen-labs-brand'] = {
+# Idempotent JSON merger — adds (or replaces) the listen-labs-brand entry.
+# Uses env vars instead of string interpolation to avoid shell-quoting issues.
+add_mcp_to_settings() {
+  local SETTINGS="$1"
+  mkdir -p "$(dirname "$SETTINGS")"
+  INSTALL_DIR="$INSTALL_DIR" SETTINGS_PATH="$SETTINGS" python3 - <<'PY'
+import json, os
+path = os.environ['SETTINGS_PATH']
+install_dir = os.environ['INSTALL_DIR']
+data = {}
+if os.path.exists(path):
+    try:
+        with open(path) as f:
+            data = json.load(f)
+    except Exception:
+        data = {}
+data.setdefault('mcpServers', {})['listen-labs-brand'] = {
     'command': 'bash',
-    'args': ['$INSTALL_DIR/run.sh']
+    'args': [os.path.join(install_dir, 'run.sh')],
 }
-with open('$SETTINGS_FILE', 'w') as f:
+with open(path, 'w') as f:
     json.dump(data, f, indent=2)
-"
-    echo "Added listen-labs-brand to Claude Code MCP config."
-  fi
-else
-  # Create settings file with just the MCP server
-  python3 -c "
-import json
-data = {
-    'mcpServers': {
-        'listen-labs-brand': {
-            'command': 'bash',
-            'args': ['$INSTALL_DIR/run.sh']
-        }
-    }
+PY
 }
-with open('$SETTINGS_FILE', 'w') as f:
-    json.dump(data, f, indent=2)
-"
-  echo "Created Claude Code settings with listen-labs-brand MCP config."
-fi
+
+add_mcp_to_settings "$CLAUDE_CODE_SETTINGS"
+echo "  Configured Claude Code:    $CLAUDE_CODE_SETTINGS"
+
+add_mcp_to_settings "$CLAUDE_DESKTOP_SETTINGS"
+echo "  Configured Claude Desktop: $CLAUDE_DESKTOP_SETTINGS"
 
 echo ""
-echo "Done! Restart Claude Code to start using the Listen Labs brand tools."
+echo "Done! Quit (Cmd+Q on Mac) and reopen your Claude app to start using the Listen Labs brand tools."
+echo ""
 echo "Available tools: get_brand_colors, get_typography, get_spacing, get_icon_guidelines,"
 echo "  get_header_convention, get_data_visualization, get_art_direction, get_css_variables,"
 echo "  get_full_guidelines"
