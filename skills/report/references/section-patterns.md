@@ -117,15 +117,17 @@ How the research was conducted. Structured data.
   <h2 class="section-heading">Methodology</h2>
   <p class="section-intro">Moderated remote usability sessions with think-aloud protocol.</p>
 
-  <table class="report-table">
-    <tr><th>Detail</th><th>Value</th></tr>
-    <tr><td>Participants</td><td>12 (6 mobile, 6 desktop)</td></tr>
-    <tr><td>Duration</td><td>45 minutes per session</td></tr>
-    <tr><td>Period</td><td>February 10–21, 2026</td></tr>
-    <tr><td>Method</td><td>Moderated remote usability testing</td></tr>
-    <tr><td>Tools</td><td>Listen Labs platform, Zoom</td></tr>
-    <tr><td>Recruitment</td><td>Existing customers, age 25-54</td></tr>
-  </table>
+  <div class="table-wrap">
+    <table class="report-table">
+      <tr><th>Detail</th><th>Value</th></tr>
+      <tr><td>Participants</td><td>12 (6 mobile, 6 desktop)</td></tr>
+      <tr><td>Duration</td><td>45 minutes per session</td></tr>
+      <tr><td>Period</td><td>February 10–21, 2026</td></tr>
+      <tr><td>Method</td><td>Moderated remote usability testing</td></tr>
+      <tr><td>Tools</td><td>Listen Labs platform, Zoom</td></tr>
+      <tr><td>Recruitment</td><td>Existing customers, age 25–54</td></tr>
+    </table>
+  </div>
 </section>
 ```
 
@@ -254,12 +256,14 @@ Raw data, full participant roster, complete quote log, or extended methodology d
 
   <div class="finding">
     <h3 class="finding-heading">Participant Overview</h3>
-    <table class="report-table">
-      <tr><th>ID</th><th>Role</th><th>Device</th><th>Duration</th></tr>
-      <tr><td>P1</td><td>Marketing Manager</td><td>Desktop</td><td>42 min</td></tr>
-      <tr><td>P2</td><td>Product Manager</td><td>Mobile</td><td>38 min</td></tr>
-      <tr><td>P3</td><td>Software Engineer</td><td>Desktop</td><td>47 min</td></tr>
-    </table>
+    <div class="table-wrap">
+      <table class="report-table">
+        <tr><th>ID</th><th>Role</th><th>Device</th><th>Duration</th></tr>
+        <tr><td>P1</td><td>Marketing Manager</td><td>Desktop</td><td>42 min</td></tr>
+        <tr><td>P2</td><td>Product Manager</td><td>Mobile</td><td>38 min</td></tr>
+        <tr><td>P3</td><td>Software Engineer</td><td>Desktop</td><td>47 min</td></tr>
+      </table>
+    </div>
   </div>
 </section>
 ```

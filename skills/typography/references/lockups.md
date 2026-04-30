@@ -66,7 +66,7 @@ The standard page or section opener. Three tiers stacked vertically.
 Highlight a single metric with dramatic scale contrast.
 
 ```
-[64px, content-brand (#0021CC)]          47%
+[64px, content-brand]                    47%
                                           ↕ 4px gap
 [14px, content-secondary]                increase in user engagement
 ```
@@ -315,6 +315,187 @@ Jan 2026                            [16px, secondary, sentence]
 **Why it works:** The asymmetric grid with tiny metadata (10px disabled) beside large content (32px primary) creates the "tiny next to huge" tension. The narrow left column mirrors the sidebar approach of Swiss Style posters and Cereal magazine layouts.
 
 **Responsive:** On mobile (< 768px), stack vertically — metadata cluster on top as an inline row, then content below.
+
+---
+
+## 8. Section Header with Accent Rule
+
+A confident, Swiss-feeling section opener. A short brand-blue rule above the title acts as a structural anchor — not decoration.
+
+```
+[2px tall, 32px wide, content-brand]      ▬▬▬▬▬▬
+                                           ↕ 24px gap
+[32px, content-primary, Title Case]        Section Title
+                                           ↕ 12px gap
+[16px, content-secondary, sentence]        Optional supporting line.
+```
+
+**CSS:**
+```css
+.section-header-accent .rule {
+  height: 2px;
+  width: 32px;
+  background: var(--content-brand);
+  margin-bottom: 24px;
+}
+.section-header-accent .title {
+  font-size: 32px;
+  line-height: 36px;    /* 4px grid */
+  color: var(--content-primary);
+  margin-bottom: 12px;
+  text-wrap: balance;
+}
+.section-header-accent .description {
+  font-size: 16px;
+  line-height: 24px;    /* 4px grid */
+  color: var(--content-secondary);
+  text-wrap: pretty;
+  max-width: 60ch;
+}
+```
+
+**Why it works:** A 32px brand rule is unmistakably structural — it reads as anchor, not ornament. Pairs with the existing #4 (full-width hairline) — pick one per page, not both.
+
+---
+
+## 9. Rotated Label Column
+
+A vertical brand element. Used in editorial layouts to label a section without consuming horizontal space — common in Swiss posters and book design.
+
+```
+┌──┬───────────────────────────────────────────┐
+│ S│                                           │
+│ E│   [32px, content-primary]                 │
+│ C│   Section Heading                         │
+│ T│                                           │
+│ I│   [16px, content-secondary]               │
+│ O│   Body text flowing in the wide column    │
+│ N│                                           │
+└──┴───────────────────────────────────────────┘
+```
+
+**HTML:**
+```html
+<div class="rotated-section">
+  <span class="rotated-label">Section Label</span>
+  <div class="content">
+    <h2>Section Heading</h2>
+    <p>Body text flowing in the wide column.</p>
+  </div>
+</div>
+```
+
+**CSS:**
+```css
+.rotated-section {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 32px;
+}
+.rotated-label {
+  font-size: 10px;
+  line-height: 16px;
+  color: var(--content-disabled);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+.rotated-section .content {
+  max-width: 720px;
+}
+
+@media (max-width: 768px) {
+  .rotated-section {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .rotated-label {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+}
+```
+
+**Why it works:** The rotated label is presence without weight — a brand signal that doesn't compete with the heading. On mobile, drop the rotation and let the label sit above the content as a normal overline.
+
+**When to use:** Section dividers in long-form reports or articles, gallery captions, archival/year markers.
+
+---
+
+## 10. Giant Background Numeral
+
+A geometric anchor for hero sections, section openers, or finding cards. A very large numeral (or letter) sits behind the content at very low opacity — readable as architecture, not as text.
+
+```
+┌─────────────────────────────────────────────────┐
+│                                          ╔═══╗  │
+│  [10px, content-disabled, Title Case]    ║   ║  │
+│  Finding 04                              ║04 ║  │
+│                                          ║   ║  │
+│  [48px, content-primary]                 ╚═══╝  │
+│  The Title of the Finding                       │
+│                                                 │
+│  [16px, content-secondary]                      │
+│  Supporting body text…                          │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
+
+**HTML:**
+```html
+<div class="numeral-anchor">
+  <div class="numeral" aria-hidden="true">04</div>
+  <div class="content">
+    <span class="overline">Finding 04</span>
+    <h2 class="heading">The Title of the Finding</h2>
+    <p class="body">Supporting body text…</p>
+  </div>
+</div>
+```
+
+**CSS:**
+```css
+.numeral-anchor {
+  position: relative;
+  isolation: isolate;
+  padding: 48px 0;
+}
+.numeral-anchor .numeral {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: clamp(10rem, 24vw, 20rem);
+  line-height: 1;
+  color: var(--content-primary);
+  opacity: 0.05;
+  user-select: none;
+  pointer-events: none;
+  z-index: -1;
+  font-variant-numeric: tabular-nums;
+  text-wrap: nowrap;
+}
+.numeral-anchor .heading {
+  font-size: 48px;
+  line-height: 52px;
+  color: var(--content-primary);
+  text-wrap: balance;
+}
+.numeral-anchor .overline {
+  font-size: 10px;
+  line-height: 16px;
+  color: var(--content-disabled);
+  display: block;
+  margin-bottom: 8px;
+}
+```
+
+**Why it works:** A barely-visible numeral at 5% opacity gives the section visual mass without competing for attention. Numbered findings, chapters, or sections gain a sense of architecture. The `aria-hidden` and `pointer-events: none` keep it decorative-only; the visible overline (`Finding 04`) carries the meaning for screen readers.
+
+**Rules:**
+- One per section maximum. Multiple anchors compete and lose their effect.
+- Opacity stays at 0.05–0.08. Higher and it starts reading as text; lower and it disappears.
+- Use only on cover, finding, or section openers — never inside running body content.
+- Numerals only (or single letters/symbols). Never use this with words.
 
 ---
 

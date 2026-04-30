@@ -37,6 +37,8 @@ With one font weight, you have four tools for creating hierarchy. Use them in th
 
 These four tools used together produce hierarchy indistinguishable from multi-weight systems.
 
+> **Deliberate departure from Swiss convention.** Many Swiss/editorial systems use `font-weight: 300` (light) for display headings and `500` (medium) for emphasis. Listen Labs uses 400 only — the visual contrast comes from size + tier + spacing instead. This is a brand constraint; do not introduce 300/500/700 weights even when implementing patterns adapted from Swiss sources.
+
 ---
 
 ## Size Hierarchy Table
@@ -193,6 +195,47 @@ With no all-caps allowed, the distinction between Title Case and sentence case i
 | Sentence case | Body copy, descriptions, helper text, error messages | Signals reading content, conversational tone |
 
 **Where case replaces weight:** In traditional systems, a label might be set in bold at body size. In a single-weight system, set the label in Title Case at the same size as body text. The capitalization pattern alone signals "this is a label, not running text."
+
+---
+
+## Typographic Implementation
+
+The universal precision rules live in `skills/_shared/brand-compliance.md`. The CSS and HTML implementation:
+
+### `text-balance` and `text-pretty`
+Apply to every heading and every body paragraph respectively. These properties prevent widows on headings and produce better rags on body copy with zero manual intervention.
+
+```css
+h1, h2, h3, .display, .heading { text-wrap: balance; }
+p, .body, .body-lead { text-wrap: pretty; }
+```
+
+### `tabular-nums` for numeric content
+Tables, stat blocks, prices, dates, percentages, and any vertical column of numbers must use tabular numerals so digits align by column.
+
+```css
+.report-table, .stat-lockup .number, .metadata { font-variant-numeric: tabular-nums; }
+```
+
+### Curly quotes and ellipsis in copy
+Always render literal `"` `"` `'` `'` and `…` in source text — never `"`, `'`, or `...`. This is a content rule (applies to every string Claude writes), not a CSS rule.
+
+| Wrong | Right |
+|-------|-------|
+| `"Design is how it works."` | `"Design is how it works."` |
+| `it's, don't` | `it's, don't` |
+| `Loading...` | `Loading…` |
+
+### Non-breaking spaces
+Insert `&nbsp;` between value and unit, and inside compact brand names or shortcuts:
+
+```html
+<span>10&nbsp;MB</span>
+<span>5&nbsp;min read</span>
+<kbd>⌘&nbsp;K</kbd>
+```
+
+This prevents awkward line breaks like `10 / MB` or `5 / min read` at narrow widths.
 
 ---
 

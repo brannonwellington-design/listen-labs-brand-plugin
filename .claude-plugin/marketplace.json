@@ -4,7 +4,7 @@
       "id": "listen-labs-brand",
       "name": "Listen Labs Brand",
       "description": "Exposes Listen Labs brand guidelines (colors, typography, spacing, icons, art direction, data visualization, presentations, typographic layout, research reports) as MCP tools and skills so Claude can apply them to any design or code output.",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "mcpServers": {
         "listen-labs-brand": {
           "command": "python3",
