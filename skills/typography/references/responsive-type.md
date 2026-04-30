@@ -275,6 +275,29 @@ Body text must be constrained regardless of viewport width:
 
 On very wide screens (1440px+), the body column stays at 720px with increasing margins. The headline can extend wider for impact.
 
+### Tables on Mobile
+
+Wide tables must never break the surrounding layout. Wrap every table in an `overflow-x: auto` container and set a `min-width` on the table itself so it scrolls horizontally below tablet width:
+
+```css
+.table-wrap { overflow-x: auto; }
+.table-wrap table { min-width: 640px; width: 100%; }
+```
+
+See `skills/_shared/brand-compliance.md` (Web Output Hygiene) for the canonical rule.
+
+### Section Padding Pattern
+
+Section padding scales with viewport — generous on desktop, tighter on mobile:
+
+```css
+.section { padding-block: 64px; }
+@media (min-width: 768px)  { .section { padding-block: 96px; } }
+@media (min-width: 1024px) { .section { padding-block: 128px; } }
+```
+
+Horizontal padding follows the same rhythm: 16px mobile → 32px tablet+. All values land on the 4px grid.
+
 ---
 
 ## Accessibility Requirements

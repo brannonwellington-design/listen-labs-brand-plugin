@@ -85,11 +85,12 @@ Foundation skill for creating premium, editorial-quality hierarchy using only In
 ```
 
 **What it provides:**
-- Size hierarchy table mapping every text role to specific sizes, line heights, and opacity tiers
-- Three-tier opacity system (100% / 60% / 30%) that replaces bold for visual weight
+- Size hierarchy table mapping every text role to specific sizes, line heights, and weight tiers
+- Three-tier visual weight system (primary / secondary / disabled) that replaces bold without ever changing font weight
 - Spacing rhythm rules — heading space, paragraph spacing, section breaks, 4px vertical grid
-- 7 pre-built typographic lockups (title blocks, stat blocks, metadata clusters, pull quotes, cards, section headers, asymmetric editorial layouts)
+- 10 pre-built typographic lockups (title blocks, stat blocks, metadata clusters, pull quotes, cards, section headers, asymmetric editorial layouts, accent rules, rotated labels, giant background numerals)
 - Fluid responsive type scale using CSS `clamp()` with pre-calculated values
+- Typographic precision details — curly quotes, ellipsis character, `text-balance`, `text-pretty`, `tabular-nums`, non-breaking spaces
 - Contrast minimums, alignment rules, and the "tiny next to huge" editorial technique
 
 **Philosophy:** Swiss International Style and modern editorial design (Kinfolk, Cereal, Monocle) translated for responsive digital interfaces.

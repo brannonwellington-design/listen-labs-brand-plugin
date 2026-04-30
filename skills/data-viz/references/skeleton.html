@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F9F4EB">
   <title>Listen Labs / Chart Title</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,39 +12,56 @@
   <style>
     /* ── Reset ─────────────────────────────────────────────── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { color-scheme: light dark; }
+    :focus-visible {
+      outline: 2px solid var(--content-primary);
+      outline-offset: 2px;
+    }
 
-    /* ── Paper Theme — Light ──────────────────────────────── */
+    /*
+     * Brand tokens — Paper theme (default).
+     *
+     * Always populated from `get_css_variables(theme=<paper|whisp>, mode='both')`
+     * at generation time. The values below are the current Paper light/dark
+     * snapshot. To switch themes, replace both blocks with the output of
+     * get_css_variables for the chosen theme. Token NAMES are identical across
+     * themes — only values change.
+     */
     :root {
+      /* Paper - Light */
       --content-primary: #120F08;
-      --content-secondary: rgba(18, 15, 8, 0.6);
+      --content-secondary: #6B6861;
       --content-inverse-primary: #F9F4EB;
-      --content-inverse-secondary: rgba(249, 244, 235, 0.6);
-      --content-disabled: rgba(18, 15, 8, 0.3);
-      --content-inverse-disabled: rgba(249, 244, 235, 0.3);
+      --content-inverse-secondary: #9E9B94;
+      --content-disabled: #B6B4AF;
+      --content-inverse-disabled: #504E49;
       --content-brand: #0021CC;
+      --content-brand-secondary: #7A85B8;
       --content-brand-contrast: #F9F4EB;
-      --content-complimentary: #E5A119;
-      --content-warning: #CF6317;
-      --content-negative: #CF2617;
+      --content-brand-contrast-secondary: #9CA3C9;
+      --content-complimentary: #B88114;
+      --content-warning: #B85814;
+      --content-negative: #B82214;
       --content-positive: #0F8A38;
 
-      --surface-highlight: #FCFBF7;
+      --surface-highlight: #FBF9F4;
       --surface-primary: #F9F4EB;
       --surface-secondary: #EEE8DD;
       --surface-tertiary: #E2DCCF;
       --surface-inverse-primary: #120F08;
       --surface-inverse-secondary: #1F1B14;
       --surface-brand-primary: #0021CC;
-      --surface-brand-secondary: rgba(0, 33, 204, 0.10);
+      --surface-brand-secondary: #D9DDF2;
       --surface-complimentary-primary: #E5A119;
-      --surface-complimentary-secondary: rgba(229, 161, 25, 0.10);
+      --surface-complimentary-secondary: #F5EBD6;
       --surface-warning-primary: #CF6317;
-      --surface-warning-secondary: rgba(207, 99, 23, 0.10);
+      --surface-warning-secondary: #F5E3D6;
       --surface-negative-primary: #CF2617;
-      --surface-negative-secondary: rgba(207, 38, 23, 0.10);
+      --surface-negative-secondary: #F5D9D6;
       --surface-positive-primary: #14B84B;
-      --surface-positive-secondary: rgba(20, 184, 75, 0.10);
+      --surface-positive-secondary: #D6F5E0;
 
+      /* Emotion tokens (shared across themes) */
       --emotion-anger-primary: #BF4040;
       --emotion-anger-secondary: rgba(191, 64, 64, 0.10);
       --emotion-happiness-primary: #D99E26;
@@ -57,15 +76,16 @@
       --emotion-fear-secondary: rgba(149, 64, 191, 0.10);
     }
 
-    /* ── Paper Theme — Dark ───────────────────────────────── */
     @media (prefers-color-scheme: dark) {
       :root {
+        /* Paper - Dark (only tokens that differ from light) */
         --content-primary: #F9F4EB;
-        --content-secondary: rgba(249, 244, 235, 0.6);
+        --content-secondary: #9E9B94;
         --content-inverse-primary: #120F08;
-        --content-inverse-secondary: rgba(18, 15, 8, 0.6);
-        --content-disabled: rgba(249, 244, 235, 0.3);
-        --content-inverse-disabled: rgba(18, 15, 8, 0.3);
+        --content-inverse-secondary: #6B6861;
+        --content-disabled: #504E49;
+        --content-inverse-disabled: #B6B4AF;
+        --content-brand: #3354FF;
 
         --surface-highlight: #080603;
         --surface-primary: #130F06;
@@ -73,9 +93,7 @@
         --surface-tertiary: #30291D;
         --surface-inverse-primary: #F9F4EB;
         --surface-inverse-secondary: #F0E9DB;
-        --surface-brand-secondary: rgba(0, 33, 204, 0.30);
-        --surface-negative-secondary: rgba(207, 38, 23, 0.20);
-        --surface-positive-secondary: rgba(20, 184, 75, 0.20);
+        --surface-brand-secondary: #131939;
       }
     }
 

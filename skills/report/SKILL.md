@@ -132,14 +132,25 @@ The 2px brand-blue left border signals "this is a direct quote" without decorati
 
 ### Data Tables
 
-Tables follow the minimal brand aesthetic — no heavy borders, no zebra striping.
+Tables follow the minimal brand aesthetic — no heavy borders, no zebra striping. Wrap every table in a horizontally-scrollable container so it never breaks mobile layout.
+
+```html
+<div class="table-wrap">
+  <table class="report-table">…</table>
+</div>
+```
 
 ```css
+.table-wrap {
+  overflow-x: auto;
+}
 .report-table {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
   font-size: 14px;
   line-height: 20px;
+  font-variant-numeric: tabular-nums;
 }
 .report-table th {
   text-align: left;
@@ -154,7 +165,7 @@ Tables follow the minimal brand aesthetic — no heavy borders, no zebra stripin
 }
 ```
 
-Header row uses primary opacity with a 1px disabled border. Body rows use secondary opacity with a tertiary surface border (barely visible — just enough structure).
+The header row uses the primary tier with a 1px disabled border; body rows use the secondary tier with a tertiary-surface border (barely visible — just enough structure). `tabular-nums` keeps numeric columns vertically aligned. The `min-width: 640px` plus `overflow-x: auto` wrapper ensures the table scrolls horizontally on mobile rather than breaking the surrounding layout.
 
 ### Stat Blocks
 
