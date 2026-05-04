@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listen Labs / Data Viz Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset ───────────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── Theme tokens (Paper theme; toggled via [data-theme]) ────── */
+    :root, [data-theme="light"] {
+      --content-primary: #120F08;
+      --content-secondary: #6B6861;
+      --content-disabled: #B6B4AF;
+      --content-brand: #0021CC;
+      --surface-highlight: #FBF9F4;
+      --surface-primary: #F9F4EB;
+      --surface-secondary: #EEE8DD;
+      --surface-tertiary: #E2DCCF;
+      --surface-brand-primary: #0021CC;
+      --surface-brand-secondary: #D9DDF2;
+
+      --emotion-anger-primary: #BF4040;
+      --emotion-happiness-primary: #D99E26;
+      --emotion-disgust-primary: #80BF40;
+      --emotion-surprise-primary: #40BFAA;
+      --emotion-sadness-primary: #406ABF;
+      --emotion-fear-primary: #9540BF;
+    }
+
+    [data-theme="dark"] {
+      --content-primary: #F9F4EB;
+      --content-secondary: #9E9B94;
+      --content-disabled: #504E49;
+      --content-brand: #3354FF;
+      --surface-highlight: #080603;
+      --surface-primary: #130F06;
+      --surface-secondary: #201C13;
+      --surface-tertiary: #30291D;
+      --surface-brand-primary: #0021CC;
+      --surface-brand-secondary: #131939;
+    }
+
+    /* ── Data-viz palette tokens (mirrors /data-viz skeleton) ────── */
+    :root, [data-dataviz-palette="brand"] {
+      --dataviz-categorical-1: hsl(229, 100%, 40%);
+      --dataviz-categorical-2: hsl(229, 100%, 60%);
+      --dataviz-categorical-3: hsl(229, 100%, 25%);
+      --dataviz-categorical-4: hsl(229, 100%, 78%);
+      --dataviz-categorical-5: hsl(229, 100%, 50%);
+      --dataviz-categorical-6: #525252;
+      --dataviz-categorical-7: #8D8D8D;
+      --dataviz-categorical-8: #C6C6C6;
+      --dataviz-sequential-100: hsl(229, 100%, 92%);
+      --dataviz-sequential-200: hsl(229, 100%, 82%);
+      --dataviz-sequential-300: hsl(229, 100%, 70%);
+      --dataviz-sequential-400: hsl(229, 100%, 55%);
+      --dataviz-sequential-500: hsl(229, 100%, 40%);
+      --dataviz-sequential-600: hsl(229, 100%, 28%);
+      --dataviz-sequential-700: hsl(229, 100%, 18%);
+      --dataviz-diverging-neg-3: hsl(27, 100%, 42%);
+      --dataviz-diverging-neg-2: hsl(27, 100%, 62%);
+      --dataviz-diverging-neg-1: hsl(27, 75%, 86%);
+      --dataviz-diverging-zero: #F5F5F5;
+      --dataviz-diverging-pos-1: hsl(229, 75%, 86%);
+      --dataviz-diverging-pos-2: hsl(229, 100%, 62%);
+      --dataviz-diverging-pos-3: #0021CC;
+      --dataviz-highlight-accent: #0021CC;
+      --dataviz-highlight-neutral-1: #525252;
+      --dataviz-highlight-neutral-2: #8D8D8D;
+      --dataviz-highlight-neutral-3: #C6C6C6;
+      --dataviz-semantic-positive: #0F8A38;
+      --dataviz-semantic-negative: #B82214;
+      --dataviz-semantic-neutral: #8D8D8D;
+    }
+
+    [data-dataviz-palette="global"] {
+      --dataviz-categorical-1: #0072B2;
+      --dataviz-categorical-2: #E69F00;
+      --dataviz-categorical-3: #009E73;
+      --dataviz-categorical-4: #CC79A7;
+      --dataviz-categorical-5: #56B4E9;
+      --dataviz-categorical-6: #D55E00;
+      --dataviz-categorical-7: #F0E442;
+      --dataviz-categorical-8: #000000;
+      --dataviz-sequential-100: #440154;
+      --dataviz-sequential-200: #443A83;
+      --dataviz-sequential-300: #31688E;
+      --dataviz-sequential-400: #21908C;
+      --dataviz-sequential-500: #35B779;
+      --dataviz-sequential-600: #8FD744;
+      --dataviz-sequential-700: #FDE725;
+      --dataviz-diverging-neg-3: #B2182B;
+      --dataviz-diverging-neg-2: #EF8A62;
+      --dataviz-diverging-neg-1: #FDDBC7;
+      --dataviz-diverging-zero: #F7F7F7;
+      --dataviz-diverging-pos-1: #D1E5F0;
+      --dataviz-diverging-pos-2: #67A9CF;
+      --dataviz-diverging-pos-3: #2166AC;
+      --dataviz-highlight-accent: #0072B2;
+      --dataviz-highlight-neutral-1: #525252;
+      --dataviz-highlight-neutral-2: #8D8D8D;
+      --dataviz-highlight-neutral-3: #C6C6C6;
+      --dataviz-semantic-positive: #0F8A38;
+      --dataviz-semantic-negative: #B82214;
+      --dataviz-semantic-neutral: #8D8D8D;
+    }
+
+    /* ── Base ────────────────────────────────────────────────────── */
+    html { color-scheme: light dark; }
+    body {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      background: var(--surface-primary);
+      color: var(--content-primary);
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ─────────────────────────────────────────────────── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--surface-primary);
+      border-bottom: 1px solid var(--content-disabled);
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px 32px;
+    }
+    .ll-header {
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
+    .ll-header .ll-brand { color: var(--content-secondary); }
+    .ll-header .ll-title { color: var(--content-primary); }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      margin-left: auto;
+    }
+    .control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--content-secondary);
+    }
+    .control .label { font-size: 10px; }
+    .seg {
+      display: inline-flex;
+      border: 1px solid var(--content-disabled);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .seg button {
+      font: inherit;
+      font-size: 12px;
+      padding: 6px 12px;
+      background: transparent;
+      color: var(--content-secondary);
+      border: none;
+      cursor: pointer;
+      transition: background 60ms, color 60ms;
+    }
+    .seg button[aria-pressed="true"] {
+      background: var(--content-primary);
+      color: var(--surface-primary);
+    }
+    .seg button:focus-visible {
+      outline: 2px solid var(--content-primary);
+      outline-offset: 2px;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────── */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .section-heading {
+      grid-column: 1 / -1;
+      font-size: 11px;
+      color: var(--content-secondary);
+      margin: 24px 0 4px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--content-disabled);
+    }
+    .section-heading:first-of-type { margin-top: 0; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface-highlight);
+      border: 1px solid var(--content-disabled);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0; /* allow flexible shrinking */
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .card-title {
+      font-size: 12px;
+      color: var(--content-primary);
+    }
+    .card-meta {
+      font-size: 10px;
+      color: var(--content-secondary);
+    }
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 240px;
+    }
+    .chart-wrap canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ── Print / reduced motion ──────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0s !important; transition-duration: 0s !important; }
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+  <header class="topbar" role="banner">
+    <div class="ll-header">
+      <span class="ll-brand">Listen Labs /</span>
+      <span class="ll-title"> Data Viz Playground</span>
+    </div>
+
+    <div class="controls" role="toolbar" aria-label="Display controls">
+      <div class="control">
+        <span class="label">Theme</span>
+        <div class="seg" role="group" aria-label="Theme">
+          <button data-theme-set="light" aria-pressed="true">Light</button>
+          <button data-theme-set="dark" aria-pressed="false">Dark</button>
+        </div>
+      </div>
+      <div class="control">
+        <span class="label">Palette</span>
+        <div class="seg" role="group" aria-label="Palette mode">
+          <button data-palette-set="brand" aria-pressed="true">Brand</button>
+          <button data-palette-set="global" aria-pressed="false">Global</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main data-dataviz-palette="brand">
+
+    <!-- Categorical -->
+    <h2 class="section-heading">Categorical — discrete categories with no inherent order</h2>
+    <div class="grid">
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — single series</span><span class="card-meta">categorical-1</span></div>
+        <div class="chart-wrap"><canvas data-make="barSingle" role="img" aria-label="Single-series bar chart"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — multi-series (4)</span><span class="card-meta">dataVizSeries(4)</span></div>
+        <div class="chart-wrap"><canvas data-make="barMulti" role="img" aria-label="Four-series bar chart"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — stacked (3)</span><span class="card-meta">dataVizSeries(3) stacked</span></div>
+        <div class="chart-wrap"><canvas data-make="barStacked" role="img" aria-label="Stacked bar chart"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — horizontal (5)</span><span class="card-meta">dataVizSeries(5)</span></div>
+        <div class="chart-wrap"><canvas data-make="barHorizontal" role="img" aria-label="Horizontal bar chart"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Line — single</span><span class="card-meta">categorical-1</span></div>
+        <div class="chart-wrap"><canvas data-make="lineSingle" role="img" aria-label="Single-series line chart"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Line — multi (3, redundant)</span><span class="card-meta">dataVizSeries(3) + dash + marker</span></div>
+        <div class="chart-wrap"><canvas data-make="lineMulti" role="img" aria-label="Three-series line chart with redundant encoding"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Line — area fill</span><span class="card-meta">categorical-1 @ 10% fill</span></div>
+        <div class="chart-wrap"><canvas data-make="lineArea" role="img" aria-label="Area-fill line chart"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Doughnut (5)</span><span class="card-meta">dataVizSeries(5)</span></div>
+        <div class="chart-wrap"><canvas data-make="doughnut" role="img" aria-label="Doughnut chart with five slices"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Pie (4)</span><span class="card-meta">dataVizSeries(4)</span></div>
+        <div class="chart-wrap"><canvas data-make="pie" role="img" aria-label="Pie chart with four slices"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Radar — multi (2)</span><span class="card-meta">dataVizSeries(2)</span></div>
+        <div class="chart-wrap"><canvas data-make="radar" role="img" aria-label="Radar chart with two series"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Scatter — groups (3)</span><span class="card-meta">dataVizSeries(3)</span></div>
+        <div class="chart-wrap"><canvas data-make="scatter" role="img" aria-label="Scatter plot with three groups"></canvas></div>
+      </section>
+
+    </div>
+
+    <!-- Sequential / Continuous -->
+    <h2 class="section-heading">Sequential — ordered or continuous data</h2>
+    <div class="grid">
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — sequential ramp (7)</span><span class="card-meta">dataVizSequential(7)</span></div>
+        <div class="chart-wrap"><canvas data-make="barSequential" role="img" aria-label="Sequential bar chart with seven stops"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Polar — sequential (6)</span><span class="card-meta">dataVizSequential(6)</span></div>
+        <div class="chart-wrap"><canvas data-make="polarSequential" role="img" aria-label="Polar area chart with sequential palette"></canvas></div>
+      </section>
+
+    </div>
+
+    <!-- Diverging / Semantic / Highlight -->
+    <h2 class="section-heading">Diverging, Highlight, Semantic — meaning-encoded color</h2>
+    <div class="grid">
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — diverging (+/-)</span><span class="card-meta">dataVizDiverging()</span></div>
+        <div class="chart-wrap"><canvas data-make="barDiverging" role="img" aria-label="Diverging bar chart with positive and negative values"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — highlight</span><span class="card-meta">dataVizHighlight()</span></div>
+        <div class="chart-wrap"><canvas data-make="barHighlight" role="img" aria-label="Highlight bar chart with one accent series"></canvas></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — semantic</span><span class="card-meta">dataVizSemantic()</span></div>
+        <div class="chart-wrap"><canvas data-make="barSemantic" role="img" aria-label="Semantic bar chart positive and negative deltas"></canvas></div>
+      </section>
+
+    </div>
+
+    <!-- Emotion (orthogonal) -->
+    <h2 class="section-heading">Emotion — reserved for the 6 Ekman emotions (orthogonal to palette mode)</h2>
+    <div class="grid">
+
+      <section class="card">
+        <div class="card-head"><span class="card-title">Bar — emotion distribution</span><span class="card-meta">--emotion-* tokens</span></div>
+        <div class="chart-wrap"><canvas data-make="barEmotion" role="img" aria-label="Emotion distribution bar chart"></canvas></div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script>
+    // ── Globals ────────────────────────────────────────────────────
+    Chart.defaults.animation = false;
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.weight = 400;
+    Chart.defaults.font.size = 12;
+
+    // ── Token helpers ──────────────────────────────────────────────
+    function dataVizScope(el) {
+      return (el && el.closest && el.closest('[data-dataviz-palette]')) || document.documentElement;
+    }
+    function tok(scope, name) {
+      return getComputedStyle(scope).getPropertyValue(name).trim();
+    }
+    function dataVizSeries(count, el) {
+      var s = dataVizScope(el), out = [];
+      for (var i = 0; i < count; i++) out.push(tok(s, '--dataviz-categorical-' + ((i % 8) + 1)));
+      return out;
+    }
+    function dataVizSequential(count, el) {
+      var s = dataVizScope(el);
+      var stops = [100, 200, 300, 400, 500, 600, 700];
+      if (count >= 7) return stops.map(function(x){ return tok(s, '--dataviz-sequential-' + x); });
+      var picked = [];
+      for (var i = 0; i < count; i++) {
+        var idx = Math.round(i * (stops.length - 1) / Math.max(1, count - 1));
+        picked.push(tok(s, '--dataviz-sequential-' + stops[idx]));
+      }
+      return picked;
+    }
+    function dataVizDiverging(el) {
+      var s = dataVizScope(el);
+      return ['neg-3','neg-2','neg-1','zero','pos-1','pos-2','pos-3']
+        .map(function(k){ return tok(s, '--dataviz-diverging-' + k); });
+    }
+    function dataVizHighlight(el) {
+      var s = dataVizScope(el);
+      return {
+        accent: tok(s, '--dataviz-highlight-accent'),
+        neutral: [
+          tok(s, '--dataviz-highlight-neutral-1'),
+          tok(s, '--dataviz-highlight-neutral-2'),
+          tok(s, '--dataviz-highlight-neutral-3'),
+        ],
+      };
+    }
+    function dataVizSemantic(el) {
+      var s = dataVizScope(el);
+      return {
+        positive: tok(s, '--dataviz-semantic-positive'),
+        negative: tok(s, '--dataviz-semantic-negative'),
+        neutral:  tok(s, '--dataviz-semantic-neutral'),
+      };
+    }
+    function emotionColors(el) {
+      var s = dataVizScope(el);
+      return ['anger','happiness','disgust','surprise','sadness','fear']
+        .map(function(k){ return tok(s, '--emotion-' + k + '-primary'); });
+    }
+    function themeTokens() {
+      var root = document.documentElement;
+      return {
+        primary:   tok(root, '--content-primary'),
+        secondary: tok(root, '--content-secondary'),
+        disabled:  tok(root, '--content-disabled'),
+      };
+    }
+
+    // ── Shared chart options factories ─────────────────────────────
+    function baseScales(t) {
+      return {
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: { color: t.secondary, font: { size: 10 }, padding: 8 },
+        },
+        y: {
+          grid: { color: t.disabled, lineWidth: 1, drawTicks: false },
+          border: { display: false },
+          ticks: { color: t.secondary, font: { size: 10 }, padding: 8 },
+        },
+      };
+    }
+    function legendBottom(t) {
+      return {
+        display: true,
+        position: 'bottom',
+        labels: {
+          color: t.primary,
+          font: { size: 11 },
+          padding: 12,
+          boxWidth: 10,
+          boxHeight: 10,
+          useBorderRadius: true,
+          borderRadius: 2,
+        },
+      };
+    }
+    function tooltip(t) {
+      return {
+        backgroundColor: t.primary,
+        titleColor: t.secondary,
+        bodyColor: tok(document.documentElement, '--surface-primary'),
+        bodyFont: { size: 12 },
+        titleFont: { size: 10 },
+        padding: 10,
+        cornerRadius: 4,
+        displayColors: true,
+        boxWidth: 8,
+        boxHeight: 8,
+        boxPadding: 4,
+      };
+    }
+
+    // ── Chart factories ────────────────────────────────────────────
+    var FACTORIES = {
+      barSingle: function(canvas) {
+        var t = themeTokens();
+        var color = dataVizSeries(1, canvas)[0];
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: ['Q1','Q2','Q3','Q4'],
+            datasets: [{ label:'Revenue', data:[120,190,170,210], backgroundColor:color, borderColor:color, borderWidth:1, borderRadius:2 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            barPercentage: 0.9, categoryPercentage: 0.85,
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      barMulti: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSeries(4, canvas);
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: ['Jan','Feb','Mar','Apr','May'],
+            datasets: [
+              { label:'A', data:[12,18,14,22,20], backgroundColor:c[0], borderColor:c[0], borderWidth:1, borderRadius:2 },
+              { label:'B', data:[ 9,14,17,16,21], backgroundColor:c[1], borderColor:c[1], borderWidth:1, borderRadius:2 },
+              { label:'C', data:[ 6,11,13,15,18], backgroundColor:c[2], borderColor:c[2], borderWidth:1, borderRadius:2 },
+              { label:'D', data:[ 4, 8,10,12,15], backgroundColor:c[3], borderColor:c[3], borderWidth:1, borderRadius:2 },
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            barPercentage: 0.85, categoryPercentage: 0.85,
+            plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      barStacked: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSeries(3, canvas);
+        var ds = (i, label) => ({ label, data:[5,8,6,9,7,10][0], backgroundColor:c[i], borderColor:c[i], borderWidth:1, borderRadius:2 });
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: ['Mon','Tue','Wed','Thu','Fri','Sat'],
+            datasets: [
+              { label:'Mobile',  data:[14,18,16,22,19,12], backgroundColor:c[0], borderColor:c[0], borderWidth:1, borderRadius:2 },
+              { label:'Desktop', data:[ 9,12,10,14,13, 7], backgroundColor:c[1], borderColor:c[1], borderWidth:1, borderRadius:2 },
+              { label:'Tablet',  data:[ 4, 6, 5, 8, 7, 3], backgroundColor:c[2], borderColor:c[2], borderWidth:1, borderRadius:2 },
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
+            scales: {
+              x: Object.assign({}, baseScales(t).x, { stacked: true }),
+              y: Object.assign({}, baseScales(t).y, { stacked: true }),
+            },
+          }
+        });
+      },
+
+      barHorizontal: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSeries(5, canvas);
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: ['Search','Email','Social','Direct','Referral'],
+            datasets: [{
+              data: [42, 28, 22, 18, 12],
+              backgroundColor: c,
+              borderColor: c,
+              borderWidth: 1,
+              borderRadius: 2,
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: {
+              x: { grid: { color: t.disabled, lineWidth: 1, drawTicks: false }, border: { display: false }, ticks: { color: t.secondary, font: { size: 10 } } },
+              y: { grid: { display: false }, border: { display: false }, ticks: { color: t.secondary, font: { size: 10 } } },
+            },
+          }
+        });
+      },
+
+      lineSingle: function(canvas) {
+        var t = themeTokens();
+        var color = dataVizSeries(1, canvas)[0];
+        return new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+            datasets: [{
+              data: [320, 380, 360, 440, 460, 510, 540],
+              borderColor: color,
+              borderWidth: 1,
+              fill: false,
+              pointRadius: 3,
+              pointBackgroundColor: color,
+              pointBorderColor: color,
+              tension: 0,
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      lineMulti: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSeries(3, canvas);
+        return new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels: ['W1','W2','W3','W4','W5','W6','W7','W8'],
+            datasets: [
+              { label:'2023', data:[10,14,12,18,17,22,25,30], borderColor:c[0], borderWidth:1, fill:false,
+                pointRadius:3, pointStyle:'circle',   pointBackgroundColor:c[0], pointBorderColor:c[0], tension:0 },
+              { label:'2024', data:[12,16,15,21,23,26,29,34], borderColor:c[1], borderWidth:1, borderDash:[4,4], fill:false,
+                pointRadius:3, pointStyle:'triangle', pointBackgroundColor:c[1], pointBorderColor:c[1], tension:0 },
+              { label:'2025', data:[ 8,12,14,17,20,24,28,33], borderColor:c[2], borderWidth:1, borderDash:[2,3], fill:false,
+                pointRadius:3, pointStyle:'rect',     pointBackgroundColor:c[2], pointBorderColor:c[2], tension:0 },
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      lineArea: function(canvas) {
+        var t = themeTokens();
+        var color = dataVizSeries(1, canvas)[0];
+        // Build a 10%-opacity fill from the resolved color.
+        var fill = color.startsWith('hsl') ? color.replace('hsl(', 'hsla(').replace(')', ', 0.10)')
+                                           : color + '1A'; // append alpha if hex
+        return new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+            datasets: [{
+              data: [240, 280, 260, 320, 340, 380],
+              borderColor: color,
+              backgroundColor: fill,
+              borderWidth: 1,
+              fill: true,
+              pointRadius: 3,
+              pointBackgroundColor: color,
+              pointBorderColor: color,
+              tension: 0.2,
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      doughnut: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSeries(5, canvas);
+        return new Chart(canvas, {
+          type: 'doughnut',
+          data: {
+            labels: ['Search','Direct','Social','Email','Referral'],
+            datasets: [{ data:[42,22,15,12, 9], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-highlight'), borderWidth:2 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            cutout: '62%',
+            plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
+          }
+        });
+      },
+
+      pie: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSeries(4, canvas);
+        return new Chart(canvas, {
+          type: 'pie',
+          data: {
+            labels: ['Promoters','Passives','Detractors','Unsure'],
+            datasets: [{ data:[55,25,15, 5], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-highlight'), borderWidth:2 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
+          }
+        });
+      },
+
+      radar: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSeries(2, canvas);
+        var fill = function(col){ return col.startsWith('hsl') ? col.replace('hsl(','hsla(').replace(')',', 0.18)') : col + '2E'; };
+        return new Chart(canvas, {
+          type: 'radar',
+          data: {
+            labels: ['Speed','Quality','Trust','Value','Support','Brand'],
+            datasets: [
+              { label:'Us',         data:[78,82,74,68,80,72], borderColor:c[0], borderWidth:1, backgroundColor:fill(c[0]), pointRadius:3, pointBackgroundColor:c[0] },
+              { label:'Competitor', data:[64,72,68,76,60,70], borderColor:c[1], borderWidth:1, borderDash:[4,4], backgroundColor:fill(c[1]), pointRadius:3, pointStyle:'triangle', pointBackgroundColor:c[1] },
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
+            scales: {
+              r: {
+                angleLines: { color: t.disabled, lineWidth: 1 },
+                grid: { color: t.disabled, lineWidth: 1 },
+                pointLabels: { color: t.secondary, font: { size: 10 } },
+                ticks: { display: false },
+                suggestedMin: 0, suggestedMax: 100,
+              }
+            },
+          }
+        });
+      },
+
+      scatter: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSeries(3, canvas);
+        function pts(n, ox, oy, sx, sy) {
+          var arr = [];
+          for (var i = 0; i < n; i++) arr.push({ x: ox + Math.random() * sx, y: oy + Math.random() * sy });
+          return arr;
+        }
+        return new Chart(canvas, {
+          type: 'scatter',
+          data: {
+            datasets: [
+              { label:'Group A', data: pts(20, 10, 60, 30, 20), backgroundColor:c[0], borderColor:c[0], pointRadius:3 },
+              { label:'Group B', data: pts(20, 50, 30, 30, 25), backgroundColor:c[1], borderColor:c[1], pointRadius:3, pointStyle:'triangle' },
+              { label:'Group C', data: pts(20, 35, 80, 30, 15), backgroundColor:c[2], borderColor:c[2], pointRadius:3, pointStyle:'rect' },
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      barSequential: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSequential(7, canvas);
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: ['<1','1–3','3–7','7–14','14–30','30–60','60+'],
+            datasets: [{ data:[24,32,40,38,30,22,12], backgroundColor:c, borderColor:c, borderWidth:1, borderRadius:2 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      polarSequential: function(canvas) {
+        var t = themeTokens();
+        var c = dataVizSequential(6, canvas);
+        return new Chart(canvas, {
+          type: 'polarArea',
+          data: {
+            labels: ['Tier 1','Tier 2','Tier 3','Tier 4','Tier 5','Tier 6'],
+            datasets: [{ data:[12,18,22,28,18,10], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-highlight'), borderWidth:2 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
+            scales: {
+              r: {
+                grid: { color: t.disabled, lineWidth: 1 },
+                angleLines: { color: t.disabled, lineWidth: 1 },
+                ticks: { display: false },
+              }
+            },
+          }
+        });
+      },
+
+      barDiverging: function(canvas) {
+        var t = themeTokens();
+        var stops = dataVizDiverging(canvas);
+        function color(v) {
+          if (v <= -20) return stops[0];
+          if (v <= -10) return stops[1];
+          if (v <    0) return stops[2];
+          if (v ===   0) return stops[3];
+          if (v <   10) return stops[4];
+          if (v <   20) return stops[5];
+          return stops[6];
+        }
+        var labels = ['A','B','C','D','E','F','G','H','I'];
+        var values = [-25,-14,-6,-2, 0, 4,11,19,28];
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              data: values,
+              backgroundColor: values.map(color),
+              borderColor: values.map(color),
+              borderWidth: 1,
+              borderRadius: 2,
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      barHighlight: function(canvas) {
+        var t = themeTokens();
+        var hl = dataVizHighlight(canvas);
+        var labels = ['A','B','C','D','E','F'];
+        var values = [12,18,9, 28, 14,11];
+        var focus = 3;
+        var colors = values.map(function(_, i) { return i === focus ? hl.accent : hl.neutral[Math.min(i, 2)]; });
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ data: values, backgroundColor: colors, borderColor: colors, borderWidth: 1, borderRadius: 2 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      barSemantic: function(canvas) {
+        var t = themeTokens();
+        var sem = dataVizSemantic(canvas);
+        var labels = ['Q1','Q2','Q3','Q4','Q5','Q6'];
+        var values = [12,-8, 0, 22,-15, 6];
+        var colors = values.map(function(v) {
+          if (v > 0) return sem.positive;
+          if (v < 0) return sem.negative;
+          return sem.neutral;
+        });
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ data: values, backgroundColor: colors, borderColor: colors, borderWidth: 1, borderRadius: 2 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+
+      barEmotion: function(canvas) {
+        var t = themeTokens();
+        var c = emotionColors(canvas);
+        return new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: ['Anger','Happiness','Disgust','Surprise','Sadness','Fear'],
+            datasets: [{
+              data: [18, 32, 5, 22, 14, 9],
+              backgroundColor: c,
+              borderColor: c,
+              borderWidth: 1,
+              borderRadius: 2,
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: tooltip(t) },
+            scales: baseScales(t),
+          }
+        });
+      },
+    };
+
+    // ── Render orchestration ───────────────────────────────────────
+    var instances = [];
+    function renderAll() {
+      instances.forEach(function(c){ try { c.destroy(); } catch (_) {} });
+      instances = [];
+      // Pick up palette/theme changes after the next paint so getComputedStyle
+      // sees the new resolved values.
+      requestAnimationFrame(function() {
+        document.querySelectorAll('canvas[data-make]').forEach(function(canvas) {
+          var make = canvas.getAttribute('data-make');
+          var fn = FACTORIES[make];
+          if (fn) {
+            try { instances.push(fn(canvas)); }
+            catch (e) { console.error('Failed to render ' + make + ':', e); }
+          }
+        });
+      });
+    }
+
+    // ── Toggle handlers ────────────────────────────────────────────
+    function setSegPressed(group, value) {
+      group.querySelectorAll('button').forEach(function(b) {
+        b.setAttribute('aria-pressed', String(b.dataset.themeSet === value || b.dataset.paletteSet === value));
+      });
+    }
+
+    document.querySelectorAll('[data-theme-set]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var v = btn.dataset.themeSet;
+        document.body.setAttribute('data-theme', v);
+        setSegPressed(btn.closest('.seg'), v);
+        renderAll();
+      });
+    });
+    document.querySelectorAll('[data-palette-set]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var v = btn.dataset.paletteSet;
+        document.querySelector('main').setAttribute('data-dataviz-palette', v);
+        setSegPressed(btn.closest('.seg'), v);
+        renderAll();
+      });
+    });
+
+    // ── Keep charts crisp on resize ────────────────────────────────
+    var resizeT;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(function() {
+        instances.forEach(function(c) { try { c.resize(); } catch(_){} });
+      }, 120);
+    });
+
+    // ── Initial render ─────────────────────────────────────────────
+    renderAll();
+  </script>
+</body>
+</html>
