@@ -396,6 +396,29 @@ DATAVIZ_RULES = {
     "grayscale": "Adjacent palette stops must differ by ≥20% luminance when desaturated. Both shipped palettes pass; verify when extending.",
     "diverging_cvd": "Never use red/green for diverging data. Default RdBu (global) and vermillion/blue (brand) are both CVD-safe.",
     "emotion_orthogonality": "Emotion tokens (--emotion-*) remain reserved for the 6 Ekman emotions and are independent of the brand/global palette mode.",
+    "dark_mode_adaptation": "A small set of palette tokens flip values in dark mode (`prefers-color-scheme: dark`) to stay legible against dark canvases. Brand: categorical-3 brightens; diverging-zero adopts surface-tertiary (theme-coherent across Paper and Whisp). Global: categorical-8 swaps black → white; diverging-zero adopts surface-tertiary. Token names are unchanged. See DATAVIZ_DARK_OVERRIDES.",
+}
+
+# Dark-mode overrides for tokens that collide with dark canvases. Keyed by
+# palette mode → token short name → CSS value. Token names match
+# DATAVIZ_PALETTES; only listed keys flip in dark mode. var(--surface-tertiary)
+# is used so the diverging midpoint stays theme-coherent across Paper/Whisp.
+DATAVIZ_DARK_OVERRIDES = {
+    "brand": {
+        # hsl(229, 100%, 25%) reads as near-black on dark canvases — flip to a
+        # legible mid-light blue while keeping the monochromatic identity.
+        "categorical-3": "hsl(229, 100%, 72%)",
+        # #F5F5F5 is invisible on dark; surface-tertiary gives a subtle
+        # "neutral midpoint" that adapts to the active theme.
+        "diverging-zero": "var(--surface-tertiary)",
+    },
+    "global": {
+        # Pure black is invisible on dark canvases. White is the natural
+        # CVD-safe substitute for the 8th Okabe-Ito slot.
+        "categorical-8": "#FFFFFF",
+        # Same theme-coherent midpoint as brand.
+        "diverging-zero": "var(--surface-tertiary)",
+    },
 }
 
 
@@ -418,9 +441,17 @@ def _dataviz_decls(mode):
     return "\n".join(lines)
 
 
+def _dataviz_dark_decls(mode):
+    """CSS declarations for dark-mode overrides (only tokens that flip)."""
+    overrides = DATAVIZ_DARK_OVERRIDES.get(mode, {})
+    return "\n".join(f"    --dataviz-{key}: {val};" for key, val in overrides.items())
+
+
 # Theme-orthogonal data-viz CSS. Brand mode is the default (applied at :root);
 # global mode overrides via the [data-dataviz-palette="global"] attribute
 # selector. Same selector pattern works for any ancestor — typically <main>.
+# Dark-mode overrides flip the small set of tokens that collide with dark
+# canvases when the user's system prefers a dark color scheme.
 DATAVIZ_CSS = f"""/* Data-viz palette tokens — brand mode (default) */
 :root,
 [data-dataviz-palette="brand"] {{
@@ -430,6 +461,19 @@ DATAVIZ_CSS = f"""/* Data-viz palette tokens — brand mode (default) */
 /* Data-viz palette tokens — global (best-practices) mode */
 [data-dataviz-palette="global"] {{
 {_dataviz_decls("global")}
+}}
+
+/* Dark-mode adaptations — only tokens that need to flip for legibility on
+   dark canvases. Token names unchanged; charts read the same --dataviz-*
+   tokens regardless of theme. */
+@media (prefers-color-scheme: dark) {{
+  :root,
+  [data-dataviz-palette="brand"] {{
+{_dataviz_dark_decls("brand")}
+  }}
+  [data-dataviz-palette="global"] {{
+{_dataviz_dark_decls("global")}
+  }}
 }}"""
 
 ART_DIRECTION = {

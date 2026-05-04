@@ -168,6 +168,18 @@
         --surface-inverse-secondary: #F0E9DB;
         --surface-brand-secondary: #131939;
       }
+
+      /* Data-viz palette dark-mode overrides — only the tokens that need
+         to flip for legibility on dark canvases. Token names unchanged. */
+      :root,
+      [data-dataviz-palette="brand"] {
+        --dataviz-categorical-3: hsl(229, 100%, 72%);
+        --dataviz-diverging-zero: var(--surface-tertiary);
+      }
+      [data-dataviz-palette="global"] {
+        --dataviz-categorical-8: #FFFFFF;
+        --dataviz-diverging-zero: var(--surface-tertiary);
+      }
     }
 
     /* ── Base ──────────────────────────────────────────────── */

@@ -23,6 +23,7 @@ from brand_data import (
     CSS_VARIABLES,
     DATA_VISUALIZATION,
     DATAVIZ_CSS,
+    DATAVIZ_DARK_OVERRIDES,
     DATAVIZ_PALETTES,
     DATAVIZ_RULES,
     DEFAULT_THEME,
@@ -113,7 +114,7 @@ TOOLS = [
     },
     {
         "name": "get_dataviz_palettes",
-        "description": "Get the swappable data-viz palette specification. Returns two parallel palettes ('brand' = monochromatic brand-blue, default; 'global' = brand-agnostic best-practices: Okabe-Ito categorical, Viridis sequential, ColorBrewer RdBu diverging) sharing the same --dataviz-* token namespace. Also returns the cap/contrast/CVD rules and the ready-to-paste CSS block declaring tokens for both modes. Charts swap modes by setting data-dataviz-palette=\"brand|global\" on any ancestor.",
+        "description": "Get the swappable data-viz palette specification. Returns two parallel palettes ('brand' = monochromatic brand-blue, default; 'global' = brand-agnostic best-practices: Okabe-Ito categorical, Viridis sequential, ColorBrewer RdBu diverging) sharing the same --dataviz-* token namespace. Also returns the dark-mode overrides (a small set of tokens that flip values under prefers-color-scheme: dark for legibility on dark canvases), the cap/contrast/CVD rules, and the ready-to-paste CSS block declaring tokens for both modes plus the dark-mode adaptation. Charts swap modes by setting data-dataviz-palette=\"brand|global\" on any ancestor.",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -220,11 +221,14 @@ def handle_get_dataviz_palettes(args):
 
     if mode == "all":
         palettes = DATAVIZ_PALETTES
+        dark_overrides = DATAVIZ_DARK_OVERRIDES
     else:
         palettes = {mode: DATAVIZ_PALETTES[mode]}
+        dark_overrides = {mode: DATAVIZ_DARK_OVERRIDES.get(mode, {})}
 
     out = {
         "palettes": palettes,
+        "dark_overrides": dark_overrides,
         "rules": DATAVIZ_RULES,
     }
     if include_css:
@@ -245,6 +249,7 @@ def handle_get_full_guidelines(_args):
         "header": HEADER,
         "data_visualization": DATA_VISUALIZATION,
         "dataviz_palettes": DATAVIZ_PALETTES,
+        "dataviz_dark_overrides": DATAVIZ_DARK_OVERRIDES,
         "dataviz_rules": DATAVIZ_RULES,
         "dataviz_css": DATAVIZ_CSS,
         "art_direction": ART_DIRECTION,

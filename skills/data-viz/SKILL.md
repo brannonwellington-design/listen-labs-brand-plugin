@@ -83,6 +83,18 @@ Use the helpers in `skeleton.html` (`dataVizSeries(n)`, `dataVizSequential(n)`, 
 - **Contrast ≥3:1** for chart elements vs. background; **≥4.5:1** for data labels.
 - **Never red/green diverging** — both shipped diverging palettes (vermillion/blue, RdBu) are CVD-safe.
 
+#### Dark-mode adaptation
+
+A small set of palette tokens flip values automatically under `prefers-color-scheme: dark` so charts stay legible on dark canvases. Token names are unchanged — chart code reads the same `--dataviz-*` tokens in either theme.
+
+| Token | Light | Dark |
+|---|---|---|
+| `--dataviz-categorical-3` (brand) | `hsl(229, 100%, 25%)` | `hsl(229, 100%, 72%)` |
+| `--dataviz-categorical-8` (global) | `#000000` | `#FFFFFF` |
+| `--dataviz-diverging-zero` (both) | near-white (`#F5F5F5` / `#F7F7F7`) | `var(--surface-tertiary)` — theme-coherent across Paper and Whisp |
+
+All other tokens are theme-stable. The skeleton ships these overrides inside the existing `@media (prefers-color-scheme: dark)` block — see `skeleton.html`.
+
 ### Typography sizing (chart-specific)
 - Axis labels: 10px or 12px. Chart title: 14px or 16px. Annotations: 10px.
 - All other typography rules (Inter 400 only, no letter-spacing, no all-caps) come from the universal compliance file.

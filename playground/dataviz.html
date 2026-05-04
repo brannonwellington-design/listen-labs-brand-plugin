@@ -120,12 +120,12 @@
     [data-theme="dark"][data-dataviz-palette="brand"],
     [data-theme="dark"] [data-dataviz-palette="brand"] {
       --dataviz-categorical-3: hsl(229, 100%, 72%);  /* was 25% — too dark on dark bg */
-      --dataviz-diverging-zero: #2A2519;             /* was #F5F5F5 — invisible on dark bg */
+      --dataviz-diverging-zero: var(--surface-tertiary);   /* was #F5F5F5 — invisible on dark bg; theme-coherent */
     }
     [data-theme="dark"][data-dataviz-palette="global"],
     [data-theme="dark"] [data-dataviz-palette="global"] {
       --dataviz-categorical-8: #FFFFFF;              /* was #000000 — invisible on dark bg */
-      --dataviz-diverging-zero: #2A2519;             /* was #F7F7F7 — invisible on dark bg */
+      --dataviz-diverging-zero: var(--surface-tertiary);   /* was #F7F7F7 — invisible on dark bg; theme-coherent */
     }
 
     /* ── Base ────────────────────────────────────────────────────── */

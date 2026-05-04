@@ -334,6 +334,8 @@ Token namespace (same in both modes): `--dataviz-categorical-{{1..8}}`, `--datav
 
 Constraints: soft cap **{DR['category_caps']['soft_max']}** categorical series; hard cap **{DR['category_caps']['hard_max']}** (roll up to "Other" beyond). Brand mode practical cap is 5 — slots 6–8 fall back to neutral grays as a soft signal to switch to `global`. For 5+ series or any multi-line chart, encode redundantly (line-style + marker shape, not just color). Never red/green diverging — both shipped diverging palettes are CVD-safe.
 
+**Dark-mode adaptation.** Three tokens flip values under `prefers-color-scheme: dark` so charts stay legible on dark canvases: brand `--dataviz-categorical-3` (very dark blue → mid-light blue), global `--dataviz-categorical-8` (black → white), and `--dataviz-diverging-zero` for both modes (near-white → `var(--surface-tertiary)`, theme-coherent across Paper and Whisp). Token names are unchanged.
+
 ### Stroke Weight
 - **{D["line_stroke_weight"]["default"]}**
 - {D["line_stroke_weight"]["principle"]}

@@ -409,48 +409,75 @@ function addClosingSlide(pres, closingText, contactInfo) {
 
 ## Chart Slides
 
-PptxGenJS can't read CSS variables, so chart colors are resolved from the `/data-viz` palette spec into literal hex strings (no `#` prefix — PptxGenJS rejects it) at generation time. Pick one palette mode per deck via `DATAVIZ_MODE`:
+PptxGenJS can't read CSS variables, so chart colors are resolved from the `/data-viz` palette spec into literal hex strings (no `#` prefix — PptxGenJS rejects it) at generation time. Pick one palette mode per deck via `DATAVIZ_MODE`, plus a `THEME_MODE` so dark-canvas decks substitute the same dark-mode-adapted hexes as `/data-viz`:
 
-- **`"brand"`** (default) — monochromatic brand-blue, mirrors `/data-viz` brand mode for slides ≤5 categorical series.
-- **`"global"`** — Okabe-Ito categorical for brand-agnostic decks or ≥6 categorical series. CVD-safe.
+- **`DATAVIZ_MODE`** — `"brand"` (default; monochromatic brand-blue) or `"global"` (Okabe-Ito categorical for brand-agnostic decks / ≥6 categorical series, CVD-safe).
+- **`THEME_MODE`** — `"light"` (default) or `"dark"` (matches the canvas; flips the small set of tokens that would be invisible on dark backgrounds — brand cat-3, global cat-8).
 
-The hex values come straight from `get_dataviz_palettes` and match the CSS tokens in `/data-viz` exactly, so a chart on a slide reads identically to the same chart in HTML.
+The hex values come straight from `get_dataviz_palettes` and match the CSS tokens in `/data-viz` exactly, so a chart on a slide reads identically to the same chart in HTML — including the dark-mode adaptations.
 
 ```javascript
-// Palette mode for this deck. Set once. Charts use the matching palette below.
+// Palette + theme mode for this deck. Set once. Charts use the matching palette below.
 var DATAVIZ_MODE = "brand";  // or "global"
+var THEME_MODE   = "light";  // or "dark" — matches the slide canvas
 
 // Categorical palettes (hex without `#`, mirrors --dataviz-categorical-1..8).
 // Resolved from get_dataviz_palettes — keep in sync if those tokens change.
+// Two columns: light-mode values (canonical) and dark-mode overrides (flipped
+// only for tokens that collide with dark canvases).
 var DATAVIZ_CATEGORICAL = {
-  brand: [  // monochromatic brand-blue (HSL 229° / 100%, vary L); slots 6-8 are neutral grays
-    hslToHex(229, 100, 40),  // 1 — brand primary (#0021CC)
-    hslToHex(229, 100, 60),  // 2
-    hslToHex(229, 100, 25),  // 3
-    hslToHex(229, 100, 78),  // 4
-    hslToHex(229, 100, 50),  // 5
-    "525252",                // 6 — neutral fallback (switch to global past 5)
-    "8D8D8D",                // 7
-    "C6C6C6",                // 8
-  ],
-  global: [  // Okabe-Ito 8 (CVD-safe academic standard)
-    "0072B2",  // 1 — Blue
-    "E69F00",  // 2 — Orange
-    "009E73",  // 3 — Green
-    "CC79A7",  // 4 — Reddish purple
-    "56B4E9",  // 5 — Sky blue
-    "D55E00",  // 6 — Vermillion (same hex as brand diverging neg-3)
-    "F0E442",  // 7 — Yellow
-    "000000",  // 8 — Black
-  ],
+  brand: {
+    light: [  // monochromatic brand-blue (HSL 229° / 100%, vary L); slots 6-8 are neutral grays
+      hslToHex(229, 100, 40),  // 1 — brand primary (#0021CC)
+      hslToHex(229, 100, 60),  // 2
+      hslToHex(229, 100, 25),  // 3
+      hslToHex(229, 100, 78),  // 4
+      hslToHex(229, 100, 50),  // 5
+      "525252",                // 6 — neutral fallback (switch to global past 5)
+      "8D8D8D",                // 7
+      "C6C6C6",                // 8
+    ],
+    dark: [
+      hslToHex(229, 100, 40),
+      hslToHex(229, 100, 60),
+      hslToHex(229, 100, 72),  // 3 — was L=25; flipped for dark-canvas legibility
+      hslToHex(229, 100, 78),
+      hslToHex(229, 100, 50),
+      "525252",
+      "8D8D8D",
+      "C6C6C6",
+    ],
+  },
+  global: {
+    light: [  // Okabe-Ito 8 (CVD-safe academic standard)
+      "0072B2",  // 1 — Blue
+      "E69F00",  // 2 — Orange
+      "009E73",  // 3 — Green
+      "CC79A7",  // 4 — Reddish purple
+      "56B4E9",  // 5 — Sky blue
+      "D55E00",  // 6 — Vermillion (same hex as brand diverging neg-3)
+      "F0E442",  // 7 — Yellow
+      "000000",  // 8 — Black
+    ],
+    dark: [
+      "0072B2",
+      "E69F00",
+      "009E73",
+      "CC79A7",
+      "56B4E9",
+      "D55E00",
+      "F0E442",
+      "FFFFFF",  // 8 — was black; swapped for dark-canvas legibility
+    ],
+  },
 };
 
-// Returns `count` chart colors from the active palette. Wraps past 8.
+// Returns `count` chart colors from the active palette + theme. Wraps past 8.
 // Soft cap 7, hard cap 10 — same rules as the /data-viz dataVizSeries() helper.
 function dataVizSeriesHex(count) {
   if (count > 10) console.warn("dataVizSeriesHex: " + count + " categories exceeds the hard cap (10).");
   else if (count > 7) console.warn("dataVizSeriesHex: " + count + " exceeds the soft cap (7); add direct labels.");
-  var palette = DATAVIZ_CATEGORICAL[DATAVIZ_MODE];
+  var palette = DATAVIZ_CATEGORICAL[DATAVIZ_MODE][THEME_MODE];
   var out = [];
   for (var i = 0; i < count; i++) out.push(palette[i % 8]);
   return out;
@@ -472,7 +499,7 @@ function hslToHex(h, s, l) {
 }
 
 // Legacy alias — kept so older slide scripts keep working. Resolves to the
-// brand-mode categorical palette above.
+// brand-mode categorical palette in the active theme.
 function brandShadesHex(count) {
   var prev = DATAVIZ_MODE;
   DATAVIZ_MODE = "brand";
