@@ -409,17 +409,51 @@ function addClosingSlide(pres, closingText, contactInfo) {
 
 ## Chart Slides
 
-For embedded charts, use PptxGenJS native chart support with brand colors. The series-color helper mirrors the `/data-viz` `brandShades` formula and emits hex strings without the `#` prefix that PptxGenJS expects.
+PptxGenJS can't read CSS variables, so chart colors are resolved from the `/data-viz` palette spec into literal hex strings (no `#` prefix — PptxGenJS rejects it) at generation time. Pick one palette mode per deck via `DATAVIZ_MODE`:
+
+- **`"brand"`** (default) — monochromatic brand-blue, mirrors `/data-viz` brand mode for slides ≤5 categorical series.
+- **`"global"`** — Okabe-Ito categorical for brand-agnostic decks or ≥6 categorical series. CVD-safe.
+
+The hex values come straight from `get_dataviz_palettes` and match the CSS tokens in `/data-viz` exactly, so a chart on a slide reads identically to the same chart in HTML.
 
 ```javascript
-// Monochromatic brand-blue series colors. Mirrors /data-viz brandShades.
-function brandShadesHex(count) {
-  var shades = [];
-  var step = 50 / (count + 1);
-  for (var i = 0; i < count; i++) {
-    shades.push(hslToHex(229, 100, 30 + step * (i + 1)));
-  }
-  return shades;
+// Palette mode for this deck. Set once. Charts use the matching palette below.
+var DATAVIZ_MODE = "brand";  // or "global"
+
+// Categorical palettes (hex without `#`, mirrors --dataviz-categorical-1..8).
+// Resolved from get_dataviz_palettes — keep in sync if those tokens change.
+var DATAVIZ_CATEGORICAL = {
+  brand: [  // monochromatic brand-blue (HSL 229° / 100%, vary L); slots 6-8 are neutral grays
+    hslToHex(229, 100, 40),  // 1 — brand primary (#0021CC)
+    hslToHex(229, 100, 60),  // 2
+    hslToHex(229, 100, 25),  // 3
+    hslToHex(229, 100, 78),  // 4
+    hslToHex(229, 100, 50),  // 5
+    "525252",                // 6 — neutral fallback (switch to global past 5)
+    "8D8D8D",                // 7
+    "C6C6C6",                // 8
+  ],
+  global: [  // Okabe-Ito 8 (CVD-safe academic standard)
+    "0072B2",  // 1 — Blue
+    "E69F00",  // 2 — Orange
+    "009E73",  // 3 — Green
+    "CC79A7",  // 4 — Reddish purple
+    "56B4E9",  // 5 — Sky blue
+    "D55E00",  // 6 — Vermillion (same hex as brand diverging neg-3)
+    "F0E442",  // 7 — Yellow
+    "000000",  // 8 — Black
+  ],
+};
+
+// Returns `count` chart colors from the active palette. Wraps past 8.
+// Soft cap 7, hard cap 10 — same rules as the /data-viz dataVizSeries() helper.
+function dataVizSeriesHex(count) {
+  if (count > 10) console.warn("dataVizSeriesHex: " + count + " categories exceeds the hard cap (10).");
+  else if (count > 7) console.warn("dataVizSeriesHex: " + count + " exceeds the soft cap (7); add direct labels.");
+  var palette = DATAVIZ_CATEGORICAL[DATAVIZ_MODE];
+  var out = [];
+  for (var i = 0; i < count; i++) out.push(palette[i % 8]);
+  return out;
 }
 
 function hslToHex(h, s, l) {
@@ -435,6 +469,16 @@ function hslToHex(h, s, l) {
   else              { r = c; b = x; }
   var to = function(n) { return Math.round((n + m) * 255).toString(16).padStart(2, "0").toUpperCase(); };
   return to(r) + to(g) + to(b);
+}
+
+// Legacy alias — kept so older slide scripts keep working. Resolves to the
+// brand-mode categorical palette above.
+function brandShadesHex(count) {
+  var prev = DATAVIZ_MODE;
+  DATAVIZ_MODE = "brand";
+  var out = dataVizSeriesHex(count);
+  DATAVIZ_MODE = prev;
+  return out;
 }
 
 function addChartSlide(pres, title, chartType, chartData, projectTitle) {
@@ -458,7 +502,7 @@ function addChartSlide(pres, title, chartType, chartData, projectTitle) {
     legendFontFace: "Inter",
     legendFontSize: 10,
     legendColor: BRAND.text,
-    chartColors: brandShadesHex(chartData.length),
+    chartColors: dataVizSeriesHex(chartData.length),
     border: { pt: 0 },
     catAxisLabelFontFace: "Inter",
     catAxisLabelFontSize: 10,

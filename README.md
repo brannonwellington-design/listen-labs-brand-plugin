@@ -31,6 +31,7 @@ The plugin adds these tools to Claude:
 | `get_icon_guidelines` | Lucide icon sizing/stroke table |
 | `get_header_convention` | Branded header format and positioning |
 | `get_data_visualization` | Chart rules, color usage, stroke weights |
+| `get_dataviz_palettes` | Swappable data-viz palettes (`brand` monochromatic / `global` best-practices) + caps and CVD rules |
 | `get_art_direction` | Design philosophy, composition principles |
 | `get_full_guidelines` | Everything above in one call |
 
@@ -47,11 +48,14 @@ Generate professional, brand-compliant data visualizations as self-contained HTM
 Or just ask Claude to chart, graph, or visualize any data — the skill auto-triggers.
 
 **What it enforces:**
-- Monochromatic brand blue (`#0021CC`) shading for data series
+- Two swappable palette modes via one attribute (`data-dataviz-palette="brand|global"`):
+  - **brand** (default) — monochromatic brand-blue (`#0021CC`); vermillion ↔ blue diverging
+  - **global** — Okabe-Ito categorical, Viridis sequential, ColorBrewer RdBu diverging (CVD-safe, brand-agnostic)
+- Soft cap 7 categorical series, hard cap 10; redundant encoding (line-style + marker shape) for ≥5 series
 - 1px strokes on all chart elements
 - 2px rounded corners on bars, 1px gap between inline bars
 - Inter 400 for all labels — no bold, no other fonts
-- Emotion color tokens restricted to Ekman emotion data only
+- Emotion color tokens restricted to Ekman emotion data only (orthogonal to palette mode)
 - Responsive flex — no distortion at any width
 - Branded header on every output
 - Light/dark mode via `prefers-color-scheme`

@@ -364,7 +364,7 @@ Reserved tokens:
 - Background fill: `{default_light_surface["surface-primary"]}` (light) or `{default_dark_surface["surface-primary"]}` (dark) — i.e. `surface-primary`
 - Draw text using Inter where possible (load as web font or use system fallback)
 - Use `{default_light_content["content-brand"]}` sparingly for highlighted data points or accents
-- **Multi-series data using brand blue**: when `{default_light_content["content-brand"]}` is used to fill data objects (bars, pie slices, lines, etc.), additional data series can use the same blue at descending opacity stops rather than introducing new colors. Choose stops that are visually distinct — e.g. 100%, 60%, 30% for three series, or 100%, 70%, 45%, 20% for four. Avoid stops so close together they're hard to tell apart.
+- **Multi-series data**: use the swappable `--dataviz-*` tokens described in **Palette Modes** above. The `brand` mode (default) renders monochromatic brand-blue shades — practical cap is 5 series; past that, switch to `global` mode (Okabe-Ito categorical, CVD-safe) by setting `data-dataviz-palette="global"` on the chart container. For 5+ series or any multi-line chart, encode redundantly (line-style + marker shape, not color alone).
 
 ### Presentations (PPTX)
 - Slide background: `{default_light_surface["surface-primary"]}` (`surface-primary`)
