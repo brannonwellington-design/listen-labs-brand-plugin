@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,6 +110,24 @@
       --dataviz-semantic-neutral: #8D8D8D;
     }
 
+    /*
+     * Dark-mode adaptations for the data-viz palettes. Most tokens read
+     * fine on either background — only the ones that collide with a dark
+     * canvas (near-white "zero" stop, pure black, very dark monochromatic
+     * blue) need theme-aware overrides. Light mode keeps the canonical
+     * spec values from the brand plugin.
+     */
+    [data-theme="dark"][data-dataviz-palette="brand"],
+    [data-theme="dark"] [data-dataviz-palette="brand"] {
+      --dataviz-categorical-3: hsl(229, 100%, 72%);  /* was 25% — too dark on dark bg */
+      --dataviz-diverging-zero: #2A2519;             /* was #F5F5F5 — invisible on dark bg */
+    }
+    [data-theme="dark"][data-dataviz-palette="global"],
+    [data-theme="dark"] [data-dataviz-palette="global"] {
+      --dataviz-categorical-8: #FFFFFF;              /* was #000000 — invisible on dark bg */
+      --dataviz-diverging-zero: #2A2519;             /* was #F7F7F7 — invisible on dark bg */
+    }
+
     /* ── Base ────────────────────────────────────────────────────── */
     html { color-scheme: light dark; }
     body {
@@ -203,7 +221,7 @@
     }
 
     .card {
-      background: var(--surface-highlight);
+      background: var(--surface-secondary);
       border: 1px solid var(--content-disabled);
       border-radius: 8px;
       padding: 16px;
@@ -243,7 +261,7 @@
     }
   </style>
 </head>
-<body data-theme="light">
+<body>
 
   <header class="topbar" role="banner">
     <div class="ll-header">
@@ -679,7 +697,7 @@
           type: 'doughnut',
           data: {
             labels: ['Search','Direct','Social','Email','Referral'],
-            datasets: [{ data:[42,22,15,12, 9], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-highlight'), borderWidth:2 }]
+            datasets: [{ data:[42,22,15,12, 9], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-secondary'), borderWidth:2 }]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
@@ -696,7 +714,7 @@
           type: 'pie',
           data: {
             labels: ['Promoters','Passives','Detractors','Unsure'],
-            datasets: [{ data:[55,25,15, 5], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-highlight'), borderWidth:2 }]
+            datasets: [{ data:[55,25,15, 5], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-secondary'), borderWidth:2 }]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
@@ -783,7 +801,7 @@
           type: 'polarArea',
           data: {
             labels: ['Tier 1','Tier 2','Tier 3','Tier 4','Tier 5','Tier 6'],
-            datasets: [{ data:[12,18,22,28,18,10], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-highlight'), borderWidth:2 }]
+            datasets: [{ data:[12,18,22,28,18,10], backgroundColor:c, borderColor: tok(document.documentElement,'--surface-secondary'), borderWidth:2 }]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
@@ -931,7 +949,9 @@
     document.querySelectorAll('[data-theme-set]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var v = btn.dataset.themeSet;
-        document.body.setAttribute('data-theme', v);
+        // Theme attribute lives on <html> so getComputedStyle(documentElement)
+        // sees the right values from the JS helpers.
+        document.documentElement.setAttribute('data-theme', v);
         setSegPressed(btn.closest('.seg'), v);
         renderAll();
       });
