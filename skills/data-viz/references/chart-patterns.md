@@ -4,6 +4,42 @@ Reference configurations for Listen Labs branded charts. Copy and adapt these �
 
 ---
 
+## Palette Mode Swap
+
+Every chart inherits its palette from the nearest ancestor with `data-dataviz-palette`. The skeleton sets `<main data-dataviz-palette="brand">` by default. To swap a chart from brand-blue to the brand-agnostic best-practices palette, change one attribute:
+
+```html
+<!-- Brand mode: monochromatic brand-blue (default, matches existing behavior) -->
+<main data-dataviz-palette="brand">
+  <figure><canvas id="chart" role="img" aria-label="..."></canvas></figure>
+</main>
+
+<!-- Global mode: Okabe-Ito categorical / Viridis sequential / RdBu diverging -->
+<main data-dataviz-palette="global">
+  <figure><canvas id="chart" role="img" aria-label="..."></canvas></figure>
+</main>
+```
+
+Mixed modes on the same page: scope `data-dataviz-palette` tighter (e.g., on each `<figure>`) — every helper resolves against the canvas's nearest scoped ancestor.
+
+### Helpers (mode-aware)
+
+All return colors resolved from the chart's active palette mode. Pass the canvas element so the helper finds the right scope:
+
+```javascript
+var canvas = document.getElementById('chart');
+
+dataVizSeries(n, canvas);      // n categorical colors (slots wrap past 8; warns past soft/hard caps)
+dataVizSequential(n, canvas);  // n evenly-spaced sequential stops
+dataVizDiverging(canvas);      // 7 stops: neg-3, neg-2, neg-1, zero, pos-1, pos-2, pos-3
+dataVizHighlight(canvas);      // { accent, neutral: [grayDark, grayMid, grayLight] }
+dataVizSemantic(canvas);       // { positive, negative, neutral }
+```
+
+Use `brandShades(n)` only for legacy charts; new charts should use `dataVizSeries(n)` so they're swap-capable.
+
+---
+
 ## Bar Chart
 
 ```javascript
@@ -54,11 +90,13 @@ Reference configurations for Listen Labs branded charts. Copy and adapt these �
 
 ### Multi-Series Bar Chart
 
-For multiple data series, use monochromatic brand shades:
+Use `dataVizSeries(n, canvas)` so the chart respects the active palette mode (brand → monochromatic blue; global → Okabe-Ito):
 
 ```javascript
-var colors = brandShades(3);
-// colors = ['hsl(229, 100%, 42.5%)', 'hsl(229, 100%, 55%)', 'hsl(229, 100%, 67.5%)']
+var canvas = document.getElementById('chart');
+var colors = dataVizSeries(3, canvas);
+// brand mode  → ['hsl(229,100%,40%)', 'hsl(229,100%,60%)', 'hsl(229,100%,25%)']
+// global mode → ['#0072B2', '#E69F00', '#009E73']
 
 datasets: [
   {
@@ -142,8 +180,11 @@ datasets: [
 
 ### Multi-Series Line Chart
 
+Multi-line charts must encode redundantly (color + dash + marker) per WCAG 1.4.1:
+
 ```javascript
-var colors = brandShades(2);
+var canvas = document.getElementById('chart');
+var colors = dataVizSeries(2, canvas);
 
 datasets: [
   {
@@ -153,6 +194,7 @@ datasets: [
     borderWidth: 1,
     fill: false,
     pointRadius: 3,
+    pointStyle: 'circle',
     pointBackgroundColor: colors[0],
     pointBorderColor: colors[0],
     pointBorderWidth: 1,
@@ -163,14 +205,121 @@ datasets: [
     data: [250, 380, 400, 460],
     borderColor: colors[1],
     borderWidth: 1,
+    borderDash: [4, 4],         // dashed → distinguishable in grayscale and CVD
     fill: false,
     pointRadius: 3,
+    pointStyle: 'triangle',     // distinct marker shape
     pointBackgroundColor: colors[1],
     pointBorderColor: colors[1],
     pointBorderWidth: 1,
     tension: 0,
   }
 ]
+```
+
+---
+
+## Sequential (ordered / continuous data)
+
+Use for ordered bins, ramps, or anything with intrinsic order (small → large, low → high). Brand mode renders a brand-blue ramp; global mode renders Viridis.
+
+```javascript
+var canvas = document.getElementById('chart');
+var colors = dataVizSequential(5, canvas);  // 5 evenly-spaced stops
+
+datasets: [{
+  label: 'Engagement bin',
+  data: [12, 28, 44, 61, 73],
+  backgroundColor: colors,    // one stop per bar, ordered low → high
+  borderColor: colors,
+  borderWidth: 1,
+  borderRadius: 2,
+}]
+```
+
+---
+
+## Diverging (data with a meaningful midpoint)
+
+Use for data that is symmetric around zero (gain/loss, +/− deltas, sentiment). Brand mode = vermillion ↔ brand-blue; global mode = ColorBrewer RdBu. Both are CVD-safe.
+
+```javascript
+var canvas = document.getElementById('chart');
+var stops = dataVizDiverging(canvas);
+// stops = [neg-3, neg-2, neg-1, zero, pos-1, pos-2, pos-3]
+
+// Map each datum to a stop based on its bucketed value vs. midpoint.
+function divergingFor(v) {
+  if (v <= -20) return stops[0];
+  if (v <= -10) return stops[1];
+  if (v <   0)  return stops[2];
+  if (v ===  0) return stops[3];
+  if (v <  10)  return stops[4];
+  if (v <  20)  return stops[5];
+  return stops[6];
+}
+
+var values = [-25, -12, -4, 0, 6, 14, 22];
+
+datasets: [{
+  label: 'Δ vs. baseline',
+  data: values,
+  backgroundColor: values.map(divergingFor),
+  borderColor: values.map(divergingFor),
+  borderWidth: 1,
+  borderRadius: 2,
+}]
+```
+
+---
+
+## Highlight ("this vs. the rest")
+
+Use when one series is the story and the others are context. The accent comes from the active palette (brand blue or Okabe-Ito blue); de-emphasized series step through neutral grays.
+
+```javascript
+var canvas = document.getElementById('chart');
+var hl = dataVizHighlight(canvas);
+// hl = { accent: '#0021CC' (brand) or '#0072B2' (global), neutral: ['#525252', '#8D8D8D', '#C6C6C6'] }
+
+var focalIndex = 2;  // which series gets the accent
+
+datasets: rawSeries.map(function(s, i) {
+  var color = (i === focalIndex) ? hl.accent : hl.neutral[Math.min(i, 2)];
+  return {
+    label: s.label,
+    data: s.data,
+    backgroundColor: color,
+    borderColor: color,
+    borderWidth: 1,
+    borderRadius: 2,
+  };
+});
+```
+
+---
+
+## Semantic (positive / negative / neutral)
+
+Use for status data: pass/fail, positive/negative deltas, KPI direction. Same hexes in both modes — these read universally.
+
+```javascript
+var canvas = document.getElementById('chart');
+var sem = dataVizSemantic(canvas);
+
+var values = [12, -8, 0, 22, -15];
+
+datasets: [{
+  label: 'KPI delta',
+  data: values,
+  backgroundColor: values.map(function(v){
+    if (v > 0) return sem.positive;
+    if (v < 0) return sem.negative;
+    return sem.neutral;
+  }),
+  borderWidth: 1,
+  borderRadius: 2,
+}]
 ```
 
 ---
@@ -255,3 +404,14 @@ tooltip: {
 | Tick marks | Never | Always |
 | Data point dots (line) | Always (3px) | Never |
 | Bar borders | Only for contrast | Default |
+
+### Choosing a palette type
+
+| Data shape | Helper | Why |
+|---|---|---|
+| Distinct categories, no order | `dataVizSeries(n)` | Categorical — discrete hues |
+| Ordered / continuous (low → high) | `dataVizSequential(n)` | Sequential — single ramp |
+| Symmetric around a midpoint (+/−) | `dataVizDiverging()` | Diverging — two ramps |
+| One focal series + context | `dataVizHighlight()` | Spotlight — accent + grays |
+| Pass/fail, positive/negative status | `dataVizSemantic()` | Universal status colors |
+| The 6 Ekman emotions | `--emotion-*` tokens | Reserved; orthogonal to brand/global |

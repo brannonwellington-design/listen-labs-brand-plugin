@@ -171,7 +171,7 @@ Replace `[emotion-name]` with one of: `anger`, `happiness`, `disgust`, `surprise
 
 ## Emotion Chart Pattern
 
-When visualizing emotion distribution across a study, use emotion primary colors for chart data series. This is the ONE exception to the monochromatic brand-blue rule in `/data-viz`.
+When visualizing emotion distribution across a study, use emotion primary colors for chart data series. The `--emotion-*` tokens are reserved for the 6 Ekman emotions and are **orthogonal to the `/data-viz` palette modes** — they apply regardless of whether the surrounding chart uses `data-dataviz-palette="brand"` or `"global"`.
 
 ```javascript
 var emotionColors = {
@@ -232,4 +232,4 @@ new Chart(ctx, {
 5. **Quote text uses `content-primary`** — the quote is the important content. The emotion color appears only on the label and the left border/background.
 6. **Emotion callouts appear within findings**, not as standalone elements. They are evidence supporting a narrative point.
 7. **The Emotional Analysis section** is the primary home for emotion callouts, but they can appear in individual findings if the finding is directly about an emotional response.
-8. **Emotion charts use emotion token colors** — this is the only context where chart data series use non-brand-blue colors.
+8. **Emotion charts use `--emotion-*` token colors** — these tokens are reserved for the 6 Ekman emotions and are orthogonal to the `/data-viz` palette modes (`brand` and `global`). Never substitute `--dataviz-categorical-*` for emotion data, and never use `--emotion-*` for non-emotion series.

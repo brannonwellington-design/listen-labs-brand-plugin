@@ -1,7 +1,7 @@
 ---
 name: report
 description: "Use this skill when creating research reports, insight summaries, study recaps, executive briefings, interview digests, competitive analyses, or any multi-section narrative document. TRIGGER when user mentions 'report', 'summary', 'brief', 'digest', 'findings', 'insights', 'writeup', 'write-up', or 'research document'. Produces self-contained, print-ready HTML files with Listen Labs branding, emotion-coded callouts, and embedded data visualizations."
-allowed-tools: Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_typography mcp__listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_art_direction mcp__listen-labs-brand__get_spacing
+allowed-tools: Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_typography mcp__listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_dataviz_palettes mcp__listen-labs-brand__get_art_direction mcp__listen-labs-brand__get_spacing
 ---
 
 # Listen Labs Report Skill
@@ -184,11 +184,12 @@ Background: `surface-brand-secondary`. Padding: 32px. Border-radius: 8px. One st
 
 ### Embedded Charts
 
-Charts are embedded inline using Chart.js (same patterns as `/data-viz`). They inherit the report's CSS variables automatically.
+Charts are embedded inline using Chart.js (same patterns as `/data-viz`). They inherit the report's CSS variables — including the `--dataviz-*` palette tokens — automatically. The report skeleton ships the same `dataVizSeries / dataVizSequential / dataVizDiverging / dataVizHighlight / dataVizSemantic` helpers as `/data-viz`.
 
 - Chart container: `width: 100%; height: 320px; margin: 24px 0;`
 - Charts get a `<figcaption>` in 12px disabled opacity below them
-- Follow all `/data-viz` rules: monochromatic brand blue, 1px strokes, 2px bar radius
+- Set `data-dataviz-palette="brand"` (default — monochromatic brand-blue) or `"global"` (Okabe-Ito / Viridis / RdBu, brand-agnostic, CVD-safe, ≥6 categorical series) on the `<figure class="chart-container">` to choose the palette per chart
+- Follow all `/data-viz` rules: 1px strokes, 2px bar radius, soft cap 7 / hard cap 10 categorical series, redundant encoding for 5+ series
 
 ---
 

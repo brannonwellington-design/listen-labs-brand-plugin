@@ -57,8 +57,8 @@ PptxGenJS doesn't read CSS variables — it needs literal hex strings. So at gen
 - Never introduce colors outside the active theme palette. No gradients. No saturated accents beyond brand blue.
 - Brand blue is used sparingly — one accent element per slide maximum. It is not a background color.
 - "Sandwich" structure encouraged: dark title slide → light content slides → dark closing slide.
-- Monochromatic data series: adjust HSL Lightness of the brand-blue base for multi-series charts (same rule as data-viz skill).
-- Emotion rules: see `skills/report/references/emotion-callouts.md` for the canonical guide.
+- Charts on slides follow the `/data-viz` palette modes (`brand` default, `global` for brand-agnostic / ≥6 categorical series). PptxGenJS can't read CSS variables, so the deck declares one mode at generation time and resolves the matching `--dataviz-*` hex values into JS constants. See "Chart Slides" in `references/slide-patterns.md` for the helpers.
+- Emotion rules: see `skills/report/references/emotion-callouts.md` for the canonical guide. Emotion tokens stay reserved for the 6 Ekman emotions and are orthogonal to palette mode.
 
 **Important:** PptxGenJS uses 6-char hex WITHOUT the `#` prefix. Strip the `#` when assigning brand values. Never include `#`.
 

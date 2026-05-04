@@ -213,7 +213,8 @@ Dedicated section for emotion-coded data. Uses emotion callouts.
 - Use emotion callouts only in this section (or when a finding is directly about emotional response)
 - Always include the emotion label (10px, emotion primary color)
 - Pair each callout with context explaining the emotional trigger
-- If including an emotion distribution chart, use emotion token colors for the chart data series
+- Emotion distribution charts use `--emotion-*` tokens — these are orthogonal to the `/data-viz` palette modes and stay reserved for the 6 Ekman emotions
+- Non-emotion charts in a report should set `data-dataviz-palette="brand"` (default) or `"global"` on the `<figure class="chart-container">` and use the `dataViz*` helpers from the report skeleton — same swap mechanism as `/data-viz`
 
 ---
 
