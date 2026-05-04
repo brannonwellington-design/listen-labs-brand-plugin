@@ -741,11 +741,11 @@
             plugins: { legend: legendBottom(t), tooltip: tooltip(t) },
             scales: {
               r: {
+                min: 0, suggestedMax: 100,
+                grid: { circular: true, color: t.disabled, lineWidth: 1 },  // circular rings, never polygons
                 angleLines: { color: t.disabled, lineWidth: 1 },
-                grid: { color: t.disabled, lineWidth: 1 },
                 pointLabels: { color: t.secondary, font: { size: 10 } },
-                ticks: { display: false },
-                suggestedMin: 0, suggestedMax: 100,
+                ticks: { count: 5, display: false },                        // 4 visible rings + center point
               }
             },
           }

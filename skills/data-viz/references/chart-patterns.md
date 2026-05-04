@@ -219,6 +219,78 @@ datasets: [
 
 ---
 
+## Radar Chart
+
+Use for compact multi-dimensional profile comparison (≤ ~8 axes). Rings must be circular, not polygonal. 4 visible rings; spokes and rings are 1px hairlines in `--content-disabled`. Hide radial tick labels.
+
+```javascript
+var canvas = document.getElementById('chart');
+var color = dataVizSeries(1, canvas)[0];
+
+{
+  type: 'radar',
+  data: {
+    labels: ['Speed','Quality','Trust','Value','Support','Brand'],
+    datasets: [{
+      label: 'Score',
+      data: [78, 82, 74, 68, 80, 72],
+      borderColor: color,
+      borderWidth: 1,
+      backgroundColor: 'hsla(229, 100%, 40%, 0.10)',  // 10% fill of brand blue
+      pointRadius: 3,
+      pointBackgroundColor: color,
+      pointBorderColor: color,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      r: {
+        min: 0,
+        suggestedMax: 100,
+        grid: { circular: true, color: contentDisabled, lineWidth: 1 },   // perfect circles, never polygons
+        angleLines: { color: contentDisabled, lineWidth: 1 },
+        pointLabels: { color: contentSecondary, font: { family: "'Inter', sans-serif", weight: 400, size: 10 } },
+        ticks: { count: 5, display: false },                              // 4 visible rings + center point
+      }
+    }
+  }
+}
+```
+
+### Multi-Series Radar
+
+Radar fills overlap, so multi-series radar requires redundant encoding (line dash + point shape) on top of color. 2 series ideal, 3 hard cap.
+
+```javascript
+var canvas = document.getElementById('chart');
+var c = dataVizSeries(2, canvas);
+function fillFor(col) { return col.startsWith('hsl') ? col.replace('hsl(','hsla(').replace(')',', 0.18)') : col + '2E'; }
+
+datasets: [
+  {
+    label: 'Us',
+    data: [78, 82, 74, 68, 80, 72],
+    borderColor: c[0], borderWidth: 1,
+    backgroundColor: fillFor(c[0]),
+    pointRadius: 3, pointStyle: 'circle',
+    pointBackgroundColor: c[0], pointBorderColor: c[0],
+  },
+  {
+    label: 'Competitor',
+    data: [64, 72, 68, 76, 60, 70],
+    borderColor: c[1], borderWidth: 1, borderDash: [4, 4],         // dashed for redundancy
+    backgroundColor: fillFor(c[1]),
+    pointRadius: 3, pointStyle: 'triangle',                         // distinct marker shape
+    pointBackgroundColor: c[1], pointBorderColor: c[1],
+  }
+]
+```
+
+---
+
 ## Sequential (ordered / continuous data)
 
 Use for ordered bins, ramps, or anything with intrinsic order (small → large, low → high). Brand mode renders a brand-blue ramp; global mode renders Viridis.

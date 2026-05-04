@@ -249,6 +249,13 @@ DATA_VISUALIZATION = {
             "corner_radius": "2px rounded corners on bar sections",
             "inline_gap": "1px padding gap between bars that are in-line with each other",
         },
+        "radar_chart_rules": {
+            "shape": "Perfect concentric circles (`grid.circular: true`), never polygons. The chart silhouette must read as a circle regardless of how many axes the dataset has.",
+            "ring_count": "4 visible rings — set `ticks.count: 5` so rings render at 25%, 50%, 75%, and 100% of the scale (the 5th tick is the center point, not a visible ring). Always keep the outer boundary ring as the max-value reference.",
+            "spokes_and_rings_color": "1px hairlines in `--content-disabled` for both rings (`grid`) and radial spokes (`angleLines`) — same weight and color as bar/line chart grids.",
+            "tick_labels": "Hide radial tick labels by default (`ticks.display: false`); the rings communicate the scale.",
+            "scale": "Always start at 0 (`min: 0`) so radar shapes are comparable across charts. Use `suggestedMax` (commonly 100) to lock the outer ring meaning.",
+        },
     },
     "color_usage": {
         "principle": "Monochromatic by default. Use the primary brand color (#0021CC) as the base, then increase or decrease the Lightness (HSL) to produce additional shades for multi-series data.",

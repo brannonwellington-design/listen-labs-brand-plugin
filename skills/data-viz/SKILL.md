@@ -114,6 +114,13 @@ All other tokens are theme-stable. The skeleton ships these overrides inside the
 - **No fill** by default (`fill: false`). Only add area fill if the user specifically requests it, and use 10% opacity of the line color.
 - **Small, clean data points** — 3px radius circles, no special point styles.
 
+### Radar Charts
+- **Circular rings, never polygonal** (`grid.circular: true`). The chart silhouette must read as a circle regardless of how many axes the dataset has.
+- **4 visible rings.** Set `ticks.count: 5` (rings at 25%/50%/75%/100% + a center point). Always keep the outer boundary ring as the max-value reference.
+- **1px hairlines for both rings and spokes** in `--content-disabled` — same weight and color as bar/line chart grids (`grid` for rings, `angleLines` for radial spokes).
+- **Hide radial tick labels** (`ticks.display: false`) — the rings communicate the scale.
+- **Always start at 0** (`min: 0`) and lock the max with `suggestedMax` (commonly 100) so radar shapes are comparable across charts.
+
 ### Layout and Responsiveness
 - **All elements must flex horizontally** without distortion. Circles stay circular, squares stay square. Use `maintainAspectRatio: false` with a constrained container height.
 - **Chart container**: `width: 100%; max-width: 800px; margin: 0 auto;` with a fixed height (400px default, adjustable).
@@ -204,6 +211,7 @@ Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` 
 - [ ] Chart-specific font sizes (axis 10–12px, title 14–16px, annotations 10px)
 - [ ] All strokes are 1px
 - [ ] Bar corners are 2px radius
+- [ ] Radar charts use circular rings (`grid.circular: true`) with 4 visible rings (`ticks.count: 5`) and the outer boundary kept
 - [ ] Grid lines use `--content-disabled`
 - [ ] Chart flexes horizontally without distortion
 - [ ] Dark mode works via prefers-color-scheme

@@ -316,6 +316,7 @@ Acceptable values only: `{radius_str}` — no arbitrary values.
 ### Chart Types
 - **Preferred**: {", ".join(D["chart_types"]["preferred"])} — {D["chart_types"]["notes"]}
 - **Bar chart rules**: {D["chart_types"]["bar_chart_rules"]["corner_radius"]}. {D["chart_types"]["bar_chart_rules"]["inline_gap"]}.
+- **Radar chart rules**: {D["chart_types"]["radar_chart_rules"]["shape"]} {D["chart_types"]["radar_chart_rules"]["ring_count"]} {D["chart_types"]["radar_chart_rules"]["spokes_and_rings_color"]} {D["chart_types"]["radar_chart_rules"]["tick_labels"]} {D["chart_types"]["radar_chart_rules"]["scale"]}
 
 ### Color Usage
 - **{D["color_usage"]["principle"]}**
