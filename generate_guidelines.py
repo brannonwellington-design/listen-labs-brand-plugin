@@ -131,6 +131,8 @@ def generate(data):
     I = data.ICONS
     H = data.HEADER
     D = data.DATA_VISUALIZATION
+    DP = data.DATAVIZ_PALETTES
+    DR = data.DATAVIZ_RULES
     A = data.ART_DIRECTION
     V = data.CSS_VARIABLES
     THEMES = data.THEMES
@@ -318,6 +320,19 @@ Acceptable values only: `{radius_str}` — no arbitrary values.
 ### Color Usage
 - **{D["color_usage"]["principle"]}**
 - {D["color_usage"]["approach"]}
+
+### Palette Modes (data-viz only)
+
+Two interchangeable palettes share the same `--dataviz-*` token namespace. Token NAMES are identical across modes; only resolved values differ. Charts swap by setting `data-dataviz-palette="brand|global"` on any ancestor (typically `<main>`). Default is `brand` — charts that don't set the attribute behave exactly as they did before this addition.
+
+| Mode | Categorical | Sequential | Diverging | When to use |
+|---|---|---|---|---|
+| `brand` (default) | Monochromatic brand-blue (HSL 229° / 100%, vary L only) | Brand-blue ramp (light → dark) | Vermillion (`#D55E00`) ↔ brand-blue | Listen Labs branded outputs; ≤5 categorical series |
+| `global` | Okabe-Ito 8 (CVD-safe academic standard) | Viridis 7-stop (perceptually uniform) | ColorBrewer RdBu 7 (CVD-safe) | Brand-agnostic outputs; ≥6 categorical series; accessibility-first contexts |
+
+Token namespace (same in both modes): `--dataviz-categorical-{{1..8}}`, `--dataviz-sequential-{{100..700}}`, `--dataviz-diverging-{{neg-3, neg-2, neg-1, zero, pos-1, pos-2, pos-3}}`, `--dataviz-highlight-{{accent, neutral-1, neutral-2, neutral-3}}`, `--dataviz-semantic-{{positive, negative, neutral}}`. Emotion tokens (`--emotion-*`) remain reserved for the 6 Ekman emotions and are orthogonal to palette mode.
+
+Constraints: soft cap **{DR['category_caps']['soft_max']}** categorical series; hard cap **{DR['category_caps']['hard_max']}** (roll up to "Other" beyond). Brand mode practical cap is 5 — slots 6–8 fall back to neutral grays as a soft signal to switch to `global`. For 5+ series or any multi-line chart, encode redundantly (line-style + marker shape, not just color). Never red/green diverging — both shipped diverging palettes are CVD-safe.
 
 ### Stroke Weight
 - **{D["line_stroke_weight"]["default"]}**

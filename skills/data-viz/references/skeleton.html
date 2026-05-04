@@ -76,6 +76,79 @@
       --emotion-fear-secondary: rgba(149, 64, 191, 0.10);
     }
 
+    /*
+     * Data-viz palette tokens — brand mode (default) and global mode.
+     *
+     * Token NAMES are identical across modes; only resolved values differ.
+     * Charts swap modes by setting `data-dataviz-palette="brand"` or
+     * `data-dataviz-palette="global"` on any ancestor (typically <main>).
+     * Always populated from `get_dataviz_palettes(include_css=true)`.
+     */
+    :root,
+    [data-dataviz-palette="brand"] {
+      --dataviz-categorical-1: hsl(229, 100%, 40%);
+      --dataviz-categorical-2: hsl(229, 100%, 60%);
+      --dataviz-categorical-3: hsl(229, 100%, 25%);
+      --dataviz-categorical-4: hsl(229, 100%, 78%);
+      --dataviz-categorical-5: hsl(229, 100%, 50%);
+      --dataviz-categorical-6: #525252;
+      --dataviz-categorical-7: #8D8D8D;
+      --dataviz-categorical-8: #C6C6C6;
+      --dataviz-sequential-100: hsl(229, 100%, 92%);
+      --dataviz-sequential-200: hsl(229, 100%, 82%);
+      --dataviz-sequential-300: hsl(229, 100%, 70%);
+      --dataviz-sequential-400: hsl(229, 100%, 55%);
+      --dataviz-sequential-500: hsl(229, 100%, 40%);
+      --dataviz-sequential-600: hsl(229, 100%, 28%);
+      --dataviz-sequential-700: hsl(229, 100%, 18%);
+      --dataviz-diverging-neg-3: hsl(27, 100%, 42%);
+      --dataviz-diverging-neg-2: hsl(27, 100%, 62%);
+      --dataviz-diverging-neg-1: hsl(27, 75%, 86%);
+      --dataviz-diverging-zero: #F5F5F5;
+      --dataviz-diverging-pos-1: hsl(229, 75%, 86%);
+      --dataviz-diverging-pos-2: hsl(229, 100%, 62%);
+      --dataviz-diverging-pos-3: #0021CC;
+      --dataviz-highlight-accent: #0021CC;
+      --dataviz-highlight-neutral-1: #525252;
+      --dataviz-highlight-neutral-2: #8D8D8D;
+      --dataviz-highlight-neutral-3: #C6C6C6;
+      --dataviz-semantic-positive: #0F8A38;
+      --dataviz-semantic-negative: #B82214;
+      --dataviz-semantic-neutral: #8D8D8D;
+    }
+
+    [data-dataviz-palette="global"] {
+      --dataviz-categorical-1: #0072B2;
+      --dataviz-categorical-2: #E69F00;
+      --dataviz-categorical-3: #009E73;
+      --dataviz-categorical-4: #CC79A7;
+      --dataviz-categorical-5: #56B4E9;
+      --dataviz-categorical-6: #D55E00;
+      --dataviz-categorical-7: #F0E442;
+      --dataviz-categorical-8: #000000;
+      --dataviz-sequential-100: #440154;
+      --dataviz-sequential-200: #443A83;
+      --dataviz-sequential-300: #31688E;
+      --dataviz-sequential-400: #21908C;
+      --dataviz-sequential-500: #35B779;
+      --dataviz-sequential-600: #8FD744;
+      --dataviz-sequential-700: #FDE725;
+      --dataviz-diverging-neg-3: #B2182B;
+      --dataviz-diverging-neg-2: #EF8A62;
+      --dataviz-diverging-neg-1: #FDDBC7;
+      --dataviz-diverging-zero: #F7F7F7;
+      --dataviz-diverging-pos-1: #D1E5F0;
+      --dataviz-diverging-pos-2: #67A9CF;
+      --dataviz-diverging-pos-3: #2166AC;
+      --dataviz-highlight-accent: #0072B2;
+      --dataviz-highlight-neutral-1: #525252;
+      --dataviz-highlight-neutral-2: #8D8D8D;
+      --dataviz-highlight-neutral-3: #C6C6C6;
+      --dataviz-semantic-positive: #0F8A38;
+      --dataviz-semantic-negative: #B82214;
+      --dataviz-semantic-neutral: #8D8D8D;
+    }
+
     @media (prefers-color-scheme: dark) {
       :root {
         /* Paper - Dark (only tokens that differ from light) */
@@ -169,7 +242,13 @@
     <span class="ll-title"> Chart Title</span>
   </div>
 
-  <main>
+  <!--
+    Palette mode: change `data-dataviz-palette` to "global" to swap every
+    chart inside <main> from monochromatic brand-blue to the brand-agnostic
+    best-practices palette (Okabe-Ito categorical, Viridis sequential,
+    ColorBrewer RdBu diverging). Token names are identical across modes.
+  -->
+  <main data-dataviz-palette="brand">
     <figure>
       <canvas id="chart" role="img" aria-label="Description of the chart data"></canvas>
       <figcaption><!-- Optional caption --></figcaption>
@@ -195,7 +274,9 @@
     Chart.defaults.color = contentPrimary;
 
     // ── Monochromatic shade generator ──────────────────────
-    // Base: hsl(229, 100%, 40%) = #0021CC
+    // Legacy: kept for backward compatibility. New charts should use
+    // dataVizSeries() below — it reads --dataviz-* tokens and respects the
+    // active palette mode (brand vs. global).
     function brandShades(count) {
       var shades = [];
       var step = 50 / (count + 1);
@@ -204,6 +285,72 @@
         shades.push('hsl(229, 100%, ' + lightness + '%)');
       }
       return shades;
+    }
+
+    // ── Palette-mode-aware helpers ─────────────────────────
+    // All helpers resolve --dataviz-* tokens from the canvas's nearest
+    // ancestor with `data-dataviz-palette`, falling back to :root. Swapping
+    // the attribute on <main> flips every chart inside it between brand and
+    // global without touching this code.
+    function dataVizScope(el) {
+      return (el && el.closest && el.closest('[data-dataviz-palette]')) || document.documentElement;
+    }
+    function dataVizToken(scope, name) {
+      return getComputedStyle(scope).getPropertyValue(name).trim();
+    }
+    function dataVizSeries(count, el) {
+      // Categorical palette. Soft cap 7, hard cap 10. Slots wrap past 8.
+      var scope = dataVizScope(el);
+      if (count > 10) {
+        console.warn('dataVizSeries: ' + count + ' categories exceeds the hard cap (10). Roll up to "Other".');
+      } else if (count > 7) {
+        console.warn('dataVizSeries: ' + count + ' categories exceeds the soft cap (7). Add direct labels rather than relying on the legend.');
+      }
+      var out = [];
+      for (var i = 0; i < count; i++) {
+        var slot = (i % 8) + 1;
+        out.push(dataVizToken(scope, '--dataviz-categorical-' + slot));
+      }
+      return out;
+    }
+    function dataVizSequential(count, el) {
+      // Ordered/continuous data. Returns `count` evenly-spaced stops from
+      // the 7-stop palette (100=lightest → 700=darkest).
+      var scope = dataVizScope(el);
+      var stops = [100, 200, 300, 400, 500, 600, 700];
+      if (count >= 7) return stops.map(function(s){ return dataVizToken(scope, '--dataviz-sequential-' + s); });
+      var picked = [];
+      for (var i = 0; i < count; i++) {
+        var idx = Math.round(i * (stops.length - 1) / Math.max(1, count - 1));
+        picked.push(dataVizToken(scope, '--dataviz-sequential-' + stops[idx]));
+      }
+      return picked;
+    }
+    function dataVizDiverging(el) {
+      // Symmetric 7-stop palette for data with a meaningful midpoint.
+      var scope = dataVizScope(el);
+      var keys = ['neg-3', 'neg-2', 'neg-1', 'zero', 'pos-1', 'pos-2', 'pos-3'];
+      return keys.map(function(k){ return dataVizToken(scope, '--dataviz-diverging-' + k); });
+    }
+    function dataVizHighlight(el) {
+      // "Spotlight" pattern: one accent + 3 neutral grays for de-emphasis.
+      var scope = dataVizScope(el);
+      return {
+        accent:  dataVizToken(scope, '--dataviz-highlight-accent'),
+        neutral: [
+          dataVizToken(scope, '--dataviz-highlight-neutral-1'),
+          dataVizToken(scope, '--dataviz-highlight-neutral-2'),
+          dataVizToken(scope, '--dataviz-highlight-neutral-3'),
+        ],
+      };
+    }
+    function dataVizSemantic(el) {
+      var scope = dataVizScope(el);
+      return {
+        positive: dataVizToken(scope, '--dataviz-semantic-positive'),
+        negative: dataVizToken(scope, '--dataviz-semantic-negative'),
+        neutral:  dataVizToken(scope, '--dataviz-semantic-neutral'),
+      };
     }
 
     // ── Chart ──────────────────────────────────────────────

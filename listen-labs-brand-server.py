@@ -22,6 +22,9 @@ from brand_data import (
     COLORS,
     CSS_VARIABLES,
     DATA_VISUALIZATION,
+    DATAVIZ_CSS,
+    DATAVIZ_PALETTES,
+    DATAVIZ_RULES,
     DEFAULT_THEME,
     HEADER,
     ICONS,
@@ -29,6 +32,8 @@ from brand_data import (
     THEMES,
     TYPOGRAPHY,
 )
+
+DATAVIZ_MODES = list(DATAVIZ_PALETTES.keys())
 
 # ─── Tool Definitions ────────────────────────────────────────────────────────
 
@@ -103,8 +108,28 @@ TOOLS = [
     },
     {
         "name": "get_data_visualization",
-        "description": "Get Listen Labs data visualization rules: chart type preferences, color usage (monochromatic brand shades), stroke weights, emotion color restrictions, and responsive/flexing rules.",
+        "description": "Get Listen Labs data visualization rules: chart type preferences, color usage (monochromatic brand shades), stroke weights, emotion color restrictions, responsive/flexing rules, and a pointer to the brand/global palette modes (see get_dataviz_palettes for the full palette spec).",
         "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "get_dataviz_palettes",
+        "description": "Get the swappable data-viz palette specification. Returns two parallel palettes ('brand' = monochromatic brand-blue, default; 'global' = brand-agnostic best-practices: Okabe-Ito categorical, Viridis sequential, ColorBrewer RdBu diverging) sharing the same --dataviz-* token namespace. Also returns the cap/contrast/CVD rules and the ready-to-paste CSS block declaring tokens for both modes. Charts swap modes by setting data-dataviz-palette=\"brand|global\" on any ancestor.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": DATAVIZ_MODES + ["all"],
+                    "description": "Which palette to return. 'all' returns both.",
+                    "default": "all",
+                },
+                "include_css": {
+                    "type": "boolean",
+                    "description": "If true, include the ready-to-paste CSS variable declaration block for both modes.",
+                    "default": True,
+                },
+            },
+        },
     },
     {
         "name": "get_art_direction",
@@ -189,6 +214,24 @@ def handle_get_data_visualization(_args):
     return json.dumps(DATA_VISUALIZATION, indent=2)
 
 
+def handle_get_dataviz_palettes(args):
+    mode = args.get("mode", "all")
+    include_css = args.get("include_css", True)
+
+    if mode == "all":
+        palettes = DATAVIZ_PALETTES
+    else:
+        palettes = {mode: DATAVIZ_PALETTES[mode]}
+
+    out = {
+        "palettes": palettes,
+        "rules": DATAVIZ_RULES,
+    }
+    if include_css:
+        out["css"] = DATAVIZ_CSS
+    return json.dumps(out, indent=2)
+
+
 def handle_get_art_direction(_args):
     return json.dumps(ART_DIRECTION, indent=2)
 
@@ -201,6 +244,9 @@ def handle_get_full_guidelines(_args):
         "icons": ICONS,
         "header": HEADER,
         "data_visualization": DATA_VISUALIZATION,
+        "dataviz_palettes": DATAVIZ_PALETTES,
+        "dataviz_rules": DATAVIZ_RULES,
+        "dataviz_css": DATAVIZ_CSS,
         "art_direction": ART_DIRECTION,
         "css_variables": CSS_VARIABLES,
     }, indent=2)
@@ -214,6 +260,7 @@ HANDLERS = {
     "get_icon_guidelines": handle_get_icon_guidelines,
     "get_header_convention": handle_get_header_convention,
     "get_data_visualization": handle_get_data_visualization,
+    "get_dataviz_palettes": handle_get_dataviz_palettes,
     "get_art_direction": handle_get_art_direction,
     "get_full_guidelines": handle_get_full_guidelines,
 }

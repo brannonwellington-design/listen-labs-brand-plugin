@@ -1,7 +1,7 @@
 ---
 name: data-viz
 description: Generate professional, brand-compliant data visualizations as self-contained HTML files. Use when creating charts, dashboards, data presentations, or any visual data output. TRIGGER when user asks to chart, graph, plot, visualize, or dashboard any data. Always produces Listen Labs branded output using Chart.js.
-allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_typography
+allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_dataviz_palettes mcp__listen-labs-brand__get_typography
 ---
 
 # Listen Labs Data Visualization Skill
@@ -17,10 +17,10 @@ Generate self-contained, brand-compliant HTML files with Chart.js visualizations
 Every visualization follows this exact sequence:
 
 1. **Read brand-compliance** — read `skills/_shared/brand-compliance.md` for universal rules.
-2. **Load brand tokens** — call `get_css_variables` and `get_data_visualization` from the Listen Labs brand MCP for live token values. Never hardcode from memory.
+2. **Load brand tokens** — call `get_css_variables`, `get_data_visualization`, and `get_dataviz_palettes` from the Listen Labs brand MCP for live token values. Never hardcode from memory.
 3. **Copy the skeleton** — start from `skills/data-viz/references/skeleton.html`. Copy it completely, then modify. Never build from scratch.
 4. **Reference chart patterns** — check `skills/data-viz/references/chart-patterns.md` for the correct Chart.js configuration for your chart type.
-5. **Populate with data** — insert the user's data into the Chart.js config. Apply brand color rules.
+5. **Populate with data** — insert the user's data into the Chart.js config. Apply color rules via the `dataViz*` helpers (mode-aware) — never write raw hex.
 6. **Run self-audit** — check every item in the audit checklist below before delivering.
 7. **Write and open** — save as a single `.html` file and open in the browser.
 
@@ -31,9 +31,57 @@ Every visualization follows this exact sequence:
 These rules add to the universal brand compliance rules.
 
 ### Colors
-- **All colors via CSS custom properties.** Never write raw hex into chart config. Use a JavaScript helper that reads computed styles from the active CSS variables.
-- **Monochromatic data series.** Use `--surface-brand-primary` as the base (this token is theme-stable). Generate additional shades by adjusting HSL Lightness only — keep Hue and Saturation constant. Example stops for multi-series: 100%, 70%, 45%, 20% lightness.
-- **Emotion data only.** `--emotion-*` tokens are reserved for the six Ekman emotions. See `skills/report/references/emotion-callouts.md` for the canonical emotion rules.
+
+Colors come from the swappable **palette modes** below. Never write raw hex into chart config — always resolve through CSS variables via the `dataViz*` helpers.
+
+#### Palette modes (brand vs. global)
+
+Two parallel palettes share the same `--dataviz-*` token namespace. Token names are identical; only the resolved values differ. Charts swap palettes by changing one attribute on a wrapper element.
+
+| Mode | Default? | Categorical | Sequential | Diverging | When to use |
+|---|---|---|---|---|---|
+| `brand` | yes | Monochromatic brand-blue (HSL 229° / 100%, vary L only) | Brand-blue ramp | Vermillion ↔ brand-blue | Listen Labs branded outputs; ≤5 categories. |
+| `global` | no | Okabe-Ito 8 (CVD-safe) | Viridis 7-stop (perceptually uniform) | ColorBrewer RdBu 7 (CVD-safe) | Brand-agnostic outputs; ≥6 categories; accessibility-first contexts. |
+
+Set the active mode on `<main>` (or any ancestor of the chart):
+
+```html
+<main data-dataviz-palette="brand">  <!-- default; matches existing brand behavior -->
+<main data-dataviz-palette="global"> <!-- best-practices, brand-agnostic -->
+```
+
+Defaulting matters: charts with no `data-dataviz-palette` attribute resolve to brand mode and look the same as before this skill was extended.
+
+#### Token namespace (same in both modes)
+
+```
+--dataviz-categorical-1 … --dataviz-categorical-8
+--dataviz-sequential-100 … --dataviz-sequential-700   (100=lightest → 700=darkest)
+--dataviz-diverging-{neg-3, neg-2, neg-1, zero, pos-1, pos-2, pos-3}
+--dataviz-highlight-accent
+--dataviz-highlight-neutral-{1, 2, 3}
+--dataviz-semantic-{positive, negative, neutral}
+```
+
+Use the helpers in `skeleton.html` (`dataVizSeries(n)`, `dataVizSequential(n)`, `dataVizDiverging()`, `dataVizHighlight()`, `dataVizSemantic()`) — they read tokens from the chart's nearest palette scope, so the same chart code works in either mode.
+
+#### Choosing the right palette type
+
+- **Categorical** — distinct categories with no inherent order (bar/line series, pie slices). Use `dataVizSeries(n)`.
+- **Sequential** — ordered or continuous data (heatmaps, ramps, ordinal bins). Use `dataVizSequential(n)`.
+- **Diverging** — data with a meaningful midpoint (gain/loss, +/− deltas, sentiment). Use `dataVizDiverging()`.
+- **Highlight** — one focal series + de-emphasized rest ("this vs. the rest"). Use `dataVizHighlight()`.
+- **Semantic** — positive/negative/neutral status (KPI deltas, pass/fail). Use `dataVizSemantic()`.
+- **Emotion** — the 6 Ekman emotions only. Use `--emotion-*` tokens. Orthogonal to brand/global. See `skills/report/references/emotion-callouts.md`.
+
+#### Caps and accessibility rules (apply in both modes)
+
+- **Soft cap: 7 categories.** Beyond 7, add direct labels rather than relying on the legend.
+- **Hard cap: 10 categories.** Beyond 10, roll up to "Other".
+- **Brand mode practical cap: 5.** Past 5, slots 6–8 fall back to neutral grays as a soft signal — switch to `global` mode if you need more distinct categories.
+- **Redundant encoding for ≥5 series or any multi-line chart.** Pair color with line-style (solid/dashed/dotted) and marker shape. Never rely on color alone (WCAG 1.4.1).
+- **Contrast ≥3:1** for chart elements vs. background; **≥4.5:1** for data labels.
+- **Never red/green diverging** — both shipped diverging palettes (vermillion/blue, RdBu) are CVD-safe.
 
 ### Typography sizing (chart-specific)
 - Axis labels: 10px or 12px. Chart title: 14px or 16px. Annotations: 10px.
@@ -72,7 +120,7 @@ These rules add to the universal brand compliance rules.
 // Disable animations globally
 Chart.defaults.animation = false;
 
-// Get brand colors from CSS variables
+// Get brand tokens from CSS variables
 var style = getComputedStyle(document.documentElement);
 var brandBlue = style.getPropertyValue('--surface-brand-primary').trim();
 var contentPrimary = style.getPropertyValue('--content-primary').trim();
@@ -86,7 +134,23 @@ Chart.defaults.font.size = 12;
 Chart.defaults.color = contentPrimary;
 ```
 
-### Monochromatic Shade Generator
+### Palette helpers (mode-aware)
+
+The skeleton ships with helpers that resolve `--dataviz-*` tokens against the chart's nearest palette scope. They work identically in `brand` and `global` modes — flipping the wrapper attribute changes the resolved colors without any code change.
+
+```javascript
+var canvas = document.getElementById('chart');
+
+dataVizSeries(3, canvas);      // → 3 categorical colors from active mode
+dataVizSequential(5, canvas);  // → 5 evenly-spaced sequential stops
+dataVizDiverging(canvas);      // → 7 diverging stops (neg-3 → pos-3)
+dataVizHighlight(canvas);      // → { accent, neutral: [g1, g2, g3] }
+dataVizSemantic(canvas);       // → { positive, negative, neutral }
+```
+
+### Legacy: `brandShades()`
+
+Pre-existing helper. Kept for backward compatibility. Prefer `dataVizSeries()` for new charts — it respects the active palette mode.
 
 ```javascript
 function brandShades(count) {
@@ -119,7 +183,12 @@ Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` 
 
 - [ ] Skeleton was used as the starting point
 - [ ] All colors via CSS custom properties — no raw hex in JS/chart config
-- [ ] Data series use monochromatic brand-blue shades (unless emotion data)
+- [ ] Palette mode is set explicitly on `<main>` (`data-dataviz-palette="brand"` or `"global"`)
+- [ ] Data series use the right palette type (categorical/sequential/diverging/highlight/semantic) for the data shape
+- [ ] Categorical series count is within caps (≤5 brand, ≤7 global; ≤10 hard with "Other" rollup)
+- [ ] Multi-line / ≥5-series charts use redundant encoding (line-style + marker shape, not just color)
+- [ ] No raw `--surface-brand-primary` in chart config when a `--dataviz-*` token applies
+- [ ] Emotion charts still use `--emotion-*` tokens (orthogonal to brand/global)
 - [ ] Chart-specific font sizes (axis 10–12px, title 14–16px, annotations 10px)
 - [ ] All strokes are 1px
 - [ ] Bar corners are 2px radius

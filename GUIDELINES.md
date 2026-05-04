@@ -393,12 +393,25 @@ Button default: 8px. Concentric nesting: inner element radius < container radius
 - **Monochromatic by default. Use the primary brand color (#0021CC) as the base, then increase or decrease the Lightness (HSL) to produce additional shades for multi-series data.**
 - Adjust L value in HSL while keeping H and S constant for a cohesive, monochromatic palette. Prefer fewer distinct hues — lean on lightness variation before introducing new colors.
 
+### Palette Modes (data-viz only)
+
+Two interchangeable palettes share the same `--dataviz-*` token namespace. Token NAMES are identical across modes; only resolved values differ. Charts swap by setting `data-dataviz-palette="brand|global"` on any ancestor (typically `<main>`). Default is `brand` — charts that don't set the attribute behave exactly as they did before this addition.
+
+| Mode | Categorical | Sequential | Diverging | When to use |
+|---|---|---|---|---|
+| `brand` (default) | Monochromatic brand-blue (HSL 229° / 100%, vary L only) | Brand-blue ramp (light → dark) | Vermillion (`#D55E00`) ↔ brand-blue | Listen Labs branded outputs; ≤5 categorical series |
+| `global` | Okabe-Ito 8 (CVD-safe academic standard) | Viridis 7-stop (perceptually uniform) | ColorBrewer RdBu 7 (CVD-safe) | Brand-agnostic outputs; ≥6 categorical series; accessibility-first contexts |
+
+Token namespace (same in both modes): `--dataviz-categorical-{1..8}`, `--dataviz-sequential-{100..700}`, `--dataviz-diverging-{neg-3, neg-2, neg-1, zero, pos-1, pos-2, pos-3}`, `--dataviz-highlight-{accent, neutral-1, neutral-2, neutral-3}`, `--dataviz-semantic-{positive, negative, neutral}`. Emotion tokens (`--emotion-*`) remain reserved for the 6 Ekman emotions and are orthogonal to palette mode.
+
+Constraints: soft cap **7** categorical series; hard cap **10** (roll up to "Other" beyond). Brand mode practical cap is 5 — slots 6–8 fall back to neutral grays as a soft signal to switch to `global`. For 5+ series or any multi-line chart, encode redundantly (line-style + marker shape, not just color). Never red/green diverging — both shipped diverging palettes are CVD-safe.
+
 ### Stroke Weight
 - **1px consistent stroke on all chart elements — axes, grid lines, data lines, borders**
 - Opt for fewer lines rather than more. Minimalism without sacrificing function — remove any line that doesn't aid comprehension.
 
 ### Emotion Color Mapping
-Emotion color tokens are exclusively reserved for the 6 core Ekman emotions (anger, happiness, disgust, surprise, sadness, fear). Never use emotion tokens for general data series, categories, or any purpose outside of Listen Labs emotional intelligence features.
+Emotion color tokens are exclusively reserved for the 6 core Ekman emotions (anger, happiness, disgust, surprise, sadness, fear). Never use emotion tokens for general data series, categories, or any purpose outside of Listen Labs emotional intelligence features. Emotion tokens are orthogonal to the brand/global palette modes.
 
 Reserved tokens:
 - `emotion-anger-primary / secondary`

@@ -253,13 +253,14 @@ DATA_VISUALIZATION = {
     "color_usage": {
         "principle": "Monochromatic by default. Use the primary brand color (#0021CC) as the base, then increase or decrease the Lightness (HSL) to produce additional shades for multi-series data.",
         "approach": "Adjust L value in HSL while keeping H and S constant for a cohesive, monochromatic palette. Prefer fewer distinct hues — lean on lightness variation before introducing new colors.",
+        "palette_modes": "Two interchangeable palette modes are exposed via --dataviz-* tokens: 'brand' (default — monochromatic brand-blue) and 'global' (best-practices, brand-agnostic — Okabe-Ito categorical, Viridis sequential, ColorBrewer RdBu diverging). Swap by setting data-dataviz-palette=\"brand|global\" on any ancestor of the chart. Token names are identical across modes; only resolved values differ. See DATAVIZ_PALETTES for the full specification.",
     },
     "line_stroke_weight": {
         "default": "1px consistent stroke on all chart elements — axes, grid lines, data lines, borders",
         "principle": "Opt for fewer lines rather than more. Minimalism without sacrificing function — remove any line that doesn't aid comprehension.",
     },
     "emotion_color_mapping": {
-        "rule": "Emotion color tokens are exclusively reserved for the 6 core Ekman emotions (anger, happiness, disgust, surprise, sadness, fear). Never use emotion tokens for general data series, categories, or any purpose outside of Listen Labs emotional intelligence features.",
+        "rule": "Emotion color tokens are exclusively reserved for the 6 core Ekman emotions (anger, happiness, disgust, surprise, sadness, fear). Never use emotion tokens for general data series, categories, or any purpose outside of Listen Labs emotional intelligence features. Emotion tokens are orthogonal to the brand/global palette modes.",
         "tokens": [
             "emotion-anger-primary / secondary",
             "emotion-happiness-primary / secondary",
@@ -276,6 +277,160 @@ DATA_VISUALIZATION = {
         "One dominant data story per chart — avoid overloading a single visualization with competing narratives.",
     ],
 }
+
+# ─── Data-Viz Palettes (brand vs. global, swappable) ────────────────────────
+#
+# Two parallel palettes share the same --dataviz-* token namespace:
+#   - "brand"  → monochromatic brand-blue (default; matches existing behavior).
+#   - "global" → brand-agnostic, best-practices palette built from established
+#                research-grade sources (Okabe-Ito, Viridis, ColorBrewer RdBu).
+#
+# Charts read --dataviz-* tokens via getComputedStyle. The resolved value
+# depends on the nearest ancestor with `data-dataviz-palette=...`, so any
+# chart can flip palettes by changing one attribute on a wrapper element.
+#
+# Existing tokens (--surface-brand-*, --content-*, --emotion-*) and helpers
+# (brandShades) are unchanged. This block is purely additive.
+
+DATAVIZ_PALETTES = {
+    "brand": {
+        "description": "Monochromatic brand-blue. Default palette. Use when the chart is presented as Listen Labs branded content. Practical cap is 5 categorical series; past that, slots 6–8 fall back to neutral grays as a soft signal to switch to 'global' mode.",
+        "categorical": [
+            "hsl(229, 100%, 40%)",  # 1 — brand primary (#0021CC)
+            "hsl(229, 100%, 60%)",  # 2
+            "hsl(229, 100%, 25%)",  # 3
+            "hsl(229, 100%, 78%)",  # 4
+            "hsl(229, 100%, 50%)",  # 5
+            "#525252",              # 6 — neutral fallback
+            "#8D8D8D",              # 7
+            "#C6C6C6",              # 8
+        ],
+        "sequential": [
+            "hsl(229, 100%, 92%)",  # 100 — lightest
+            "hsl(229, 100%, 82%)",  # 200
+            "hsl(229, 100%, 70%)",  # 300
+            "hsl(229, 100%, 55%)",  # 400
+            "hsl(229, 100%, 40%)",  # 500 — brand mid
+            "hsl(229, 100%, 28%)",  # 600
+            "hsl(229, 100%, 18%)",  # 700 — darkest
+        ],
+        "diverging": {
+            "neg-3": "hsl(27, 100%, 42%)",   # vermillion (#D55E00) — same hex as global categorical-6
+            "neg-2": "hsl(27, 100%, 62%)",
+            "neg-1": "hsl(27, 75%, 86%)",
+            "zero":  "#F5F5F5",
+            "pos-1": "hsl(229, 75%, 86%)",
+            "pos-2": "hsl(229, 100%, 62%)",
+            "pos-3": "#0021CC",              # brand primary
+        },
+        "highlight": {
+            "accent":    "#0021CC",  # brand primary
+            "neutral-1": "#525252",
+            "neutral-2": "#8D8D8D",
+            "neutral-3": "#C6C6C6",
+        },
+        "semantic": {
+            "positive": "#0F8A38",
+            "negative": "#B82214",
+            "neutral":  "#8D8D8D",
+        },
+    },
+    "global": {
+        "description": "Brand-agnostic, best-practices palette. Categorical = Okabe-Ito 8 (academic CVD-safe standard). Sequential = Viridis 7-stop (perceptually uniform). Diverging = ColorBrewer RdBu 7 (CVD-safe). Use when the chart should follow data-viz best practices independent of brand identity.",
+        "categorical": [
+            "#0072B2",  # 1 — Blue (Okabe-Ito)
+            "#E69F00",  # 2 — Orange
+            "#009E73",  # 3 — Green
+            "#CC79A7",  # 4 — Reddish purple
+            "#56B4E9",  # 5 — Sky blue
+            "#D55E00",  # 6 — Vermillion (same hex as brand diverging neg-3)
+            "#F0E442",  # 7 — Yellow
+            "#000000",  # 8 — Black
+        ],
+        "sequential": [
+            "#440154",  # 100 — Viridis
+            "#443A83",  # 200
+            "#31688E",  # 300
+            "#21908C",  # 400
+            "#35B779",  # 500
+            "#8FD744",  # 600
+            "#FDE725",  # 700
+        ],
+        "diverging": {
+            "neg-3": "#B2182B",  # ColorBrewer RdBu
+            "neg-2": "#EF8A62",
+            "neg-1": "#FDDBC7",
+            "zero":  "#F7F7F7",
+            "pos-1": "#D1E5F0",
+            "pos-2": "#67A9CF",
+            "pos-3": "#2166AC",
+        },
+        "highlight": {
+            "accent":    "#0072B2",  # Okabe-Ito Blue
+            "neutral-1": "#525252",
+            "neutral-2": "#8D8D8D",
+            "neutral-3": "#C6C6C6",
+        },
+        "semantic": {
+            "positive": "#0F8A38",
+            "negative": "#B82214",
+            "neutral":  "#8D8D8D",
+        },
+    },
+}
+
+DATAVIZ_RULES = {
+    "default_mode": "brand",
+    "swap_mechanism": 'Set data-dataviz-palette="brand|global" on any ancestor of the chart (typically <main> or :root). All --dataviz-* tokens cascade and resolve to the active mode\'s values. Charts can omit the attribute entirely to inherit the brand default.',
+    "category_caps": {
+        "soft_max": 7,
+        "hard_max": 10,
+        "rule": "Beyond 7 categories, require direct data labels rather than legend lookup. Beyond 10, roll up to 'Other'. Brand mode practical cap is 5 (monochromatic limits); past that the palette degrades to neutral grays — switch to global mode if you need more distinct categories.",
+    },
+    "redundant_encoding": "For 5+ series or any line chart with multiple lines, encode redundantly: line-style (solid/dashed/dotted) + marker shape (circle/triangle/square) in addition to color. Never rely on color alone (WCAG 1.4.1).",
+    "contrast": {
+        "graphical_min_ratio": "3:1",
+        "text_min_ratio": "4.5:1",
+        "rule": "All categorical colors must hit ≥3:1 against the chart background; data labels must hit ≥4.5:1.",
+    },
+    "grayscale": "Adjacent palette stops must differ by ≥20% luminance when desaturated. Both shipped palettes pass; verify when extending.",
+    "diverging_cvd": "Never use red/green for diverging data. Default RdBu (global) and vermillion/blue (brand) are both CVD-safe.",
+    "emotion_orthogonality": "Emotion tokens (--emotion-*) remain reserved for the 6 Ekman emotions and are independent of the brand/global palette mode.",
+}
+
+
+def _dataviz_decls(mode):
+    """Generate CSS custom-property declarations for a palette mode."""
+    p = DATAVIZ_PALETTES[mode]
+    lines = []
+    for i, c in enumerate(p["categorical"], start=1):
+        lines.append(f"  --dataviz-categorical-{i}: {c};")
+    stops = [100, 200, 300, 400, 500, 600, 700]
+    for stop, c in zip(stops, p["sequential"]):
+        lines.append(f"  --dataviz-sequential-{stop}: {c};")
+    for key in ("neg-3", "neg-2", "neg-1", "zero", "pos-1", "pos-2", "pos-3"):
+        lines.append(f"  --dataviz-diverging-{key}: {p['diverging'][key]};")
+    lines.append(f"  --dataviz-highlight-accent: {p['highlight']['accent']};")
+    for n in (1, 2, 3):
+        lines.append(f"  --dataviz-highlight-neutral-{n}: {p['highlight'][f'neutral-{n}']};")
+    for key in ("positive", "negative", "neutral"):
+        lines.append(f"  --dataviz-semantic-{key}: {p['semantic'][key]};")
+    return "\n".join(lines)
+
+
+# Theme-orthogonal data-viz CSS. Brand mode is the default (applied at :root);
+# global mode overrides via the [data-dataviz-palette="global"] attribute
+# selector. Same selector pattern works for any ancestor — typically <main>.
+DATAVIZ_CSS = f"""/* Data-viz palette tokens — brand mode (default) */
+:root,
+[data-dataviz-palette="brand"] {{
+{_dataviz_decls("brand")}
+}}
+
+/* Data-viz palette tokens — global (best-practices) mode */
+[data-dataviz-palette="global"] {{
+{_dataviz_decls("global")}
+}}"""
 
 ART_DIRECTION = {
     "philosophy": "Dieter Rams — less, but better. Every element must earn its place.",
