@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listen Labs / Brand Guidelines — Paper · Grid Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+<style>
+  /* ── One source of truth: grid + Paper tokens ───────── */
+  :root {
+    --cols: 12;
+    --bl: 8px;            /* baseline unit */
+    --lh: 24px;           /* leading = 3 × baseline */
+    --gutter: 24px;       /* Listen Labs desktop website preset */
+    --margin: 24px;
+    --pad: 96px;          /* spread top/bottom pad = 12 × baseline */
+    --maxw: 1120px;
+
+    --content-primary: #120F08;
+    --content-secondary: #6B6861;
+    --content-inverse-primary: #F9F4EB;
+    --content-inverse-secondary: #9E9B94;
+    --content-disabled: #B6B4AF;
+    --content-inverse-disabled: #504E49;
+    --content-brand: #0021CC;
+    --content-brand-secondary: #7A85B8;
+    --content-brand-contrast: #F9F4EB;
+    --content-brand-contrast-secondary: #9CA3C9;
+    --content-complimentary: #B88114;
+    --content-warning: #B85814;
+    --content-negative: #B82214;
+    --content-positive: #0F8A38;
+    --surface-highlight: #FBF9F4;
+    --surface-primary: #F9F4EB;
+    --surface-secondary: #EEE8DD;
+    --surface-tertiary: #E2DCCF;
+    --surface-inverse-primary: #120F08;
+    --surface-inverse-secondary: #1F1B14;
+    --surface-brand-primary: #0021CC;
+    --surface-brand-secondary: #D9DDF2;
+    --surface-complimentary-primary: #E5A119;
+    --surface-complimentary-secondary: #F5EBD6;
+    --surface-warning-primary: #CF6317;
+    --surface-warning-secondary: #F5E3D6;
+    --surface-negative-primary: #CF2617;
+    --surface-negative-secondary: #F5D9D6;
+    --surface-positive-primary: #14B84B;
+    --surface-positive-secondary: #D6F5E0;
+
+    --hairline: var(--surface-tertiary);
+
+    /* overlay tints — brand blue columns, complimentary gold baselines */
+    --g-col: rgba(0, 33, 204, .05);
+    --g-edge: rgba(0, 33, 204, .32);
+    --g-base: rgba(184, 129, 20, .32);
+    --g-base-min: rgba(184, 129, 20, .10);
+  }
+  /* Dark mode is explicit — toggled via the button, never inherited from the OS.
+     --hairline resolves through surface-tertiary, so it flips automatically. */
+  :root[data-theme="dark"] {
+    --content-primary: #F9F4EB;
+    --content-secondary: #9E9B94;
+    --content-inverse-primary: #120F08;
+    --content-inverse-secondary: #6B6861;
+    --content-disabled: #504E49;
+    --content-inverse-disabled: #B6B4AF;
+    --content-brand: #3354FF;
+    --content-brand-secondary: #7A85B8;
+    --content-brand-contrast: #F9F4EB;
+    --content-brand-contrast-secondary: #9CA3C9;
+    --content-complimentary: #B88114;
+    --content-warning: #B85814;
+    --content-negative: #B82214;
+    --content-positive: #0F8A38;
+    --surface-highlight: #080603;
+    --surface-primary: #130F06;
+    --surface-secondary: #201C13;
+    --surface-tertiary: #30291D;
+    --surface-inverse-primary: #F9F4EB;
+    --surface-inverse-secondary: #F0E9DB;
+    --surface-brand-primary: #0021CC;
+    --surface-brand-secondary: #131939;
+    --surface-complimentary-primary: #E5A119;
+    --surface-complimentary-secondary: #F5EBD6;
+    --surface-warning-primary: #CF6317;
+    --surface-warning-secondary: #F5E3D6;
+    --surface-negative-primary: #CF2617;
+    --surface-negative-secondary: #F5D9D6;
+    --surface-positive-primary: #14B84B;
+    --surface-positive-secondary: #D6F5E0;
+    --g-col: rgba(51, 84, 255, .08);
+    --g-edge: rgba(51, 84, 255, .40);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Inter Regular 400 everywhere — nothing may render bold, light, or synthesized */
+  h1, h2, h3, h4, h5, h6, th, b, strong, button, em, i {
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  body {
+    background: var(--surface-primary);
+    color: var(--content-primary);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: var(--lh);          /* every text box on the 24px rhythm */
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Branded header (brand law, sits above the grid) ── */
+  .brand-header {
+    text-align: center;
+    padding-top: 24px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .brand-header .co { color: var(--content-secondary); }
+
+  /* ── Logo ────────────────────────────────────────────── */
+  .logo-stage {
+    height: 168px;                          /* 7 × leading */
+    background: var(--surface-highlight);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-stage svg { height: 48px; width: auto; }   /* 2 × leading */
+  .logo-stage svg path { fill: var(--content-primary); }
+  .btn-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn {
+    font-family: 'Inter', sans-serif; font-weight: 400;
+    font-size: 12px; line-height: 16px;
+    color: var(--content-primary);
+    background: var(--surface-highlight);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 8px 16px;                      /* 32px tall = XL component height */
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--surface-secondary); }
+
+  /* ── Typography waterfall ────────────────────────────── */
+  .band.wf {
+    align-items: baseline;
+    border-top: 1px solid var(--hairline);
+    padding-top: 8px;
+  }
+  .wf .spec-line {
+    white-space: nowrap;
+    overflow-x: clip;            /* y stays visible so descenders never clip */
+    text-overflow: ellipsis;
+  }
+
+  /* ── Section scaffold (existing) ─────────────────────── */
+  .spread { position: relative; width: 100%; }
+  .wrap {
+    position: relative;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 var(--margin);
+  }
+  .spread .wrap { padding-top: 40px; padding-bottom: 56px; }  /* ×8 */
+  .spread + .spread .wrap { border-top: 1px solid var(--hairline); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    column-gap: var(--gutter);
+    row-gap: var(--lh);
+  }
+  .band {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    column-gap: var(--gutter);
+    row-gap: var(--lh);
+    align-items: start;
+  }
+  @supports not (grid-template-columns: subgrid) {
+    .band { grid-template-columns: repeat(var(--cols), 1fr); }
+  }
+  .band.base { align-items: end; }
+
+  /* column-line placement classes (responsive-safe) */
+  .c1-3  { grid-column: 1 / 3; }
+  .c1-5  { grid-column: 1 / 5; }
+  .c1-7  { grid-column: 1 / 7; }
+  .c1-9  { grid-column: 1 / 9; }
+  .c1-13 { grid-column: 1 / 13; }
+  .c3-5  { grid-column: 3 / 5; }
+  .c3-7  { grid-column: 3 / 7; }
+  .c3-9  { grid-column: 3 / 9; }
+  .c3-13 { grid-column: 3 / 13; }
+  .c5-9  { grid-column: 5 / 9; }
+  .c5-13 { grid-column: 5 / 13; }
+  .c7-13 { grid-column: 7 / 13; }
+  .c9-13 { grid-column: 9 / 13; }
+  .c7-10 { grid-column: 7 / 10; }
+  .c10-13{ grid-column: 10 / 13; }
+
+  /* ── Grid overlay — same content box as the content ─── */
+  .guides {
+    position: absolute; inset: 0;
+    pointer-events: none; z-index: 60;
+    opacity: 0; transition: opacity .26s ease;
+  }
+  body.grid-on .guides { opacity: 1; }
+  .guides .cols {
+    position: absolute; top: 0; bottom: 0;
+    left: var(--margin); right: var(--margin);
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    column-gap: var(--gutter);
+  }
+  .guides .col {
+    background: var(--g-col);
+    box-shadow: inset 1px 0 0 var(--g-edge), inset -1px 0 0 var(--g-edge);
+    position: relative;
+  }
+  .guides .col span {
+    position: absolute; top: 8px; left: 0; right: 0;
+    text-align: center;
+    font-size: 10px; line-height: 16px;
+    color: var(--content-brand);
+  }
+  .guides .rows {
+    position: absolute;
+    left: var(--margin); right: var(--margin);
+    top: 40px; bottom: 0;
+    background-image:
+      repeating-linear-gradient(to bottom, var(--g-base) 0 1px, transparent 1px var(--lh)),
+      repeating-linear-gradient(to bottom, var(--g-base-min) 0 1px, transparent 1px var(--bl));
+  }
+  .guides .mline { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--g-edge); }
+  .guides .mline.l { left: var(--margin); }
+  .guides .mline.r { right: var(--margin); }
+
+  /* ── Install command box ─────────────────────────────── */
+  .cmd-box {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    background: var(--surface-secondary);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .cmd-text {
+    font-size: 12px; line-height: 16px;
+    overflow-wrap: anywhere;
+    flex: 1; min-width: 240px;
+  }
+  .quiet-link { color: var(--content-secondary); text-underline-offset: 2px; }
+  .quiet-link:hover { color: var(--content-primary); }
+
+  /* ── Grid toggle (brand-compliant: Inter 400, radius 8) ── */
+  .toggle-cluster {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    display: flex; gap: 8px;
+  }
+  .toggle {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface-inverse-primary);
+    color: var(--surface-primary);
+    border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-weight: 400;
+    font-size: 12px; line-height: 16px;
+    padding: 8px 16px; border-radius: 8px;
+  }
+  .toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--content-secondary); }
+  body.grid-on #gridToggle { background: var(--content-brand); color: #F9F4EB; }
+  body.grid-on #gridToggle .dot { background: #F9F4EB; }
+  :root[data-theme="dark"] #themeToggle .dot { background: #F9F4EB; }
+
+  /* ── Type roles — every line-height a ×8 px value ───── */
+  .masthead { font-size: 96px; line-height: 104px; text-wrap: balance; }
+  .big-num  { font-size: 80px; line-height: 80px; color: var(--content-disabled); }
+  .kicker   { font-size: 12px; line-height: 16px; color: var(--content-secondary); }
+  .h-sec    { font-size: 20px; line-height: 24px; }
+  .sub      { font-size: 14px; line-height: 24px; color: var(--content-secondary); text-wrap: pretty; }
+  .micro    { font-size: 10px; line-height: 16px; color: var(--content-secondary); }
+  .lede     { font-size: 18px; line-height: 24px; color: var(--content-secondary); text-wrap: pretty; }
+  .lede em  { font-style: normal; color: var(--content-primary); }
+
+  /* ── Section content components ─────────────────────── */
+  .principle .p-title { font-size: 14px; line-height: 24px; }
+  .principle .p-body  { font-size: 12px; line-height: 16px; color: var(--content-secondary); text-wrap: pretty; }
+
+  .chip { border-radius: 4px; border: 1px solid var(--hairline); }
+  .chip.h48  { height: 48px; }   /* 2 × leading */
+  .chip.h120 { height: 120px; border: none; }  /* 5 × leading */
+  .chip.h120 {
+    display: flex; align-items: flex-end;
+    padding: 12px; color: #F9F4EB;
+    font-size: 12px; line-height: 16px;
+  }
+  .tok  { font-size: 10px; line-height: 16px; margin-top: 8px; overflow-wrap: anywhere; }
+  .hex  { font-size: 10px; line-height: 16px; color: var(--content-secondary); }
+  .sw-grid {
+    display: grid;
+    grid-template-columns: subgrid;
+    column-gap: var(--gutter);
+    row-gap: var(--lh);
+  }
+
+  .spec { line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .px-tag { font-size: 10px; line-height: 16px; color: var(--content-secondary); }
+
+  .tier-2 { color: var(--content-secondary); }
+  .tier-3 { color: var(--content-disabled); }
+
+  .spec-table { width: 100%; border-collapse: collapse; font-size: 12px; line-height: 16px; }
+  .spec-table th {
+    font-weight: 400; text-align: left;
+    color: var(--content-secondary);
+    padding: 8px 16px 8px 0;              /* 16 + 8 + 8 = 32 = 4 × bl */
+    border-bottom: 1px solid var(--hairline);
+  }
+  .spec-table td {
+    padding: 8px 16px 8px 0;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: baseline;
+  }
+  .spec-table tr:last-child td { border-bottom: none; }
+
+  .radius-demo { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
+  .radius-demo .r {
+    width: 48px; height: 48px;            /* 2 × leading */
+    background: var(--surface-secondary);
+    border: 1px solid var(--hairline);
+    display: flex; align-items: flex-end; justify-content: center;
+    font-size: 10px; line-height: 16px; color: var(--content-secondary);
+    padding-bottom: 4px;
+  }
+
+  .palette-strip { display: flex; gap: 2px; margin-bottom: 8px; }
+  .palette-strip .stop { height: 24px; flex: 1; border-radius: 2px; }  /* 1 × leading */
+
+  .avoid-item {
+    font-size: 12px; line-height: 16px;
+    color: var(--content-secondary);
+    padding: 8px 0;                        /* 16 + 16 = 32 = 4 × bl */
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  footer .wrap {
+    border-top: 1px solid var(--hairline);
+    padding-top: 24px; padding-bottom: 48px;
+    display: flex; justify-content: space-between; gap: 24px;
+    font-size: 10px; line-height: 16px; color: var(--content-secondary);
+    flex-wrap: wrap;
+  }
+
+  /* ── Responsive: collapse bands below 720px ─────────── */
+  @media (max-width: 720px) {
+    .band > [class^="c"] { grid-column: 1 / -1; }
+    .masthead { font-size: 48px; line-height: 56px; }
+    .big-num  { font-size: 48px; line-height: 48px; }
+    .spread .wrap { padding-top: 24px; padding-bottom: 40px; }
+  }
+
+  @media print {
+    .toggle, .guides { display: none; }
+    body { font-size: 11px; }
+    .masthead { font-size: 56px; line-height: 56px; }
+    .spread { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toggle-cluster">
+  <button class="toggle" id="themeToggle" aria-pressed="false">
+    <span class="dot"></span><span class="lbl">Dark mode</span><span>D</span>
+  </button>
+  <button class="toggle" id="gridToggle" aria-pressed="false">
+    <span class="dot"></span><span class="lbl">Show grid</span><span>G</span>
+  </button>
+</div>
+
+<div class="brand-header">
+  <span class="co">Listen Labs /</span> Brand Guidelines
+</div>
+
+<!-- ── Title spread ──────────────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="kicker c1-9">Theme · Paper</div>
+        <div class="kicker c10-13">Grid Edition · July 2026</div>
+      </div>
+      <div class="band">
+        <h1 class="masthead c1-13">Brand guidelines, on the grid.</h1>
+      </div>
+      <div class="band">
+        <p class="lede c1-7"><em>Less, but better.</em> Every element must earn its place. Hierarchy comes from scale and tone — never from weight, color noise, or decoration.</p>
+        <p class="micro c10-13">This page is set on a 12-column modular grid with an 8px baseline and 24px leading. Press G to see it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 01 Logo ───────────────────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="big-num c1-3">01</div>
+        <div class="c3-5">
+          <h2 class="h-sec">Logo</h2>
+          <p class="micro">One locked SVG — mark plus wordmark, 105×23 viewBox. Never redrawn. Renders in content-primary on any brand surface.</p>
+        </div>
+        <div class="c5-13">
+          <div class="logo-stage">
+            <svg id="logoDisplay" width="105" height="23" viewBox="0 0 105 23" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Listen Labs logo">
+              <path d="M15.3743 0.408977H8.45517C7.9619 0.408977 7.56238 0.808502 7.56238 1.30177V8.22092C7.56238 8.71419 7.9619 9.11371 8.45517 9.11371H15.3743C15.8676 9.11371 16.2671 8.71419 16.2671 8.22092V1.30177C16.2671 0.808502 15.8676 0.408977 15.3743 0.408977Z"/>
+              <path d="M6.71435 9.11354H0.893341C0.383333 9.11354 -0.0284702 9.54096 0.00166153 10.051C0.308559 15.266 3.15769 19.8081 7.3248 22.453C7.75 22.7231 8.31468 22.5847 8.57025 22.1506L11.5232 17.1498C11.7642 16.7413 11.6437 16.2157 11.2486 15.9534C9.23873 14.6221 7.84597 12.4314 7.60268 9.90812C7.55916 9.45503 7.17079 9.11354 6.71547 9.11354H6.71435Z"/>
+              <path d="M35.2818 20.7496V0.408936H38.2973V18.1608H48.3076V20.7496H35.2818Z"/>
+              <path d="M50.0196 5.81416H52.8929V20.7496H50.0196V5.81416ZM49.9627 3.65207V0.408936H52.9498V3.65207H49.9627Z"/>
+              <path d="M54.5939 16.1979H57.4388C57.9224 17.791 58.975 18.7582 61.0517 18.7582C62.7587 18.7582 63.9819 17.9901 63.9819 16.653C63.9819 15.2591 62.5595 14.8892 60.4543 14.3772L59.4017 14.0927C56.9267 13.4953 55.0776 12.3858 55.0776 9.79695C55.0776 7.15124 57.4672 5.41588 60.7957 5.41588C64.0957 5.41588 66.2578 6.8383 66.5992 9.7685H63.8682C63.4414 8.43142 62.4457 7.69176 60.7104 7.69176C58.8897 7.69176 58.0078 8.43142 58.0078 9.54092C58.0078 10.7642 58.8897 11.1056 60.7104 11.6461L62.3035 12.1013C65.2906 12.9547 66.8553 13.8651 66.8553 16.3686C66.8553 19.2419 64.3802 21.091 60.9664 21.091C57.325 21.091 55.1913 19.5264 54.5939 16.1979Z"/>
+              <path d="M72.4861 1.77446V5.81416H75.274V8.03314H72.4861V16.9944C72.4861 18.4453 73.1973 18.8436 74.3068 18.8436C74.5059 18.8436 74.8188 18.8151 75.018 18.7867V20.9203C74.5913 21.0057 74.2783 21.0341 73.9085 21.0341C71.2628 21.0341 69.5843 20.1522 69.5843 17.1651V8.03314H67.3369V5.81416H69.5843V1.77446H72.4861Z"/>
+              <path d="M90.448 14.0358H78.7556C78.841 16.653 80.6048 18.7298 83.4496 18.7298C85.4979 18.7298 86.4936 17.7625 87.2617 16.4824H90.135C89.31 19.185 86.8919 21.1195 83.3358 21.1195C78.7272 21.1195 75.8539 18.0186 75.8539 13.353C75.8539 8.68746 78.8694 5.38743 83.3358 5.38743C88.2005 5.38743 90.448 9.08574 90.448 13.097V14.0358ZM78.8694 11.7599H87.4609C87.2048 9.37022 85.754 7.72021 83.279 7.72021C80.9177 7.72021 79.1824 9.25643 78.8694 11.7599Z"/>
+              <path d="M95.0172 5.81416V7.834C95.7853 6.55382 97.2646 5.38743 99.7681 5.38743C103.21 5.38743 105.003 7.69176 105.003 11.5608V20.7496H102.101V12.6418C102.101 9.68316 101.134 7.834 98.7724 7.834C96.3827 7.834 95.0741 9.7685 95.0741 12.1297V20.7496H92.2008V6.9521C92.2008 6.58227 92.2008 6.18399 92.1723 5.81416H95.0172Z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="band">
+        <div class="c5-9">
+          <div class="btn-row">
+            <button class="btn" id="copySvg" type="button">Copy SVG</button>
+            <button class="btn" id="downloadSvg" type="button">Download .svg</button>
+          </div>
+        </div>
+        <p class="micro c9-13">listen-labs-logo.svg · exports at original fidelity with black fills · scales to any size without loss</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 02 Foundation ─────────────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="big-num c1-3">02</div>
+        <div class="c3-5">
+          <h2 class="h-sec">Foundation</h2>
+          <p class="micro">Dieter Rams as north star. Scale contrast is the primary compositional tool.</p>
+        </div>
+        <div class="c5-13">
+          <div class="band" style="grid-column:1/-1; grid-template-columns:repeat(2,1fr); column-gap:24px;">
+            <div class="principle"><div class="p-title">Radical reduction</div><div class="p-body">Strip down until removing one more thing would break comprehension.</div></div>
+            <div class="principle"><div class="p-title">Stillness</div><div class="p-body">White space is load-bearing, not leftover.</div></div>
+            <div class="principle"><div class="p-title">Neutral confidence</div><div class="p-body">The design doesn't try to impress, it simply works.</div></div>
+            <div class="principle"><div class="p-title">Scale contrast is the primary compositional tool</div><div class="p-body">Not color, not decoration.</div></div>
+            <div class="principle"><div class="p-title">One dominant element per composition</div><div class="p-body">Everything else is subordinate.</div></div>
+            <div class="principle"><div class="p-title">Grid discipline</div><div class="p-body">Nothing floats arbitrarily.</div></div>
+            <div class="principle"><div class="p-title">Functional hierarchy</div><div class="p-body">Most important = most visually dominant.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 03 Color ──────────────────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="big-num c1-3">03</div>
+        <div class="c3-5">
+          <h2 class="h-sec">Color · Paper</h2>
+          <p class="micro">Warm off-white canvas, near-black content. Brand blue is spent sparingly — one accent element per composition.</p>
+        </div>
+        <div class="c5-13">
+          <p class="kicker">Brand</p>
+        </div>
+      </div>
+      <div class="band">
+        <div class="c5-9">
+          <div class="chip h120" style="background:#0021CC">The one accent</div>
+          <div class="tok">surface-brand-primary / content-brand</div>
+          <div class="hex">#0021CC · dark mode content: #3354FF</div>
+        </div>
+        <div class="c9-13">
+          <div class="chip h48" style="background:#D9DDF2"></div>
+          <div class="tok">surface-brand-secondary</div>
+          <div class="hex">#D9DDF2</div>
+          <div class="chip h48" style="background:#7A85B8; margin-top:16px"></div>
+          <div class="tok">content-brand-secondary</div>
+          <div class="hex">#7A85B8</div>
+        </div>
+      </div>
+      <div class="band">
+        <p class="kicker c5-13">Content</p>
+      </div>
+      <div class="band">
+        <div class="c5-13">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:24px;">
+            <div><div class="chip h48" style="background:#120F08"></div><div class="tok">content-primary</div><div class="hex">#120F08</div></div>
+            <div><div class="chip h48" style="background:#6B6861"></div><div class="tok">content-secondary</div><div class="hex">#6B6861</div></div>
+            <div><div class="chip h48" style="background:#B6B4AF"></div><div class="tok">content-disabled</div><div class="hex">#B6B4AF</div></div>
+            <div><div class="chip h48" style="background:#B88114"></div><div class="tok">content-complimentary</div><div class="hex">#B88114</div></div>
+            <div><div class="chip h48" style="background:#B85814"></div><div class="tok">content-warning</div><div class="hex">#B85814</div></div>
+            <div><div class="chip h48" style="background:#B82214"></div><div class="tok">content-negative</div><div class="hex">#B82214</div></div>
+            <div><div class="chip h48" style="background:#0F8A38"></div><div class="tok">content-positive</div><div class="hex">#0F8A38</div></div>
+                    </div>
+        </div>
+      </div>
+      <div class="band">
+        <p class="kicker c5-13">Surface</p>
+      </div>
+      <div class="band">
+        <div class="c5-13">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:24px;">
+            <div><div class="chip h48" style="background:#FBF9F4"></div><div class="tok">surface-highlight</div><div class="hex">#FBF9F4</div></div>
+            <div><div class="chip h48" style="background:#F9F4EB"></div><div class="tok">surface-primary</div><div class="hex">#F9F4EB</div></div>
+            <div><div class="chip h48" style="background:#EEE8DD"></div><div class="tok">surface-secondary</div><div class="hex">#EEE8DD</div></div>
+            <div><div class="chip h48" style="background:#E2DCCF"></div><div class="tok">surface-tertiary</div><div class="hex">#E2DCCF</div></div>
+            <div><div class="chip h48" style="background:#120F08"></div><div class="tok">surface-inverse-primary</div><div class="hex">#120F08</div></div>
+            <div><div class="chip h48" style="background:#1F1B14"></div><div class="tok">surface-inverse-secondary</div><div class="hex">#1F1B14</div></div>
+                    </div>
+        </div>
+      </div>
+      <div class="band">
+        <p class="kicker c5-13">Surface · semantic — primary for the state, secondary for its tinted field</p>
+      </div>
+      <div class="band">
+        <div class="c5-13">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:24px;">
+            <div><div class="chip h48" style="background:#E5A119"></div><div class="tok">surface-complimentary-primary</div><div class="hex">#E5A119</div></div>
+            <div><div class="chip h48" style="background:#F5EBD6"></div><div class="tok">surface-complimentary-secondary</div><div class="hex">#F5EBD6</div></div>
+            <div><div class="chip h48" style="background:#CF6317"></div><div class="tok">surface-warning-primary</div><div class="hex">#CF6317</div></div>
+            <div><div class="chip h48" style="background:#F5E3D6"></div><div class="tok">surface-warning-secondary</div><div class="hex">#F5E3D6</div></div>
+            <div><div class="chip h48" style="background:#CF2617"></div><div class="tok">surface-negative-primary</div><div class="hex">#CF2617</div></div>
+            <div><div class="chip h48" style="background:#F5D9D6"></div><div class="tok">surface-negative-secondary</div><div class="hex">#F5D9D6</div></div>
+            <div><div class="chip h48" style="background:#14B84B"></div><div class="tok">surface-positive-primary</div><div class="hex">#14B84B</div></div>
+            <div><div class="chip h48" style="background:#D6F5E0"></div><div class="tok">surface-positive-secondary</div><div class="hex">#D6F5E0</div></div>
+                    </div>
+        </div>
+      </div>
+      <div class="band">
+        <p class="kicker c5-13">Emotion — reserved exclusively for the 6 Ekman emotions, never for general data</p>
+      </div>
+      <div class="band">
+        <div class="c5-13">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:24px;">
+            <div><div class="chip h48" style="background:#BF4040"></div><div class="tok">anger</div><div class="hex">#BF4040</div></div>
+            <div><div class="chip h48" style="background:#D99E26"></div><div class="tok">happiness</div><div class="hex">#D99E26</div></div>
+            <div><div class="chip h48" style="background:#80BF40"></div><div class="tok">disgust</div><div class="hex">#80BF40</div></div>
+            <div><div class="chip h48" style="background:#40BFAA"></div><div class="tok">surprise</div><div class="hex">#40BFAA</div></div>
+            <div><div class="chip h48" style="background:#406ABF"></div><div class="tok">sadness</div><div class="hex">#406ABF</div></div>
+            <div><div class="chip h48" style="background:#9540BF"></div><div class="tok">fear</div><div class="hex">#9540BF</div></div>
+                    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 04 Typography ─────────────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="big-num c1-3">04</div>
+        <div class="c3-5">
+          <h2 class="h-sec">Typography</h2>
+          <p class="micro">One family, one weight. Hierarchy is built from size and the three-tier tone system — never bold.</p>
+        </div>
+        <div class="c5-9">
+          <table class="spec-table">
+            <tr><th>Rule</th><th>Value</th></tr>
+            <tr><td>Family</td><td>Inter</td></tr>
+            <tr><td>Weight</td><td>400 Regular only</td></tr>
+            <tr><td>Letter-spacing</td><td>Default — never overridden</td></tr>
+            <tr><td>Case</td><td>Sentence case; Title Case for headers and metadata</td></tr>
+            <tr><td>Scale</td><td>6–128px in even steps</td></tr>
+          </table>
+        </div>
+        <div class="c9-13">
+          <table class="spec-table">
+            <tr><th>Tone tier</th><th>Replaces</th></tr>
+            <tr><td>Primary tier</td><td>Bold — for emphasis</td></tr>
+            <tr><td class="tier-2">Secondary tier</td><td>Regular — supporting text</td></tr>
+            <tr><td class="tier-3">Disabled tier</td><td>Light — quietest voice</td></tr>
+          </table>
+          <p class="micro" style="margin-top:8px">Emphasis is a change of color, never of weight. All three tiers below are the same Inter 400.</p>
+        </div>
+      </div>
+
+      <div class="band wf">
+        <div class="px-tag c3-5">104px · display</div>
+        <div class="spec-line c5-13" style="font-size:104px; line-height:112px;">Don't guess.</div>
+      </div>
+      <div class="band wf">
+        <div class="px-tag c3-5">64px · headline</div>
+        <div class="spec-line c5-13" style="font-size:64px; line-height:72px;">Don't guess, just listen.</div>
+      </div>
+      <div class="band wf">
+        <div class="px-tag c3-5">40px · title</div>
+        <div class="spec-line c5-13" style="font-size:40px; line-height:48px;">Don't guess, just listen.</div>
+      </div>
+      <div class="band wf">
+        <div class="px-tag c3-5">28px · subtitle</div>
+        <div class="spec-line c5-13" style="font-size:28px; line-height:32px;">Don't guess, just listen.</div>
+      </div>
+      <div class="band wf">
+        <div class="px-tag c3-5">20px · lede</div>
+        <div class="spec-line c5-13" style="font-size:20px; line-height:24px;">Don't guess, just listen.</div>
+      </div>
+      <div class="band wf">
+        <div class="px-tag c3-5">14px · body</div>
+        <div class="spec-line c5-13" style="font-size:14px; line-height:24px;">Don't guess, just listen. Understand what people want, and why.</div>
+      </div>
+      <div class="band wf">
+        <div class="px-tag c3-5">10px · caption</div>
+        <div class="spec-line tier-2 c5-13" style="font-size:10px; line-height:16px;">Don't guess, just listen. Understand what people want, and why. Fast.</div>
+      </div>
+
+      <div class="band">
+        <p class="micro c5-13">Full scale: 6 · 8 · 10 · 12 · 14 · 16 · 18 · 20 · 24 · 28 · 32 · 40 · 48 · 56 · 64 · 72 · 80 · 88 · 96 · 104 · 112 · 120 · 128</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 05 Spacing & radius ───────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="big-num c1-3">05</div>
+        <div class="c3-5">
+          <h2 class="h-sec">Spacing &amp; Radius</h2>
+          <p class="micro">4px base unit. Even numbers only. Aspect-locked shapes never distort at any width.</p>
+        </div>
+        <div class="c5-9">
+          <table class="spec-table">
+            <tr><th>Component height</th><th>Value</th></tr>
+            <tr><td>XL</td><td>32px</td></tr>
+            <tr><td>L</td><td>24px</td></tr>
+            <tr><td>M</td><td>20px</td></tr>
+            <tr><td>S</td><td>16px</td></tr>
+            <tr><td>XS</td><td>12px</td></tr>
+          </table>
+        </div>
+        <div class="c9-13">
+          <table class="spec-table">
+            <tr><th>Grid preset</th><th>Cols</th><th>M / G</th></tr>
+            <tr><td>Presentation 1920×1080</td><td>12</td><td>40 / 40px</td></tr>
+            <tr><td>Desktop website</td><td>12</td><td>24 / 24px</td></tr>
+            <tr><td>Mobile website</td><td>4</td><td>16 / 16px</td></tr>
+            <tr><td>Desktop product</td><td>12</td><td>16 / 16px</td></tr>
+            <tr><td>Mobile product</td><td>4</td><td>16 / 16px</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="band">
+        <div class="c5-13">
+          <div class="radius-demo">
+            <div class="r" style="border-radius:0">0</div>
+            <div class="r" style="border-radius:2px">2</div>
+            <div class="r" style="border-radius:4px">4</div>
+            <div class="r" style="border-radius:8px">8</div>
+            <div class="r" style="border-radius:12px">12</div>
+            <div class="r" style="border-radius:16px">16</div>
+          </div>
+          <p class="micro" style="margin-top:8px">Button default 8px. Concentric nesting: inner radius &lt; container radius. This page's grid uses the desktop website preset — 12 columns, 24px margins, 24px gutters.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 06 Icons & header ─────────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="big-num c1-3">06</div>
+        <div class="c3-5">
+          <h2 class="h-sec">Icons &amp; Header</h2>
+          <p class="micro">Lucide only. Icon line weight visually matches nearby Inter Regular.</p>
+        </div>
+        <div class="c5-9">
+          <table class="spec-table">
+            <tr><th>Text</th><th>Icon</th><th>Stroke</th></tr>
+            <tr><td>8px</td><td>10×10</td><td>0.75px</td></tr>
+            <tr><td>10px</td><td>12×12</td><td>1px</td></tr>
+            <tr><td>12px</td><td>14×14</td><td>1px</td></tr>
+            <tr><td>14px</td><td>16×16</td><td>1.25px</td></tr>
+            <tr><td>16px</td><td>18×18</td><td>1.25px</td></tr>
+            <tr><td>18px</td><td>20×20</td><td>1.5px</td></tr>
+            <tr><td>20px</td><td>22×22</td><td>1.75px</td></tr>
+            <tr><td>24px+</td><td>24×24</td><td>2px</td></tr>
+          </table>
+          <p class="micro" style="margin-top:8px">Rule of thumb: icon ≈ text + 2px. Icons take the color of their text.</p>
+        </div>
+        <div class="c9-13">
+          <table class="spec-table">
+            <tr><th>Header convention</th><th></th></tr>
+            <tr><td>Format</td><td><span class="tier-2">Listen Labs /</span> Project Title</td></tr>
+            <tr><td>Position</td><td>Top center, 24px from top</td></tr>
+            <tr><td>Size</td><td>12px, both parts equal</td></tr>
+            <tr><td>Case</td><td>Title Case always</td></tr>
+            <tr><td>Colors</td><td>secondary / primary</td></tr>
+          </table>
+          <p class="micro" style="margin-top:8px">Single line, / divider. Present on every branded output — including this page.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 07 Data visualization ─────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="big-num c1-3">07</div>
+        <div class="c3-5">
+          <h2 class="h-sec">Data Visualization</h2>
+          <p class="micro">Monochromatic by default. Two swappable palette modes share one token namespace.</p>
+        </div>
+        <div class="c5-13">
+          <p class="kicker">Brand mode — default · categorical (practical cap 5, then neutral fallback)</p>
+          <div class="palette-strip">
+            <div class="stop" style="background:hsl(229, 100%, 40%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 60%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 25%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 78%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 50%)"></div>
+            <div class="stop" style="background:#525252"></div>
+            <div class="stop" style="background:#8D8D8D"></div>
+            <div class="stop" style="background:#C6C6C6"></div>
+          </div>
+          <p class="micro">Hue 229 held constant — only lightness varies</p>
+        </div>
+      </div>
+      <div class="band">
+        <div class="c5-9">
+          <p class="kicker">Brand sequential · 7 stops · 100 → 700</p>
+          <div class="palette-strip">
+            <div class="stop" style="background:hsl(229, 100%, 92%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 82%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 70%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 55%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 40%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 28%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 18%)"></div>
+          </div>
+        </div>
+        <div class="c9-13">
+          <p class="kicker">Brand diverging · vermillion ↔ blue · CVD-safe</p>
+          <div class="palette-strip">
+            <div class="stop" style="background:hsl(27, 100%, 42%)"></div>
+            <div class="stop" style="background:hsl(27, 100%, 62%)"></div>
+            <div class="stop" style="background:hsl(27, 75%, 86%)"></div>
+            <div class="stop" style="background:#F5F5F5; border:1px solid var(--hairline)"></div>
+            <div class="stop" style="background:hsl(229, 75%, 86%)"></div>
+            <div class="stop" style="background:hsl(229, 100%, 62%)"></div>
+            <div class="stop" style="background:#0021CC"></div>
+          </div>
+        </div>
+      </div>
+      <div class="band">
+        <p class="sub c5-13" style="font-size:12px; line-height:16px;"><span style="color:var(--content-primary)">Default to bar and line charts.</span> 1px strokes on every element — axes, grids, lines, borders. Bars: 2px corner radius, 1px inline gap. Grid lines use content-disabled. <span style="color:var(--content-primary)">Caps:</span> 7 series soft, 10 hard, then roll up to Other. 5+ series require redundant encoding — line style plus marker shape, never color alone. <span style="color:var(--content-primary)">Contrast:</span> 3:1 minimum for graphics, 4.5:1 for labels. Never red/green for diverging data. Global mode swaps to Okabe-Ito / Viridis / RdBu via data-dataviz-palette="global". One dominant data story per chart.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 08 Never ──────────────────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="big-num c1-3">08</div>
+        <div class="c3-5">
+          <h2 class="h-sec">Never</h2>
+          <p class="micro">If it's on this list, it doesn't ship.</p>
+        </div>
+        <div class="c5-9">
+          <div class="avoid-item">Drop shadows or heavy depth effects</div>
+          <div class="avoid-item">Rounded, bubbly UI</div>
+          <div class="avoid-item">Bright/saturated accent colors beyond #0021CC</div>
+          <div class="avoid-item">Bold or light font weights</div>
+          <div class="avoid-item">Letter-spacing overrides</div>
+          <div class="avoid-item">Cluttered layouts</div>
+        </div>
+        <div class="c9-13">
+          <div class="avoid-item">Generic or decorative imagery</div>
+          <div class="avoid-item">Odd numbers for spacing or sizing</div>
+          <div class="avoid-item">Arbitrary border radius values outside the scale</div>
+          <div class="avoid-item">Multiple competing focal points</div>
+          <div class="avoid-item">Decorative elements that don't carry meaning</div>
+          <div class="avoid-item">Emotion tokens on non-emotion data</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── For Claude users ──────────────────────────────── -->
+<section class="spread">
+  <div class="wrap">
+    <div class="guides" aria-hidden="true">
+      <div class="cols"></div><div class="rows"></div>
+      <i class="mline l"></i><i class="mline r"></i>
+    </div>
+    <div class="grid">
+      <div class="band">
+        <div class="c1-5">
+          <h2 class="h-sec">Using Claude?</h2>
+          <p class="micro">Install these guidelines as a plugin and Claude applies every rule on this page automatically — colors, type, spacing, charts, decks, and reports.</p>
+        </div>
+        <div class="c5-13">
+          <div class="cmd-box">
+            <span class="cmd-text" id="installCmd">curl -sL https://raw.githubusercontent.com/brannonwellington-design/listen-labs-brand-plugin/main/install.sh | bash</span>
+            <button class="btn" id="copyCmd" type="button">Copy command</button>
+          </div>
+          <p class="micro" style="margin-top:8px">Run in Terminal, then fully quit and reopen your Claude app. Works with Claude Code and Claude Desktop. Developers can also grab <a class="quiet-link" href="tokens.css">tokens.css</a> or <a class="quiet-link" href="tokens.json">tokens.json</a> directly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Listen Labs / Brand Guidelines · Paper theme · Grid Edition</span>
+    <span>12-column modular grid · 8px baseline · press G to toggle</span>
+    <span>2026-07-14 · 2b8b802 · generated from brand_data.py · <a class="quiet-link" href="https://github.com/brannonwellington-design/listen-labs-brand-plugin">source</a></span>
+  </div>
+</footer>
+
+<script>
+/* theme: button + 'D' key — defaults to light, never reads the OS setting */
+var themeBtn = document.getElementById('themeToggle');
+function setTheme(dark) {
+  if (dark) { document.documentElement.setAttribute('data-theme', 'dark'); }
+  else { document.documentElement.removeAttribute('data-theme'); }
+  if (themeBtn) {
+    themeBtn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    var l = themeBtn.querySelector('.lbl');
+    if (l) l.textContent = dark ? 'Light mode' : 'Dark mode';
+  }
+  try { localStorage.setItem('ll-theme', dark ? 'dark' : 'light'); } catch (e) {}
+}
+function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
+if (themeBtn) themeBtn.addEventListener('click', function () { setTheme(!isDark()); });
+document.addEventListener('keydown', function (e) {
+  if ((e.key === 'd' || e.key === 'D') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    setTheme(!isDark());
+  }
+});
+try { if (localStorage.getItem('ll-theme') === 'dark') setTheme(true); } catch (e) {}
+
+/* toggle: button + 'G' key */
+var btn = document.getElementById('gridToggle');
+function setGrid(on) {
+  document.body.classList.toggle('grid-on', on);
+  if (btn) {
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    var l = btn.querySelector('.lbl');
+    if (l) l.textContent = on ? 'Hide grid' : 'Show grid';
+  }
+}
+if (btn) btn.addEventListener('click', function () {
+  setGrid(!document.body.classList.contains('grid-on'));
+});
+document.addEventListener('keydown', function (e) {
+  if ((e.key === 'g' || e.key === 'G') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    setGrid(!document.body.classList.contains('grid-on'));
+  }
+});
+
+/* populate every overlay's numbered column guides */
+document.querySelectorAll('.guides .cols').forEach(function (h) {
+  var n = getComputedStyle(document.documentElement).getPropertyValue('--cols').trim() || '12';
+  for (var i = 1; i <= parseInt(n, 10); i++) {
+    var c = document.createElement('div'); c.className = 'col';
+    var s = document.createElement('span'); s.textContent = i;
+    c.appendChild(s); h.appendChild(c);
+  }
+});
+
+/* OPTICAL ALIGNMENT — shift display boxes so the INK lands on the column line */
+(function () {
+  var cvs = document.createElement('canvas'), ctx = cvs.getContext('2d');
+  var sel = '.masthead, .big-num';
+  function align() {
+    document.querySelectorAll(sel).forEach(function (el) {
+      el.style.marginLeft = '0px';
+      var cs = getComputedStyle(el), ch = (el.textContent || '').trim().charAt(0);
+      if (!ch) return;
+      if (cs.textTransform === 'uppercase') ch = ch.toUpperCase();
+      ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      ctx.textAlign = 'left';
+      var abl = ctx.measureText(ch).actualBoundingBoxLeft;
+      if (isFinite(abl)) el.style.marginLeft = abl.toFixed(2) + 'px';
+    });
+  }
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(align); }
+  align();
+  var t;
+  window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(align, 120); });
+})();
+/* LOGO ASSET — pristine source for copy/download (original black fills) */
+var LOGO_SVG = '<svg width="105" height="23" viewBox="0 0 105 23" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+  document.getElementById('logoDisplay').innerHTML.replace(/<path /g, '<path fill="black" ').replace(/\s{2,}/g, ' ').trim() +
+  '</svg>';
+
+var copyBtn = document.getElementById('copySvg');
+if (copyBtn) copyBtn.addEventListener('click', function () {
+  function done() {
+    copyBtn.textContent = 'Copied';
+    setTimeout(function () { copyBtn.textContent = 'Copy SVG'; }, 1600);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(LOGO_SVG).then(done, fallback);
+  } else { fallback(); }
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = LOGO_SVG;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+});
+
+var cmdBtn = document.getElementById('copyCmd');
+if (cmdBtn) cmdBtn.addEventListener('click', function () {
+  var txt = document.getElementById('installCmd').textContent;
+  function done() {
+    cmdBtn.textContent = 'Copied';
+    setTimeout(function () { cmdBtn.textContent = 'Copy command'; }, 1600);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(done, function () {});
+  }
+});
+
+var dlBtn = document.getElementById('downloadSvg');
+if (dlBtn) dlBtn.addEventListener('click', function () {
+  var blob = new Blob([LOGO_SVG], { type: 'image/svg+xml' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'listen-labs-logo.svg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+});
+</script>
+
+</body>
+</html>

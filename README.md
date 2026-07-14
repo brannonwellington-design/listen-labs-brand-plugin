@@ -126,6 +126,21 @@ Or just ask Claude to create a report, summary, brief, or write-up — the skill
 
 ---
 
+## Brand Site
+
+The one-page brand guideline lives at **`docs/index.html`** and is generated from `brand_data.py` — the same source of truth the MCP tools read. Edit `brand_data.py`, commit, and the page, `docs/tokens.css`, and `docs/tokens.json` regenerate automatically via the pre-commit hook (same pattern as `GUIDELINES.md`).
+
+Serve it with GitHub Pages: **Settings → Pages → Deploy from a branch → `main` / `docs`**. The page includes the logo SVG (copy/download), all Paper tokens, the full spec, a toggleable layout grid (press `G`), and the plugin install command — so one URL serves humans grabbing assets and routes Claude users into the plugin.
+
+Developer endpoints served alongside the page:
+
+| File | Contents |
+| ---- | -------- |
+| `tokens.css` | Paper light + dark custom properties, emotion tokens, data-viz palette tokens |
+| `tokens.json` | Full machine-readable dump of every token and rule |
+
+Regenerate manually anytime with `python3 generate_site.py`.
+
 ## Auto-Updates
 
 The plugin auto-updates every time Claude starts a new session. When brand guidelines change in this repo, everyone gets the latest version automatically.

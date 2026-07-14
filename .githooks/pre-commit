@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Auto-sync GUIDELINES.md from brand data before every commit.
-# Regenerate and stage it whenever the data or generator changes.
+# Auto-sync generated outputs from brand data before every commit.
 
 REPO_DIR="$(git rev-parse --show-toplevel)"
 
@@ -9,4 +8,11 @@ if git diff --cached --name-only | grep -qE "^(brand_data\.py|generate_guideline
     python3 "$REPO_DIR/generate_guidelines.py"
     git add "$REPO_DIR/GUIDELINES.md"
     echo "GUIDELINES.md synced and staged."
+fi
+
+if git diff --cached --name-only | grep -qE "^(brand_data\.py|generate_site\.py|templates/|assets/)"; then
+    echo "Brand data, site generator, template, or assets changed — regenerating docs/..."
+    python3 "$REPO_DIR/generate_site.py"
+    git add "$REPO_DIR/docs"
+    echo "docs/ synced and staged."
 fi

@@ -1,0 +1,187 @@
+/* Listen Labs design tokens — Paper theme.
+ * Generated from brand_data.py (COLORS) — do not edit by hand. 2026-07-14
+ * Source: https://github.com/brannonwellington-design/listen-labs-brand-plugin
+ * Dark mode applies via data-theme="dark" on <html>, or via OS preference
+ * unless data-theme="light" explicitly opts out. */
+
+:root {
+  --content-primary: #120F08;
+  --content-secondary: #6B6861;
+  --content-inverse-primary: #F9F4EB;
+  --content-inverse-secondary: #9E9B94;
+  --content-disabled: #B6B4AF;
+  --content-inverse-disabled: #504E49;
+  --content-brand: #0021CC;
+  --content-brand-secondary: #7A85B8;
+  --content-brand-contrast: #F9F4EB;
+  --content-brand-contrast-secondary: #9CA3C9;
+  --content-complimentary: #B88114;
+  --content-warning: #B85814;
+  --content-negative: #B82214;
+  --content-positive: #0F8A38;
+  --surface-highlight: #FBF9F4;
+  --surface-primary: #F9F4EB;
+  --surface-secondary: #EEE8DD;
+  --surface-tertiary: #E2DCCF;
+  --surface-inverse-primary: #120F08;
+  --surface-inverse-secondary: #1F1B14;
+  --surface-brand-primary: #0021CC;
+  --surface-brand-secondary: #D9DDF2;
+  --surface-complimentary-primary: #E5A119;
+  --surface-complimentary-secondary: #F5EBD6;
+  --surface-warning-primary: #CF6317;
+  --surface-warning-secondary: #F5E3D6;
+  --surface-negative-primary: #CF2617;
+  --surface-negative-secondary: #F5D9D6;
+  --surface-positive-primary: #14B84B;
+  --surface-positive-secondary: #D6F5E0;
+
+  /* Emotion tokens — reserved for the 6 Ekman emotions */
+  --emotion-anger-primary: #BF4040;
+  --emotion-anger-secondary: rgba(191, 64, 64, 0.10);
+  --emotion-happiness-primary: #D99E26;
+  --emotion-happiness-secondary: rgba(217, 158, 38, 0.10);
+  --emotion-disgust-primary: #80BF40;
+  --emotion-disgust-secondary: rgba(128, 191, 64, 0.10);
+  --emotion-surprise-primary: #40BFAA;
+  --emotion-surprise-secondary: rgba(64, 191, 170, 0.10);
+  --emotion-sadness-primary: #406ABF;
+  --emotion-sadness-secondary: rgba(64, 106, 191, 0.10);
+  --emotion-fear-primary: #9540BF;
+  --emotion-fear-secondary: rgba(149, 64, 191, 0.10);
+}
+
+:root[data-theme="dark"] {
+  --content-primary: #F9F4EB;
+  --content-secondary: #9E9B94;
+  --content-inverse-primary: #120F08;
+  --content-inverse-secondary: #6B6861;
+  --content-disabled: #504E49;
+  --content-inverse-disabled: #B6B4AF;
+  --content-brand: #3354FF;
+  --content-brand-secondary: #7A85B8;
+  --content-brand-contrast: #F9F4EB;
+  --content-brand-contrast-secondary: #9CA3C9;
+  --content-complimentary: #B88114;
+  --content-warning: #B85814;
+  --content-negative: #B82214;
+  --content-positive: #0F8A38;
+  --surface-highlight: #080603;
+  --surface-primary: #130F06;
+  --surface-secondary: #201C13;
+  --surface-tertiary: #30291D;
+  --surface-inverse-primary: #F9F4EB;
+  --surface-inverse-secondary: #F0E9DB;
+  --surface-brand-primary: #0021CC;
+  --surface-brand-secondary: #131939;
+  --surface-complimentary-primary: #E5A119;
+  --surface-complimentary-secondary: #F5EBD6;
+  --surface-warning-primary: #CF6317;
+  --surface-warning-secondary: #F5E3D6;
+  --surface-negative-primary: #CF2617;
+  --surface-negative-secondary: #F5D9D6;
+  --surface-positive-primary: #14B84B;
+  --surface-positive-secondary: #D6F5E0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --content-primary: #F9F4EB;
+    --content-secondary: #9E9B94;
+    --content-inverse-primary: #120F08;
+    --content-inverse-secondary: #6B6861;
+    --content-disabled: #504E49;
+    --content-inverse-disabled: #B6B4AF;
+    --content-brand: #3354FF;
+    --content-brand-secondary: #7A85B8;
+    --content-brand-contrast: #F9F4EB;
+    --content-brand-contrast-secondary: #9CA3C9;
+    --content-complimentary: #B88114;
+    --content-warning: #B85814;
+    --content-negative: #B82214;
+    --content-positive: #0F8A38;
+    --surface-highlight: #080603;
+    --surface-primary: #130F06;
+    --surface-secondary: #201C13;
+    --surface-tertiary: #30291D;
+    --surface-inverse-primary: #F9F4EB;
+    --surface-inverse-secondary: #F0E9DB;
+    --surface-brand-primary: #0021CC;
+    --surface-brand-secondary: #131939;
+    --surface-complimentary-primary: #E5A119;
+    --surface-complimentary-secondary: #F5EBD6;
+    --surface-warning-primary: #CF6317;
+    --surface-warning-secondary: #F5E3D6;
+    --surface-negative-primary: #CF2617;
+    --surface-negative-secondary: #F5D9D6;
+    --surface-positive-primary: #14B84B;
+    --surface-positive-secondary: #D6F5E0;
+  }
+}
+
+/* Data-viz palette tokens — brand mode (default) */
+:root,
+[data-dataviz-palette="brand"] {
+  --dataviz-categorical-1: hsl(229, 100%, 40%);
+  --dataviz-categorical-2: hsl(229, 100%, 60%);
+  --dataviz-categorical-3: hsl(229, 100%, 25%);
+  --dataviz-categorical-4: hsl(229, 100%, 78%);
+  --dataviz-categorical-5: hsl(229, 100%, 50%);
+  --dataviz-categorical-6: #525252;
+  --dataviz-categorical-7: #8D8D8D;
+  --dataviz-categorical-8: #C6C6C6;
+  --dataviz-sequential-100: hsl(229, 100%, 92%);
+  --dataviz-sequential-200: hsl(229, 100%, 82%);
+  --dataviz-sequential-300: hsl(229, 100%, 70%);
+  --dataviz-sequential-400: hsl(229, 100%, 55%);
+  --dataviz-sequential-500: hsl(229, 100%, 40%);
+  --dataviz-sequential-600: hsl(229, 100%, 28%);
+  --dataviz-sequential-700: hsl(229, 100%, 18%);
+  --dataviz-diverging-neg-3: hsl(27, 100%, 42%);
+  --dataviz-diverging-neg-2: hsl(27, 100%, 62%);
+  --dataviz-diverging-neg-1: hsl(27, 75%, 86%);
+  --dataviz-diverging-zero: #F5F5F5;
+  --dataviz-diverging-pos-1: hsl(229, 75%, 86%);
+  --dataviz-diverging-pos-2: hsl(229, 100%, 62%);
+  --dataviz-diverging-pos-3: #0021CC;
+  --dataviz-highlight-accent: #0021CC;
+  --dataviz-highlight-neutral-1: #525252;
+  --dataviz-highlight-neutral-2: #8D8D8D;
+  --dataviz-highlight-neutral-3: #C6C6C6;
+  --dataviz-semantic-positive: #0F8A38;
+  --dataviz-semantic-negative: #B82214;
+  --dataviz-semantic-neutral: #8D8D8D;
+}
+
+/* Data-viz palette tokens — global (best-practices) mode */
+[data-dataviz-palette="global"] {
+  --dataviz-categorical-1: #0072B2;
+  --dataviz-categorical-2: #E69F00;
+  --dataviz-categorical-3: #009E73;
+  --dataviz-categorical-4: #CC79A7;
+  --dataviz-categorical-5: #56B4E9;
+  --dataviz-categorical-6: #D55E00;
+  --dataviz-categorical-7: #F0E442;
+  --dataviz-categorical-8: #000000;
+  --dataviz-sequential-100: #440154;
+  --dataviz-sequential-200: #443A83;
+  --dataviz-sequential-300: #31688E;
+  --dataviz-sequential-400: #21908C;
+  --dataviz-sequential-500: #35B779;
+  --dataviz-sequential-600: #8FD744;
+  --dataviz-sequential-700: #FDE725;
+  --dataviz-diverging-neg-3: #B2182B;
+  --dataviz-diverging-neg-2: #EF8A62;
+  --dataviz-diverging-neg-1: #FDDBC7;
+  --dataviz-diverging-zero: #F7F7F7;
+  --dataviz-diverging-pos-1: #D1E5F0;
+  --dataviz-diverging-pos-2: #67A9CF;
+  --dataviz-diverging-pos-3: #2166AC;
+  --dataviz-highlight-accent: #0072B2;
+  --dataviz-highlight-neutral-1: #525252;
+  --dataviz-highlight-neutral-2: #8D8D8D;
+  --dataviz-highlight-neutral-3: #C6C6C6;
+  --dataviz-semantic-positive: #0F8A38;
+  --dataviz-semantic-negative: #B82214;
+  --dataviz-semantic-neutral: #8D8D8D;
+}

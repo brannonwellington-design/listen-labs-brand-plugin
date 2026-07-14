@@ -464,133 +464,33 @@ ART_DIRECTION = {
     ],
 }
 
+# ─── CSS variable blocks ─────────────────────────────────────────────────────
+# Derived from COLORS so the two can never drift apart. Light blocks carry the
+# full token set plus emotion tokens; dark blocks carry only the tokens whose
+# values differ from light (i.e. the overrides).
+
+def _css_block(theme_name, mode):
+    theme = COLORS[theme_name]
+    lines = [f"/* {theme_name.capitalize()} - {mode.capitalize()} */"]
+    if mode == "light":
+        for group in ("content", "surface"):
+            for token, value in theme["light"][group].items():
+                lines.append(f"--{token}: {value};")
+            lines.append("")
+        lines.append("/* Emotion tokens */")
+        for token, value in COLORS["emotion"].items():
+            lines.append(f"--{token}: {value};")
+    else:
+        for group in ("content", "surface"):
+            for token, value in theme["dark"][group].items():
+                if theme["light"][group].get(token) != value:
+                    lines.append(f"--{token}: {value};")
+            if group == "content":
+                lines.append("")
+    return "\n".join(lines)
+
+
 CSS_VARIABLES = {
-    "paper": {
-        "light": """/* Paper - Light */
---content-primary: #120F08;
---content-secondary: #6B6861;
---content-inverse-primary: #F9F4EB;
---content-inverse-secondary: #9E9B94;
---content-disabled: #B6B4AF;
---content-inverse-disabled: #504E49;
---content-brand: #0021CC;
---content-brand-secondary: #7A85B8;
---content-brand-contrast: #F9F4EB;
---content-brand-contrast-secondary: #9CA3C9;
---content-complimentary: #B88114;
---content-warning: #B85814;
---content-negative: #B82214;
---content-positive: #0F8A38;
-
---surface-highlight: #FBF9F4;
---surface-primary: #F9F4EB;
---surface-secondary: #EEE8DD;
---surface-tertiary: #E2DCCF;
---surface-inverse-primary: #120F08;
---surface-inverse-secondary: #1F1B14;
---surface-brand-primary: #0021CC;
---surface-brand-secondary: #D9DDF2;
---surface-complimentary-primary: #E5A119;
---surface-complimentary-secondary: #F5EBD6;
---surface-warning-primary: #CF6317;
---surface-warning-secondary: #F5E3D6;
---surface-negative-primary: #CF2617;
---surface-negative-secondary: #F5D9D6;
---surface-positive-primary: #14B84B;
---surface-positive-secondary: #D6F5E0;
-
-/* Emotion tokens */
---emotion-anger-primary: #BF4040;
---emotion-anger-secondary: rgba(191, 64, 64, 0.10);
---emotion-happiness-primary: #D99E26;
---emotion-happiness-secondary: rgba(217, 158, 38, 0.10);
---emotion-disgust-primary: #80BF40;
---emotion-disgust-secondary: rgba(128, 191, 64, 0.10);
---emotion-surprise-primary: #40BFAA;
---emotion-surprise-secondary: rgba(64, 191, 170, 0.10);
---emotion-sadness-primary: #406ABF;
---emotion-sadness-secondary: rgba(64, 106, 191, 0.10);
---emotion-fear-primary: #9540BF;
---emotion-fear-secondary: rgba(149, 64, 191, 0.10);""",
-        "dark": """/* Paper - Dark */
---content-primary: #F9F4EB;
---content-secondary: #9E9B94;
---content-inverse-primary: #120F08;
---content-inverse-secondary: #6B6861;
---content-disabled: #504E49;
---content-inverse-disabled: #B6B4AF;
---content-brand: #3354FF;
-
---surface-highlight: #080603;
---surface-primary: #130F06;
---surface-secondary: #201C13;
---surface-tertiary: #30291D;
---surface-inverse-primary: #F9F4EB;
---surface-inverse-secondary: #F0E9DB;
---surface-brand-secondary: #131939;""",
-    },
-    "whisp": {
-        "light": """/* Whisp - Light */
---content-primary: #1A1A1A;
---content-secondary: #666666;
---content-inverse-primary: #E5E5E5;
---content-inverse-secondary: #999999;
---content-disabled: #B2B2B2;
---content-inverse-disabled: #4D4D4D;
---content-brand: #0021CC;
---content-brand-secondary: #7A85B8;
---content-brand-contrast: #E5E5E5;
---content-brand-contrast-secondary: #9CA3C9;
---content-complimentary: #B88114;
---content-warning: #B85814;
---content-negative: #B82214;
---content-positive: #0F8A38;
-
---surface-highlight: #FFFFFF;
---surface-primary: #FAFAFA;
---surface-secondary: #F0F0F0;
---surface-tertiary: #E0E0E0;
---surface-inverse-primary: #1A1A1A;
---surface-inverse-secondary: #262626;
---surface-brand-primary: #0021CC;
---surface-brand-secondary: #D9DDF2;
---surface-complimentary-primary: #E5A119;
---surface-complimentary-secondary: #F5EBD6;
---surface-warning-primary: #CF6317;
---surface-warning-secondary: #F5E3D6;
---surface-negative-primary: #CF2617;
---surface-negative-secondary: #F5D9D6;
---surface-positive-primary: #14B84B;
---surface-positive-secondary: #D6F5E0;
-
-/* Emotion tokens */
---emotion-anger-primary: #BF4040;
---emotion-anger-secondary: rgba(191, 64, 64, 0.10);
---emotion-happiness-primary: #D99E26;
---emotion-happiness-secondary: rgba(217, 158, 38, 0.10);
---emotion-disgust-primary: #80BF40;
---emotion-disgust-secondary: rgba(128, 191, 64, 0.10);
---emotion-surprise-primary: #40BFAA;
---emotion-surprise-secondary: rgba(64, 191, 170, 0.10);
---emotion-sadness-primary: #406ABF;
---emotion-sadness-secondary: rgba(64, 106, 191, 0.10);
---emotion-fear-primary: #9540BF;
---emotion-fear-secondary: rgba(149, 64, 191, 0.10);""",
-        "dark": """/* Whisp - Dark */
---content-primary: #E5E5E5;
---content-secondary: #999999;
---content-inverse-primary: #1A1A1A;
---content-inverse-secondary: #666666;
---content-disabled: #4D4D4D;
---content-inverse-disabled: #B2B2B2;
---content-brand: #3354FF;
-
---surface-highlight: #000000;
---surface-primary: #1A1A1A;
---surface-secondary: #262626;
---surface-tertiary: #333333;
---surface-inverse-primary: #FAFAFA;
---surface-inverse-secondary: #F0F0F0;
---surface-brand-secondary: #131939;""",
-    },
+    theme: {mode: _css_block(theme, mode) for mode in ("light", "dark")}
+    for theme in THEMES
 }
