@@ -222,6 +222,8 @@ Interpolation: {data.ICONS["interpolation"]}.
 ```
 {hdr["case"]}, both parts same size ({hdr["default_font_size"]} default), {hdr["position"].lower()}. {hdr["notes"]}
 
+**Where it appears:** {hdr.get("where_it_appears", "")}
+
 ## Data-viz palette tokens
 
 Two interchangeable modes with IDENTICAL token names. Default is **{rules["default_mode"]}** (monochromatic blue — lightness varies, hue and saturation never do). Switch to **global** (Okabe-Ito categorical / Viridis sequential / ColorBrewer RdBu diverging — all CVD-safe) when >5 distinct categories are needed or the user wants brand-agnostic best practices. Swap via `data-dataviz-palette="brand|global"` on any chart ancestor.

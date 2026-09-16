@@ -236,6 +236,7 @@ Rules:
 - Both use the same font size — **default is {H["default_font_size"]}** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
 - No letter-spacing added
 - Single line, space-separated with a `/` divider
+- **Where it appears:** {H.get("where_it_appears", "")}
 
 HTML example:
 ```html

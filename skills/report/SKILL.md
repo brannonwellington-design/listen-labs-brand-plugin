@@ -59,7 +59,7 @@ Every report follows this section order. Sections can be omitted if irrelevant, 
 
 ### The Cover Section
 
-The cover is the first thing anyone sees. It must be simple, confident, and branded.
+The cover is the first thing anyone sees. It must be simple, confident, and branded. (Inside the Listen Labs product canvas, omit the branded header line and its fixed band — the cover title leads.)
 
 ```
 [Branded Header: Listen Labs / Report Title — 12px, top center, 24px from top]

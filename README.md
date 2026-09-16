@@ -35,6 +35,10 @@ The plugin adds these tools to Claude:
 | `get_art_direction` | Design philosophy, composition principles |
 | `get_full_guidelines` | Everything above in one call |
 
+## Where the skills run
+
+Two delivery contexts share the same rules. On a **machine** (Claude Code, Claude Desktop), an artifact is written as a single `.html` file and opened. Inside the **Listen Labs product canvas** — the HTML canvas editor fed by insights reports and chat — the artifact is returned as one self-contained HTML document that renders in a pane, assumes no network, responds to its container rather than the screen, omits the `Listen Labs / Title` credit line (the product chrome already carries the brand), and stays readable and editable for the person who picks it up next.
+
 ## Skills
 
 Five skills share one brand source. `/research-artifacts` is the front door for anything a researcher or stakeholder will look at; the others are specialists it hands off to.
@@ -90,7 +94,7 @@ Or just ask Claude to chart, graph, or visualize any data — the skill auto-tri
 - Inter 400 for all labels — no bold, no other fonts
 - Emotion color tokens restricted to Ekman emotion data only (orthogonal to palette mode)
 - Responsive flex — no distortion at any width
-- Branded header on every output
+- Branded header on standalone outputs (omitted inside the product canvas)
 - Light/dark mode via `prefers-color-scheme`
 
 **Output:** A single self-contained `.html` file that opens in your browser.

@@ -111,7 +111,7 @@ Use the helpers in `skeleton.html` (`dataVizSeries(n)`, `dataVizSequential(n)`, 
 - **Chart container**: `width: 100%; max-width: 800px; margin: 0 auto;` with a fixed height (400px default for a standalone chart; 320px when embedded in a `/report`, whose reading column is narrower).
 
 ### Structure
-- **Branded header** at top of every output. Call `get_header_convention` for the canonical spec.
+- **Branded header** at the top of standalone outputs (files, exports). Omit it inside the Listen Labs product canvas — delete the `.ll-header` element and its top padding so the chart title leads. Call `get_header_convention` for the canonical spec.
 - **Light mode default.** Dark mode via `prefers-color-scheme: dark` media query.
 - **Semantic HTML.** Use `<main>`, `<section>`, `<figure>`, `<figcaption>`.
 - **Accessible canvas.** Every `<canvas>` gets `role="img"` and a descriptive `aria-label`.

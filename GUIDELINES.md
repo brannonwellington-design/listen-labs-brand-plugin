@@ -271,6 +271,7 @@ Rules:
 - Both use the same font size — **default is 12px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
 - No letter-spacing added
 - Single line, space-separated with a `/` divider
+- **Where it appears:** Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the wordmark in the navigation instead of the credit line.
 
 HTML example:
 ```html

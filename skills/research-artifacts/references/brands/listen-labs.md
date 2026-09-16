@@ -151,6 +151,8 @@ Interpolation: icon size ≈ text size + 2px, stroke ≈ scaled proportionally f
 ```
 Title Case always, both parts same size (12px default), top center, 24px from top. Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.
 
+**Where it appears:** Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the wordmark in the navigation instead of the credit line.
+
 ## Data-viz palette tokens
 
 Two interchangeable modes with IDENTICAL token names. Default is **brand** (monochromatic blue — lightness varies, hue and saturation never do). Switch to **global** (Okabe-Ito categorical / Viridis sequential / ColorBrewer RdBu diverging — all CVD-safe) when >5 distinct categories are needed or the user wants brand-agnostic best practices. Swap via `data-dataviz-palette="brand|global"` on any chart ancestor.

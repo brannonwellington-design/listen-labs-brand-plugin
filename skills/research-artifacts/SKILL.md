@@ -10,7 +10,7 @@ allowed-tools: Read Write Edit Bash(python3 *) Bash(open *) Bash(start *) Bash(x
 
 Turn research data and open-ended visual prompts into deliverables that look like they came out of a design studio — every time, regardless of how the prompt is phrased, in whichever brand the artifact belongs to.
 
-**Where this runs.** Two delivery contexts, same physics: (1) a **file** on a machine — write a single `.html` and open it; (2) the **Listen Labs product canvas** — an HTML canvas editor fed by insights reports and chat, where the artifact is returned as one self-contained HTML document, rendered in a pane whose width is not the screen's, possibly with external network blocked, and then edited by a person. Everything below is written so the same artifact works in both. See "Canvas-safe delivery" under The Physics.
+**Where this runs.** Two delivery contexts, same physics: (1) a **file** on a machine — write a single `.html` and open it; (2) the **Listen Labs product canvas** — an HTML canvas editor fed by insights reports and chat, where the artifact is returned as one self-contained HTML document, rendered in a pane whose width is not the screen's, possibly with external network blocked, and then edited by a person. Everything below is written so the same artifact works in both. See "Canvas-safe delivery" under The Physics. One rule differs by context: the `Listen Labs / Title` credit line appears on standalone artifacts (files, PDFs, posters, exports) and is **omitted inside the product canvas**, where the chrome already carries the brand — the composition simply starts with the title.
 
 **Nothing is out of scope.** This skill runs on an open-ended HTML canvas: a single pie chart, a full customer journey map, a poster, a landing page, a generative texture, or a thing nobody has named yet are all legitimate outputs. The references below are a pattern library, not a menu — they exist so that whatever gets made has great layout, hierarchy, and works on desktop and mobile. When a request fits no pattern, the Physics alone are enough to build it well; never narrow, redirect, or refuse a request because it has no anatomy.
 
@@ -125,7 +125,7 @@ The Müller-Brockmann grid discipline is absorbed into `references/grid-engineer
 ## Verification checklist (run before delivering, every time)
 
 - [ ] Brand resolved explicitly; every color, font, size, radius, and stroke traces to the active brand file (no invented values, no values leaked from another brand)
-- [ ] Branded header present per the brand's header convention
+- [ ] Credit line per context: present on standalone/exported artifacts, omitted inside the product canvas; the layout looks intentional either way (no empty band where a header would have been)
 - [ ] Only the brand's allowed font families and weights (search the file for `font-weight` and `letter-spacing` and check every hit against the brand file)
 - [ ] All spacing in multiples of the brand's base unit; radii only from its scale
 - [ ] Strokes per the brand's stroke spec; grid lines subordinate to data

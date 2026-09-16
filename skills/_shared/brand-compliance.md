@@ -33,7 +33,7 @@ Emotion tokens (`emotion-anger-*`, `emotion-happiness-*`, etc.) are shared acros
 6. **Even-number spacing, 4px base.** All padding, margin, gap, width, height, and offset values are multiples of 4.
 7. **Border radius from the brand scale.** Only 0, 2, 4, 8, 12, 16.
 8. **No drop shadows. No gradients. No decorative elements without informational purpose.**
-9. **Branded header** (`Listen Labs / Title`) where the format supports it. Call `get_header_convention` for the spec.
+9. **Branded header** (`Listen Labs / Title`) on standalone artifacts that leave the product — HTML files, PDFs, posters, decks, exported images. **Omit it inside the Listen Labs product canvas**, where the product chrome already carries the brand; websites use the wordmark in the nav instead. Call `get_header_convention` for the spec.
 10. **Emotion tokens are reserved.** Use `emotion-*` only for the six Ekman emotion data — never for general categories, status indicators, or decoration.
 11. **Colors stay within the active theme palette.** No introducing colors outside Paper/Whisp tokens. The one sanctioned exception is the `global` data-viz palette mode (Okabe-Ito / Viridis / RdBu), which exists for accessibility and brand-agnostic charts and is reached only through the `--dataviz-*` tokens.
 
@@ -161,7 +161,7 @@ Before delivering any output, verify:
 - [ ] Spacing values are multiples of 4px (even numbers)
 - [ ] Border radius from scale only (0, 2, 4, 8, 12, 16)
 - [ ] No drop shadows, no gradients, no decorative ornament
-- [ ] Branded header present where the format supports it
+- [ ] Branded header present on standalone/exported artifacts; omitted inside the product canvas; nav wordmark (not the credit line) on websites
 - [ ] Emotion tokens used only for Ekman emotion data
 - [ ] Colors stay within the active theme palette
 

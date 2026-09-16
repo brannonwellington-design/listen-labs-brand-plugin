@@ -235,6 +235,7 @@ HEADER = {
     "project_title_color": "content-primary",
     "default_font_size": "12px",
     "notes": "Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.",
+    "where_it_appears": "Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the wordmark in the navigation instead of the credit line.",
     "html_example": '''<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:12px;">
   <span style="color: var(--content-secondary)">Listen Labs /</span>
   <span style="color: var(--content-primary)"> Project Title</span>

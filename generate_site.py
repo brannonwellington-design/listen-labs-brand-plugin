@@ -187,6 +187,7 @@ def build_markers():
         f"            <tr><td>Size</td><td>{h['default_font_size']}, both parts equal</td></tr>",
         f"            <tr><td>Case</td><td>{h['case']}</td></tr>",
         f"            <tr><td>Colors</td><td>{colors}</td></tr>",
+        f"            <tr><td>Where</td><td>{h.get('where_it_appears', '')}</td></tr>",
     ])
 
     brand_pal = data.DATAVIZ_PALETTES["brand"]
