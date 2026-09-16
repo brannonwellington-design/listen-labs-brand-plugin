@@ -6,7 +6,7 @@
 
 > Answers the contract in `_contract.md`. Fields map 1:1; voice section at the bottom.
 
-> **Source: `brand_data.py` (the same data the Listen Labs brand MCP serves) · Snapshot: 2026-07-14.**
+> **Source: `brand_data.py` (the same data the Listen Labs brand MCP serves) · Snapshot: 2026-09-16.**
 > This file is regenerated from the repo's single source of truth, so it matches `get_full_guidelines` exactly.
 > If the brand MCP is connected, you may still call it to confirm live values. Copy values verbatim, never approximate.
 

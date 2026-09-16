@@ -111,7 +111,7 @@ Space above a heading is always greater than space below it. This groups the hea
 | H2 (32px) | 40px | 16px | 2.5:1 |
 | H3 (24px) | 32px | 12px | 2.7:1 |
 | Body paragraph | — | 16px | — |
-| Section break | 64-96px | — | — |
+| Section break | 96px desktop · 64px tablet · 48px mobile | — | — |
 
 ### Paragraph Spacing
 

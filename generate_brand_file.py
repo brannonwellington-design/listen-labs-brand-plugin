@@ -31,8 +31,14 @@ import brand_data as data
 
 
 def snapshot_date():
-    """Date of the last commit touching brand_data.py, falling back to today."""
+    """Date of the last commit touching brand_data.py; today if brand_data.py has uncommitted changes."""
     try:
+        dirty = subprocess.run(
+            ["git", "-C", SCRIPT_DIR, "status", "--porcelain", "--", "brand_data.py"],
+            capture_output=True, text=True,
+        ).stdout.strip()
+        if dirty:
+            return datetime.date.today().isoformat()
         out = subprocess.check_output(
             ["git", "-C", SCRIPT_DIR, "log", "-1", "--format=%cs", "--", "brand_data.py"],
             stderr=subprocess.DEVNULL,
