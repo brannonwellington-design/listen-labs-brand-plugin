@@ -2,7 +2,7 @@
 
 Each anatomy defines: what the deliverable is FOR, its required parts, its layout skeleton, and its known failure modes. The skeleton is a starting structure, not a cage — vary composition freely, but a deliverable missing a required part is incomplete, and a listed failure mode is a bug.
 
-Anatomies 1–8 render as HTML/SVG through this skill; §9 hands off to `/report`. Everything here inherits the Physics from SKILL.md and all values from the ACTIVE BRAND FILE (`brands/<brand>.md`). Token names below are universal; their resolved values, and all radii/strokes/fonts, come from that file.
+Anatomies 1–8 and 10–14 render through this skill; §9 hands off to `/report`. §10 (web page) and §12 (interactive story) lean on `skills/_shared/components.md` for buttons, inputs, nav, cards, and tooltips. Everything here inherits the Physics from SKILL.md and all values from the ACTIVE BRAND FILE (`brands/<brand>.md`). Token names below are universal; their resolved values, and all radii/strokes/fonts, come from that file.
 
 ---
 
@@ -117,6 +117,80 @@ Highest value per row may carry a 2px `--content-brand` underline to guide scann
 **Skeleton:** Start from `skills/report/references/skeleton.html` and the section patterns in `skills/report/references/section-patterns.md`. Reading measure ≤800px, centered; 96px between major sections (or one 1px hairline with 48px above and below — pick one style per report, never both); 48px between subsections. Cover fills the viewport with the title block vertically centered and no decoration. Body text in `--content-secondary`; headings in `--content-primary`; captions and metadata in `--content-disabled`. Participant quotes: 2px `--content-brand` left border, attribution in `--content-disabled`, never italic. Stat blocks on `--surface-brand-secondary`, 32px padding, one per finding maximum. Charts embedded via the `/data-viz` Chart.js skeleton with a 12px `<figcaption>`. Emotion-coded findings use the callouts in `skills/report/references/emotion-callouts.md`. Print stylesheet: cover on its own page, sections/findings/charts never split across pages, white background.
 
 **Failure modes:** findings without evidence attached · quotes without attribution · both whitespace AND rules as section dividers · centered body text · italic quotes · charts without captions · a second accent color anywhere (brand blue only; emotion tokens only on coded emotions).
+
+---
+
+## 10. Web Page / Landing Page
+
+**For:** A marketing, product, or campaign page that a stranger reads top to bottom and acts on — a landing page, a feature page, a microsite, a program page.
+
+**Required parts:** top navigation (per `skills/_shared/components.md` → Navigation; the branded credit line is NOT used on websites) · hero band with ONE headline (48–64px desktop / 32–40px mobile, `text-wrap: balance`), one supporting sentence (18px `--content-secondary`), and at most one primary + one secondary button · 3–6 content bands, each making one point with one dominant element (a stat, a figure, a short verbatim, a product frame) · one proof band (numbers with n=, logos, or quotes — never all three) · a closing call-to-action band (the one place a dark `--surface-inverse-primary` band is allowed) · footer.
+
+**Skeleton:** Full-width bands on the 12-column grid with the canonical rhythm (`brand-compliance.md`); grid engineering applies (`grid-engineering.md`). Hero text spans 7–8 of 12 columns and anchors LEFT — the asymmetric editorial layout from `/typography` — with the right columns holding one figure or breathing room, never a stock photo. Alternate band surfaces sparingly (primary / secondary / primary…), never a background color per section. Section headers are H2 32px with the overline only when it disambiguates. Feature bands: 2–3 columns of icon (Lucide, 18px) + 16px Title Case label + 14px `--content-secondary` copy, equal heights. Product screenshots sit in a 1px `--surface-tertiary` frame with radius 12 on `--surface-secondary`, at a fixed aspect ratio. Metadata: `<title>` in Title Case, `<meta name="description">`, `theme-color`, Open Graph title/description, and a favicon (`assets/listen-labs-logo.svg` from the plugin root, inline as a data URI). Full page must pass at 375 / 768 / 1280 with no sideways scroll.
+
+**Failure modes:** a hero that centers everything (centered is for a single isolated line, not a whole band) · three buttons in the hero · a gradient, blob, or drop-shadow "card" grid · a band per idea until the page is twelve bands (cut to the six that carry the argument) · the branded credit line and a nav on the same page · a testimonial without attribution · a dark band used twice · type below 14px anywhere except metadata.
+
+---
+
+## 11. Print Page / Poster / PDF One-Pager
+
+**For:** A single sheet that will be printed or exported to PDF — a poster, a printed one-pager, a handout, a spec sheet.
+
+**Required parts:** branded header (may be replaced by the wordmark on a poster) · one dominant element readable at arm's length (poster) or across a desk (sheet) · supporting content that fits the page with no overflow · a footer line with source, date, and n= · the page geometry declared in CSS, not left to the print dialog.
+
+**Skeleton:** A fixed-size page container sized in physical units and a matching `@page` rule:
+
+```css
+@page { size: A4 portrait; margin: 0; }           /* or Letter, A3, 18in 24in for a poster */
+.page { width: 210mm; min-height: 297mm; padding: 16mm; margin: 0 auto; background: var(--surface-primary); }
+@media screen { .page { box-shadow: none; outline: 1px solid var(--surface-tertiary); margin: 32px auto; } }
+* { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+```
+
+Type sizes go UP for print distance: a poster headline is 96–128px from the type scale, body no smaller than 14px on a sheet and 20px on a poster; line lengths still ≤ 80 characters. Use the light tokens of the chosen theme for anything that will be printed (the skeleton's print block does this automatically); a dark poster is a deliberate choice with `--surface-inverse-primary` set explicitly, not the reader's OS dark mode leaking in. Charts render as static SVG (no tooltips, direct labels only), and every value the reader needs is printed on the page. Hairlines 1px; nothing lighter than `--content-disabled` on paper. No page-break rules are needed inside a one-pager because nothing may break — if content overflows, cut content, never shrink type below the floors. Export: open in the browser and print to PDF with margins "None" and background graphics on; say this in one line when delivering.
+
+**Failure modes:** a responsive web layout "printed" (unpredictable pagination) · text that depends on hover · light-on-dark inherited from a dark-mode machine · two dominant elements on one sheet · an unlabelled chart · a poster built at screen sizes so the headline is 32px tall on paper.
+
+---
+
+## 12. Interactive Infographic / Explorable Data Story
+
+**For:** A narrative that the reader moves through — a scrollytelling piece, a step-through explainer, a filterable explorer, an annotated chart that reveals its layers.
+
+**Required parts:** branded header · a title that states the finding · an opening view that already tells the story with NO interaction (the Archie Tse rule — the default render is the overview) · 3–7 narrative steps or one control set (filters, toggles, a range) · direct annotations on the chart at each step · a source/method note with n= · a static fallback: every state the story depends on is reachable by keyboard and readable in print.
+
+**Skeleton:** Two patterns, pick one:
+- *Scrollytelling:* a sticky chart panel (`position: sticky; top: 64px`, 60% width desktop, full width stacked on mobile) beside a column of step paragraphs (18px lead, 16px body, 24px gap, each step ≥ 60vh tall). An `IntersectionObserver` sets the active step; the chart transitions between states in 200–400ms ease-out on `opacity`/`transform` only, and jumps instantly under `prefers-reduced-motion`. Every step is a real DOM section with a heading, so the piece reads top to bottom as an article when scripting fails.
+- *Explorer:* controls in one row above the chart (chips, a select, or a range from `components.md`), the chart, then a details region that updates with the selection. Overview first, zoom and filter second, details on demand (Shneiderman). Controls never start in an empty state; the initial selection is the most interesting one.
+Chart internals follow `charts.md` (interaction engineering: hit layers in the same coordinate space, proximity snapping, tooltips anchored to marks, text halos). Annotations use a 1px leader and 12px text with a paper halo. State is plain JS in the single file; no framework.
+
+**Failure modes:** a story that only exists in tooltips · animation on load with no reduced-motion path · a chart that re-scales its axes between steps without a visible cue (keep domains fixed across steps unless the change IS the point) · steps shorter than the viewport so two are active at once · controls that reset the story · a mobile layout where the sticky panel covers the text.
+
+---
+
+## 13. Fixed-Canvas Graphic (social, slide image, thumbnail)
+
+**For:** A single image at a fixed pixel size — a social post, an Open Graph image, a slide-sized graphic, a thumbnail for a report.
+
+**Required parts:** a fixed-size stage · one dominant element (a stat, a verbatim, a chart) · the wordmark or the `Listen Labs /` credit line · nothing that depends on scrolling or hovering.
+
+**Skeleton:** Standard stages — 1200×630 (Open Graph / link preview), 1080×1080 (square), 1080×1350 (portrait social), 1920×1080 (slide, presentation grid 12 / 40 / 40), 1600×900 (thumbnail). Build the stage as `.stage { width: 1200px; height: 630px; position: relative; overflow: hidden; }` with an inner safe area of 8% on every side; place on the 12-column grid inside that area. Type does NOT use the fluid `clamp()` scale — pick fixed sizes from the type scale for the stage (headline 64–96px on a 1200-wide stage, metadata 20–24px; nothing under 20px on social sizes). Big numeral + tiny label is the signature move here. Export at 2× device pixel ratio: open the file, screenshot the `.stage` element (Chrome: DevTools → Capture node screenshot; or `chromium --headless --screenshot --window-size=W,H file.html`), and state the export step in one line. Provide a `data-mode="light"` pin on `<html>` so the export does not depend on the machine's OS theme.
+
+**Failure modes:** responsive units on a fixed stage · text touching the edge (respect the safe area) · a screenshot at 1× that ships blurry · dark mode leaking in from the exporting machine · three ideas on one tile.
+
+---
+
+## 14. HTML Email
+
+**For:** A branded email — announcement, digest, invitation — that must render in mail clients.
+
+**The physics change here, and the skill says so:** mail clients strip `<style>`, ignore CSS custom properties, block web fonts, and mangle flex/grid. So an email is NOT built from the brand token block or the HTML skeletons. Instead:
+
+**Required parts:** a 600px table-based layout, centered · every style inlined with literal hex values resolved from the brand file (Paper light) · font stack `'Inter', 'Helvetica Neue', Arial, sans-serif` (Inter will usually not load; the layout must look right in Arial) · a preheader line · one primary "bulletproof" button (a table cell with `background-color`, 32px tall, radius 8 via `border-radius` where supported, padded link inside — never an image button) · the wordmark as an inline PNG/SVG-with-PNG-fallback at 20px tall · a plain-text alternative · a footer with sender address and unsubscribe where applicable.
+
+**Skeleton:** `<table role="presentation" width="600">` rows for header / hero / body / call to action / footer; 24px cell padding; 16px/24px body in `#6B6861` on `#F9F4EB`, headings in `#120F08` (values copied from the brand file at build time, stated in a comment at the top of the file); 1px `#E2DCCF` hairlines as table borders; no background images; no charts (link to the artifact instead, or embed a static PNG). Dark mode: add `<meta name="color-scheme" content="light">` and `<meta name="supported-color-schemes" content="light">` so clients do not invert the palette; the brand's cream canvas is designed for light rendering.
+
+**Failure modes:** `var(--…)` anywhere in an email · a `<style>`-only layout · a web font the layout depends on · a 100%-width layout that breaks in Outlook · a chart canvas · more than one primary button.
 
 ---
 

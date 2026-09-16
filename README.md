@@ -41,7 +41,7 @@ Five skills share one brand source. `/research-artifacts` is the front door for 
 
 | Ask for… | Skill |
 |---|---|
-| One-pager, journey map, cross-tab, concept test, persona cards, workflow diagram, dashboard, map, or any open-ended research visual | `/research-artifacts` |
+| One-pager, journey map, cross-tab, concept test, persona cards, workflow diagram, dashboard, map, interactive infographic, poster or PDF page, landing page, social graphic, HTML email, or any open-ended visual | `/research-artifacts` |
 | Multi-section longform report that prints to PDF | `/report` |
 | Slide deck (.pptx) | `/pptx` |
 | A Chart.js chart, or a chart inside a report | `/data-viz` |
@@ -61,9 +61,11 @@ Or just ask for a one-pager, journey map, persona, cross-tab, concept test, work
 - **Physics** (`SKILL.md`) — brand-independent laws: one dominant element, scale contrast as hierarchy, load-bearing whitespace, WCAG contrast floors, redundant encoding, typographic precision, web hygiene.
 - **Research ethics** — verbatims are sacred and attributed (P1, P7); n is always visible; small-n data as counts not percentages; compared concepts get identical visual weight; one story per view.
 - **Voice** (`references/brands/<brand>.md`) — everything stylistic, one file per brand answering the same contract (`_contract.md`). `listen-labs.md` is **generated from `brand_data.py`** so it can never drift from the MCP. Other brands are added by filling in the contract (see below).
-- **Anatomy** (`references/deliverables.md`) — required parts, layout skeleton, and failure modes for nine deliverables: one-pager, customer decision journey map, persona cross-tab explorer, concept test readout, workflow/process diagram, persona cards, chart panels & dashboards, global/geo heat maps, and the longform report (handed to `/report`). Plus a procedure for novel prompts.
+- **Anatomy** (`references/deliverables.md`) — required parts, layout skeleton, and failure modes for nine deliverables: one-pager, customer decision journey map, persona cross-tab explorer, concept test readout, workflow/process diagram, persona cards, chart panels & dashboards, global/geo heat maps, the longform report (handed to `/report`), web/landing pages, print pages and posters, interactive data stories, fixed-canvas social graphics, and HTML email. Plus a procedure for novel prompts.
 - **Chart grammar** (`references/charts.md`) — which chart for which data (position > length > angle > area), a rendering and data-volume ladder, hard bans (3D, dual axes, truncated axes, rainbow ramps), label defense, data-derived scale domains, the NYT-style rule that crucial information is visible without interaction, interaction engineering for tooltips and hit areas, per-type rendering specs (bar, grouped bar, line, pie, venn/UpSet, heatmap, scatter, sankey, slope), rendering-engine choice (SVG, D3, Chart.js, canvas), generative/canvas rules, pinned CDN libraries.
 - **Grid engineering** (`references/grid-engineering.md`) — Müller-Brockmann grid discipline adapted for single-file artifacts: grid parameters as CSS variables, subgrid bands, baseline lock, optical ink alignment for display type, a `G`-key overlay, and an in-page audit for column snap and baseline drift.
+- **Components** (`skills/_shared/components.md`) — the interface vocabulary every page-like output uses: buttons, links, inputs, cards, chips, tooltips, nav, footer, bands, tables, stat tiles, and empty/loading/error states, all keyed to brand tokens.
+- **House policies** (`skills/_shared/brand-compliance.md`) — imagery and logo use, motion, composition variety (the anti-generic rule), and print/PDF behaviour, shared by every skill.
 - **Failure prevention** (`SKILL.md`) — a safe default recipe for ambiguous asks, data sanity guards (empty, single, all-zero, negative), an extreme-input test, degrade-by-design rules, and how to handle impossible asks without shipping a broken chart.
 
 **Output:** A single self-contained `.html` file.
@@ -82,7 +84,7 @@ Or just ask Claude to chart, graph, or visualize any data — the skill auto-tri
 - Two swappable palette modes via one attribute (`data-dataviz-palette="brand|global"`):
   - **brand** (default) — monochromatic brand-blue (`#0021CC`); vermillion ↔ blue diverging
   - **global** — Okabe-Ito categorical, Viridis sequential, ColorBrewer RdBu diverging (CVD-safe, brand-agnostic)
-- Soft cap 7 categorical series, hard cap 10; redundant encoding (line-style + marker shape) for ≥5 series
+- Practical cap 5 categorical series in brand mode (soft cap 7, hard cap 10 with an “Other” roll-up); redundant encoding (line-style + marker shape) for ≥5 series
 - 1px strokes on all chart elements
 - 2px rounded corners on bars, 1px gap between inline bars
 - Inter 400 for all labels — no bold, no other fonts
@@ -170,7 +172,7 @@ Developer endpoints served alongside the page:
 | `tokens.css` | Paper light + dark custom properties, emotion tokens, data-viz palette tokens |
 | `tokens.json` | Full machine-readable dump of every token and rule |
 
-Regenerate manually anytime with `python3 generate_site.py`, `python3 generate_guidelines.py`, and `python3 generate_brand_file.py`.
+Regenerate manually anytime with `python3 generate_site.py`, `python3 generate_guidelines.py`, `python3 generate_brand_file.py`, and `python3 generate_skeleton_tokens.py`.
 
 ### Generated files — never edit by hand
 
@@ -179,6 +181,7 @@ Regenerate manually anytime with `python3 generate_site.py`, `python3 generate_g
 | `GUIDELINES.md` | `generate_guidelines.py` | Humans, `get_full_guidelines` |
 | `docs/index.html`, `docs/tokens.css`, `docs/tokens.json` | `generate_site.py` | Brand site, developers |
 | `skills/research-artifacts/references/brands/listen-labs.md` | `generate_brand_file.py` | `/research-artifacts` skill |
+| Token block inside `skills/report/references/skeleton.html` and `skills/data-viz/references/skeleton.html` | `generate_skeleton_tokens.py` | `/report` and `/data-viz` skeletons (Paper + Whisp, light/dark, print-safe) |
 
 To add a **second brand** to `/research-artifacts`, copy `skills/research-artifacts/references/brands/_contract.md` to `<brand>.md` and fill every field from that brand's official guidelines. Those files are authored by hand and are not generated. The plugin ships with Listen Labs only.
 

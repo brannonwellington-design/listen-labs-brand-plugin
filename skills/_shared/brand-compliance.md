@@ -35,7 +35,7 @@ Emotion tokens (`emotion-anger-*`, `emotion-happiness-*`, etc.) are shared acros
 8. **No drop shadows. No gradients. No decorative elements without informational purpose.**
 9. **Branded header** (`Listen Labs / Title`) where the format supports it. Call `get_header_convention` for the spec.
 10. **Emotion tokens are reserved.** Use `emotion-*` only for the six Ekman emotion data — never for general categories, status indicators, or decoration.
-11. **Colors stay within the active theme palette.** No introducing colors outside Paper/Whisp tokens.
+11. **Colors stay within the active theme palette.** No introducing colors outside Paper/Whisp tokens. The one sanctioned exception is the `global` data-viz palette mode (Okabe-Ito / Viridis / RdBu), which exists for accessibility and brand-agnostic charts and is reached only through the `--dataviz-*` tokens.
 
 ---
 
@@ -80,8 +80,8 @@ Never use `outline: none` without a replacement. Every interactive element gets 
 
 (Or use the active theme's `--content-brand` for branded focus.)
 
-### Motion
-Honor `prefers-reduced-motion`. If you add transitions or animations, gate them and animate **only `transform` and `opacity`** — never `transition: all`:
+### Motion (implementation)
+Full policy in the **Motion** section below. Gate every transition and animate **only `transform` and `opacity`** — never `transition: all`:
 
 ```css
 @media (prefers-reduced-motion: no-preference) {
@@ -90,10 +90,57 @@ Honor `prefers-reduced-motion`. If you add transitions or animations, gate them 
 ```
 
 ### Mobile rules
-- **Touch targets ≥ 44×44px** for every interactive element on mobile.
+- **Touch targets ≥ 44×44px** for every interactive element on mobile. This is the *hit area*, not the visual size: a brand button keeps its 32px visual height (XL component height) and gains the rest through padding, margin, or a transparent `::before` hit layer.
 - **No hover-only states.** Active/focus states must convey the same information without hover.
 - **Tables**: wrap in `overflow-x-auto` and set `min-width: 640px` on the table itself so the layout never breaks below tablet.
-- **Section padding scales:** `py-16 md:py-24 lg:py-32` (or equivalent — 64 / 96 / 128px). Horizontal padding `px-4 md:px-8` (16 / 32px).
+- **Canonical vertical rhythm (every skill uses these, never other values):**
+  - Between major sections: 96px desktop · 64px tablet · 48px mobile (longform reports may use 96px throughout, or a single 1px rule with 48px above and below — never both).
+  - Between subsections: 48px desktop · 32px mobile.
+  - Page horizontal padding: 24px desktop · 16px mobile for full-width pages; a centered reading column (reports) uses 48px desktop · 24px mobile inside its max-width.
+  - Hero / cover top and bottom: 128px desktop · 96px tablet · 64px mobile.
+
+---
+
+## Imagery, Illustration, and the Logo
+
+- **Default is no imagery.** Listen Labs artifacts carry their weight with type, numbers, and data. Add an image only when it IS the content (a product frame, a participant-provided artifact, a map).
+- **Never stock photography, never generated "people".** Invented humans undermine research credibility. Persona identity is a monochrome geometric mark, not a face.
+- **When a hero or illustrative image is genuinely wanted** (a campaign page, a cover), the sanctioned source is the Listen Labs Brand Hub image recipes: if the `Listen_Labs_Brand_Hub` MCP is connected, call `list_recipes` → `get_recipe` and hand the finished Midjourney prompt to the user rather than drawing an illustration by hand. Otherwise state that an image slot is reserved and leave a `--surface-secondary` placeholder with the exact size.
+- **The wordmark** lives at `assets/listen-labs-logo.svg` (plugin root). Inline it as SVG with `fill="currentColor"` so it follows the theme; render at 20px tall in nav and footers, 16px in a credit line; clear space equal to its height on all sides; never recolor it brand blue, never stretch, never place on a busy surface. Websites use the wordmark in the nav; artifacts and documents use the text credit line (`Listen Labs / Title`) — not both.
+- **Icons:** Lucide only, inline SVG, sized and stroked per the icon table, colored as the accompanying text. An icon on every list item is decoration; an icon that disambiguates is information.
+
+---
+
+## Motion
+
+- **Default is stillness.** No motion on load, no looping, no parallax, no auto-playing anything.
+- **When motion is used** (a reveal in an interactive story, a hover, a tooltip): animate only `transform` and `opacity`; 150ms for hover/tooltip, 200–400ms ease-out for reveals and state changes; stagger children ≤ 40ms apart and never more than five; one thing moves at a time.
+- **Every transition has a reduced-motion path** to the same final state: wrap in `@media (prefers-reduced-motion: no-preference)` or check `matchMedia` before animating in JS.
+- **Motion is never the only cue.** Whatever a transition reveals must also be discoverable without it.
+
+---
+
+## Composition Variety (the anti-generic rule)
+
+Two artifacts built from the same skeleton must not look like the same artifact. Before building, choose deliberately, and choose differently from the last thing you made:
+
+- **The dominant element** — a giant numeral, a single chart, a verbatim set large, a stark headline, a map. One per composition.
+- **The signature move** — pick one from `skills/typography/references/lockups.md` (tiny-next-to-huge, asymmetric two-column, giant background numeral, rotated label column, section header with rule) and commit to it; the same lockup should not open every deliverable.
+- **The anchor** — left-anchored asymmetric layouts are the house default; centered composition is reserved for a single isolated line (a cover title, a stat on a tile).
+- **The surface rhythm** — mostly `--surface-primary`; one `--surface-secondary` band or one dark band as the accent, not both, not every other section.
+- **Reading direction** — vary between vertical stacks, two-column spreads, and horizontal flows (journeys, timelines) according to the data's shape, not habit.
+- **Then stop.** Variety comes from these choices, never from adding ornament, a second accent color, a shadow, or a font weight.
+
+---
+
+## Print and PDF
+
+Any HTML output may be printed. Every skeleton already ships a print block that re-declares the chosen theme's light tokens, sets `print-color-adjust: exact`, and declares `@page` margins. When you author HTML from scratch, do the same, plus:
+
+- `break-inside: avoid` on figures, quotes, callouts, stat blocks, and table rows; `break-after: page` after a cover.
+- Print what the reader needs: no content that lives only in tooltips or hover states; every chart shows its values or direct labels.
+- For a fixed-size sheet or poster, size the page container in physical units and set `@page { size: …; margin: 0 }` (anatomy §11 in `skills/research-artifacts/references/deliverables.md`).
+- Tell the user the export step in one line: browser → Print → Save as PDF, margins None, background graphics on.
 
 ---
 
@@ -131,5 +178,9 @@ Before delivering any output, verify:
 - [ ] No hover-only states
 - [ ] Tables wrap in `overflow-x-auto` with `min-width: 640px`
 - [ ] Tested at 375px / 768px / 1280px — no horizontal scroll, no broken layouts
+- [ ] Print check: light tokens re-declared in `@media print`, `print-color-adjust: exact`, nothing essential hover-only
+- [ ] No stock or generated imagery; wordmark from `assets/listen-labs-logo.svg` if used, credit line OR nav, not both
+- [ ] Motion: none by default; any transition is `opacity`/`transform`, ≤400ms, with a reduced-motion path
+- [ ] Composition chosen deliberately (dominant element, one signature lockup, left anchor, surface rhythm) — not the same layout as the last artifact
 
 If any item fails, fix before delivering. Skill-specific checklists add format-specific items — pass both.

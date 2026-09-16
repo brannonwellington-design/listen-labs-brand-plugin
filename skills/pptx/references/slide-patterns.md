@@ -83,7 +83,7 @@ function addTitleSlide(pres, title, subtitle) {
     x: 0.6, y: 1.6, w: 8.8, h: 1.4,
     align: "center",
     ...makeTitleInverse(),
-    fontSize: 44,
+    fontSize: 40,
   });
 
   // Subtitle — smaller, muted
@@ -452,7 +452,10 @@ function dataVizSeriesHex(count) {
   else if (count > 7) console.warn("dataVizSeriesHex: " + count + " exceeds the soft cap (7); add direct labels.");
   var palette = DATAVIZ_CATEGORICAL[DATAVIZ_MODE];
   var out = [];
-  for (var i = 0; i < count; i++) out.push(palette[i % 8]);
+  // Brand mode is capped at 5 distinct series, global at 8; beyond that roll data up to "Other" instead of wrapping colors.
+  var cap = (mode === 'global') ? 8 : 5;
+  if (count > cap) throw new Error('Too many series for ' + mode + ' mode (' + count + ' > ' + cap + '): roll up to Other or switch mode.');
+  for (var i = 0; i < count; i++) out.push(palette[i]);
   return out;
 }
 

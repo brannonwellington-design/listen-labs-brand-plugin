@@ -1,7 +1,7 @@
 ---
 name: typography
-description: "Use this skill when laying out type-heavy content — HTML pages, dashboards, artifacts, landing pages, emails, documents, or any layout where text hierarchy, spacing, and composition matter. TRIGGER when user asks to design, lay out, or build any interface or page with text. Provides Listen Labs typographic hierarchy, spacing rhythm, lockup patterns, grid rules, and responsive scaling — all using Inter Regular 400 only. This is a foundation skill that /research-artifacts, /report, /data-viz, and /pptx build on."
-allowed-tools: mcp__listen-labs-brand__get_full_guidelines mcp__plugin_listen-labs-brand_listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_typography mcp__plugin_listen-labs-brand_listen-labs-brand__get_typography mcp__listen-labs-brand__get_spacing mcp__plugin_listen-labs-brand_listen-labs-brand__get_spacing mcp__listen-labs-brand__get_css_variables mcp__plugin_listen-labs-brand_listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_art_direction mcp__plugin_listen-labs-brand_listen-labs-brand__get_art_direction
+description: "Foundation skill for typographic hierarchy, spacing rhythm, lockups, reading measure, and fluid type — all using Inter Regular 400 only. Load it alongside whichever skill owns the deliverable (/research-artifacts for pages, one-pagers, dashboards, and landing pages; /report for longform reports; /data-viz for charts; /pptx for decks) whenever text hierarchy or composition matters. Use it on its own only for pure typography questions (a type scale, a lockup, a heading system). It does not choose or produce the artifact by itself."
+allowed-tools: Read Write Edit mcp__listen-labs-brand__get_full_guidelines mcp__plugin_listen-labs-brand_listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_typography mcp__plugin_listen-labs-brand_listen-labs-brand__get_typography mcp__listen-labs-brand__get_spacing mcp__plugin_listen-labs-brand_listen-labs-brand__get_spacing mcp__listen-labs-brand__get_css_variables mcp__plugin_listen-labs-brand_listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_art_direction mcp__plugin_listen-labs-brand_listen-labs-brand__get_art_direction mcp__listen-labs-brand__get_header_convention mcp__plugin_listen-labs-brand_listen-labs-brand__get_header_convention
 ---
 
 # Listen Labs Typography Skill
@@ -120,7 +120,7 @@ Space above a heading is always greater than space below it. This groups the hea
 
 ### Section Breaks
 
-Major sections are separated by 64-96px of vertical space — or a full-width 1px rule in `content-disabled`. This breathing room is the editorial technique that gives layouts their premium, unhurried feel.
+Major sections are separated by 96px desktop / 64px tablet / 48px mobile of vertical space (the canonical rhythm in `skills/_shared/brand-compliance.md`) — or a full-width 1px rule in `content-disabled`. This breathing room is the editorial technique that gives layouts their premium, unhurried feel.
 
 ### The 4px Vertical Rhythm Grid
 

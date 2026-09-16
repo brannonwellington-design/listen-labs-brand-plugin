@@ -1,7 +1,7 @@
 ---
 name: data-viz
 description: "Generate professional, brand-compliant Chart.js data visualizations as self-contained HTML files. This is the Chart.js rendering engine of the plugin: use it when the user asks for Chart.js, wants interactive tooltips/legends, or a chart is embedded in a /report. TRIGGER on chart, graph, plot, visualize, dashboard when Chart.js is the right engine; for chart *selection* (which chart for which data), research deliverables (one-pagers, journey maps, cross-tabs, concept tests, maps), SVG/D3 rendering, or any other brand's styling, /research-artifacts is the front door and delegates here. Always produces Listen Labs branded output."
-allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__plugin_listen-labs-brand_listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__plugin_listen-labs-brand_listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__plugin_listen-labs-brand_listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_data_visualization mcp__plugin_listen-labs-brand_listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_dataviz_palettes mcp__plugin_listen-labs-brand_listen-labs-brand__get_dataviz_palettes mcp__listen-labs-brand__get_typography mcp__plugin_listen-labs-brand_listen-labs-brand__get_typography
+allowed-tools: Read Write Edit Bash(python3 *) Bash(open *) Bash(start *) Bash(xdg-open *) mcp__listen-labs-brand__get_full_guidelines mcp__plugin_listen-labs-brand_listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__plugin_listen-labs-brand_listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__plugin_listen-labs-brand_listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_data_visualization mcp__plugin_listen-labs-brand_listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_dataviz_palettes mcp__plugin_listen-labs-brand_listen-labs-brand__get_dataviz_palettes mcp__listen-labs-brand__get_typography mcp__plugin_listen-labs-brand_listen-labs-brand__get_typography mcp__listen-labs-brand__get_header_convention mcp__plugin_listen-labs-brand_listen-labs-brand__get_header_convention mcp__listen-labs-brand__get_spacing mcp__plugin_listen-labs-brand_listen-labs-brand__get_spacing
 ---
 
 # Listen Labs Data Visualization Skill
@@ -26,7 +26,7 @@ Every visualization follows this exact sequence:
 4. **Reference chart patterns** — pick the chart type with `skills/research-artifacts/references/charts.md` (selection rules), then check `skills/data-viz/references/chart-patterns.md` for the correct Chart.js configuration for that type.
 5. **Populate with data** — insert the user's data into the Chart.js config. Apply color rules via the `dataViz*` helpers (mode-aware) — never write raw hex.
 6. **Run self-audit** — check every item in the audit checklist below before delivering.
-7. **Write and open** — save as a single `.html` file and open in the browser.
+7. **Write and open** — save as a single `.html` file and open it in the default browser (`open` on macOS, `xdg-open` on Linux, `start` on Windows; if none applies, print the absolute path).
 
 ---
 
@@ -108,7 +108,7 @@ Use the helpers in `skeleton.html` (`dataVizSeries(n)`, `dataVizSequential(n)`, 
 
 ### Layout and Responsiveness
 - **All elements must flex horizontally** without distortion. Circles stay circular, squares stay square. Use `maintainAspectRatio: false` with a constrained container height.
-- **Chart container**: `width: 100%; max-width: 800px; margin: 0 auto;` with a fixed height (400px default, adjustable).
+- **Chart container**: `width: 100%; max-width: 800px; margin: 0 auto;` with a fixed height (400px default for a standalone chart; 320px when embedded in a `/report`, whose reading column is narrower).
 
 ### Structure
 - **Branded header** at top of every output. Call `get_header_convention` for the canonical spec.
@@ -177,7 +177,7 @@ function brandShades(count) {
 - **Chart.js CDN**: `https://cdn.jsdelivr.net/npm/chart.js@4`
 - **Inter font**: `https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap`
 - **File location**: Write to the current working directory with a descriptive filename (e.g., `revenue-by-quarter.html`).
-- **Auto-open**: After writing, run `open <filename>.html` to preview in browser.
+- **Auto-open**: After writing, open the file with the platform command (`open` macOS · `xdg-open` Linux · `start` Windows); otherwise print the absolute path.
 
 ---
 
@@ -187,7 +187,7 @@ Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` 
 
 - [ ] Skeleton was used as the starting point
 - [ ] All colors via CSS custom properties — no raw hex in JS/chart config
-- [ ] Palette mode is set explicitly on `<main>` (`data-dataviz-palette="brand"` or `"global"`)
+- [ ] Palette mode is set explicitly on the chart's wrapper (`<main>` in a standalone chart, the `<figure>` in a report) via `data-dataviz-palette="brand"` or `"global"`
 - [ ] Data series use the right palette type (categorical/sequential/diverging/highlight/semantic) for the data shape
 - [ ] Categorical series count is within caps (≤5 brand, ≤7 global; ≤10 hard with "Other" rollup)
 - [ ] Multi-line / ≥5-series charts use redundant encoding (line-style + marker shape, not just color)

@@ -1,6 +1,7 @@
 ---
 name: pptx
 description: "Use this skill any time a .pptx file is involved — creating slide decks, pitch decks, presentations, or editing existing .pptx files. TRIGGER when user mentions 'deck', 'slides', 'presentation', 'pptx', or references a .pptx filename. Always produces Listen Labs branded output. This skill layers brand constraints on top of the built-in Anthropic PPTX skill — use the built-in skill's pptxgenjs.md for the full PptxGenJS API reference and editing.md for template workflows."
+allowed-tools: Read Write Edit Bash(node *) Bash(npm *) Bash(python *) Bash(python3 *) Bash(soffice *) Bash(pdftoppm *) mcp__listen-labs-brand__get_full_guidelines mcp__plugin_listen-labs-brand_listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__plugin_listen-labs-brand_listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_typography mcp__plugin_listen-labs-brand_listen-labs-brand__get_typography mcp__listen-labs-brand__get_spacing mcp__plugin_listen-labs-brand_listen-labs-brand__get_spacing mcp__listen-labs-brand__get_header_convention mcp__plugin_listen-labs-brand_listen-labs-brand__get_header_convention mcp__listen-labs-brand__get_art_direction mcp__plugin_listen-labs-brand_listen-labs-brand__get_art_direction mcp__listen-labs-brand__get_dataviz_palettes mcp__plugin_listen-labs-brand_listen-labs-brand__get_dataviz_palettes
 ---
 
 # Listen Labs Presentation Skill
@@ -167,7 +168,8 @@ Verify: correct slide count, all titles populated, no placeholder text, no dupli
 
 Convert to images:
 ```bash
-python scripts/office/soffice.py --headless --convert-to pdf output.pptx
+# soffice.py ships with the built-in Anthropic PPTX skill — run it from that skill's directory, or call LibreOffice directly:
+soffice --headless --convert-to pdf output.pptx
 pdftoppm -jpeg -r 150 output.pdf slide
 ```
 
@@ -182,7 +184,7 @@ Listen Labs brand rules to check against:
 - Font should appear to be one weight throughout (no bold)
 - Text should not be ALL CAPS anywhere
 - Only one accent color (brand blue) used sparingly
-- Minimum 0.5" margin from all edges
+- Minimum 0.6" margin from all edges
 - No overlapping elements, no cut-off text
 - Clean alignment — nothing floats arbitrarily
 - Obvious size contrast between titles and body text
@@ -211,8 +213,8 @@ Report ALL issues found, including minor ones.
 Install before first use:
 
 ```bash
-npm install pptxgenjs
-pip install "markitdown[pptx]" Pillow
+npm install pptxgenjs                       # needs Node.js (https://nodejs.org)
+python3 -m pip install --user "markitdown[pptx]" Pillow   # or inside a venv if pip reports "externally-managed-environment"
 ```
 
-LibreOffice and Poppler are needed for visual QA (PDF conversion and image extraction).
+Visual QA needs LibreOffice (`soffice`) and Poppler (`pdftoppm`): macOS `brew install --cask libreoffice && brew install poppler`; Debian/Ubuntu `sudo apt install libreoffice poppler-utils`. If either is missing, skip Phase 2 and say so — never claim the deck was visually checked.
