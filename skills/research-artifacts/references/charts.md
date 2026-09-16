@@ -18,6 +18,9 @@ Two questions, in order: WHICH chart (selection), then HOW to draw it (rendering
 | Geography | Choropleth / proportional symbols (see deliverables.md §8) | 3D globes, pin clutter |
 | Ranking shift between two points | Slope chart | Two side-by-side bar charts |
 
+Rendering and volume ladder: SVG under ~1,000 elements; `<canvas>` 1,000–10,000; WebGL beyond that. By data volume: <20 points → simple chart, direct labels; 20–500 → standard; 500–5,000 → aggregate or filter first; 5,000+ → aggregation is mandatory (or canvas with intent). Never feed raw thousands into an SVG chart.
+Additional anti-patterns (hard bans): 3D charts; dual y-axes with unrelated scales; truncated/non-zero axes without a visible break indication; rainbow or HSV-equidistant ramps.
+Label defense (all chart types, not just pies): before rendering, account for the LONGEST label at the SMALLEST supported width — wrap to two lines max or truncate with the full text available on hover/tap; run collision spreading wherever labels can stack (pie leaders, endpoint labels, node labels, annotations). A single overlapping label makes the whole artifact read as broken.
 Defaults when in doubt: **bar and line charts work for almost anything** — most brand files prefer them. Reach elsewhere only when the data demands it.
 
 Qual-research specifics: small n → dot units or counts ("7 of 12"), not smooth percentages. Theme frequency → horizontal bars sorted descending, verbatim on hover/beside the top themes. Sentiment over interview time → line with Ekman-colored markers only where a specific emotion was coded.
@@ -26,11 +29,18 @@ Qual-research specifics: small n → dot units or counts ("7 of 12"), not smooth
 
 - SVG, drawn with plain JS or D3 (cdnjs), inside a responsive `viewBox`; text NOT scaled by viewBox distortion (use `preserveAspectRatio` sensibly or recompute on resize).
 - All strokes 1px. Axis lines: `--content-secondary`. Grid lines: `--content-disabled`, horizontal only unless both axes are continuous, and as few as comprehension needs (3–5). No chart border box. No axis line where a baseline gridline already does the job — fewer lines beat more.
-- Ticks: 10–12px Inter 400, `--content-secondary`. Numbers right-aligned on y, centered on x. Abbreviate (1.2k, 40%). Never rotate x labels 45° — use a horizontal bar chart instead.
+- Ticks: 10–12px, `--content-secondary`, with `font-variant-numeric: tabular-nums` on ALL numeric labels (axes, values, tooltips) so digits don't jitter or misalign. Numbers right-aligned on y, centered on x. Abbreviate (1.2k, 40%). Never rotate x labels 45° — use a horizontal bar chart instead.
 - Series colors: `--dataviz-categorical-*` in slot order. One-series charts use `--dataviz-highlight-accent`; when one series is the story among several, story = accent, rest = the highlight neutrals.
 - Direct labels at line ends / bar ends whenever they fit; legend only when direct labels can't work, and then as a single top row, 12px, swatch = 12px square, radius = smallest nonzero step of the brand radius scale.
-- Titles state findings (see deliverables.md §7). Every chart shows its n.
-- Animation: none by default. If asked: single 200–400ms ease-out reveal, no bouncing, nothing loops.
+- Titles state findings (see deliverables.md §7); subtitle names metric, unit, timeframe; a source/method line (10px, `--content-secondary`) closes the panel when the data has a source worth crediting. Every chart shows its n.
+- Scale domains come FROM THE DATA (`max` of the series), never a hand-typed round cap — a hardcoded cap silently pushes outliers off-canvas. Extend to a tidy tick above the true max if needed.
+- The Archie Tse rule: crucial information is visible WITHOUT interaction. Tooltips deepen the story (verbatims, exact bases); they never carry the only copy of something the reader needs. Design at 375px width first, then widen.
+- Interaction engineering (each rule prevents a real observed bug):
+  - Hover hit-layers live in the SAME transformed group/coordinate space as the marks they target — an overlay on the SVG root while marks sit in a translated `<g>` reads pointer coords off by the margins and highlights the wrong mark.
+  - Proximity, not pixels: never make a reader hover a 2–3px target. Give marks generous invisible hit areas, or for lines/scatter build a Delaunay/nearest-point snap so the closest mark responds.
+  - Anchor tooltips to the hovered MARK's box (centered above it) and transition left/top ~200ms so the tip glides between marks; a cursor-glued tooltip jitters and covers the data. One reusable highlight marker moves along lines to give the tip an anchor.
+  - Annotations drawn on the chart get a paper-colored text halo (`paint-order: stroke fill; stroke: var(--surface-primary); stroke-width: 3px`) and a short 1px leader lifting them clear of the data and axis ticks.
+- Animation: none by default. If asked (or established in the artifact's pattern): single 200–400ms ease-out reveal, no bouncing, nothing loops — and every reveal/transition is wrapped in a `prefers-reduced-motion: reduce` guard that skips straight to the final state.
 
 ## Rendering engines
 
@@ -53,7 +63,7 @@ Whatever the engine: colors resolve from `--dataviz-*` tokens (never raw hex in 
 
 **Line.** line weights per the brand chart primitives (default vs story line). Points marked only at data points that matter (ends, inflections, annotations) — 4–6px circles, filled `--surface-primary` with 1px series-color stroke. Multi-line: redundant encoding (solid/dashed/dotted + marker shape) per the active brand file. Y-axis may start non-zero ONLY with a visible axis break note; default zero.
 
-**Pie (when justified).** ≤5 slices, largest starting at 12 o'clock going clockwise, remainder rolled to "Other" in `--dataviz-highlight-neutral-3`. 1px `--surface-primary` gaps between slices (matches the bar gap logic). Outside labels use ELBOW leaders — a radial stub from the arc, then a short horizontal run, text anchored past the elbow — never straight radial lines: a radial leader's approach angle depends on slice position, so near 6 and 12 o'clock it stabs vertically into the lettering. Spread same-side labels to a minimum vertical separation (≈2 text rows) before drawing leaders, so adjacent thin slices don't stack their labels. Text sits beside the elbow end, never touching the line. Labels inside only if ≥4.5:1. Never a legend for a pie — if labels don't fit, it should've been a bar.
+**Pie (when justified).** ≤5 slices, largest starting at 12 o'clock going clockwise, remainder rolled to "Other" in `--dataviz-highlight-neutral-3`. Visual 1px `--surface-primary` gaps between slices, achieved with a 2px `--surface-primary` stroke on each slice path (each edge contributes half). Outside labels use ELBOW leaders — a radial stub from the arc, then a short horizontal run, text anchored past the elbow — never straight radial lines: a radial leader's approach angle depends on slice position, so near 6 and 12 o'clock it stabs vertically into the lettering. Spread same-side labels to a minimum vertical separation (≈2 text rows) before drawing leaders, so adjacent thin slices don't stack their labels. Text sits beside the elbow end, never touching the line. Labels inside only if ≥4.5:1. Never a legend for a pie — if labels don't fit, it should've been a bar.
 
 **Venn (concept only).** 2–3 circles, `--dataviz-categorical-*` strokes at 1px with 8–10% fill opacity of the same colors; intersection labels in `--content-primary`. State in a footnote that areas are NOT proportional. If the user wants proportional overlap: switch to an UpSet-style layout (intersection-size bars above a dot-membership matrix) — it's honest and it looks more original than a Venn anyway.
 
@@ -65,9 +75,11 @@ Whatever the engine: colors resolve from `--dataviz-*` tokens (never raw hex in 
 
 **Slope chart.** Two vertical baselines, 1px connecting lines, story lines in accent, rest in neutrals, direct labels both ends.
 
+For explorable views (dashboards, explorers) follow Shneiderman's mantra: overview first, zoom and filter second, details on demand last — the default render is the overview, never an empty state waiting for input.
+
 ## Canvas & generative (open-ended visual prompts)
 
-`<canvas>` (or SVG particle systems) is for texture, motion, and >1000-element renders — not for standard charts. When a prompt calls for something generative/expressive (an ambient visual of interview activity, a poster-like data texture): seed all randomness (`mulberry32(seed)`) so outputs are reproducible; expose the 2–4 parameters that matter as plain variables at the top of the script; draw only with token colors (pull them via `getComputedStyle(document.documentElement).getPropertyValue('--content-brand')` so theme switching still works); respect the physics — even generative work gets the branded header, the type rules, and one dominant visual idea. `requestAnimationFrame` for motion; static poster output should also render at 2× via `devicePixelRatio` scaling so exports stay crisp.
+`<canvas>` (or SVG particle systems) is for texture, motion, and >1000-element renders — not for standard charts. When a prompt calls for something generative/expressive (an ambient visual of interview activity, a poster-like data texture): seed all randomness (`mulberry32(seed)`) so outputs are reproducible; expose the 2–4 parameters that matter as plain variables at the top of the script; draw only with token colors (pull them via `getComputedStyle(document.documentElement).getPropertyValue('--content-brand')` so theme switching still works); respect the physics — even generative work gets the brand header, the type rules, and one dominant visual idea. Tune parameters until the output looks mastered — controlled chaos, not first-render noise; if the first seed looks accidental, iterate the parameters, not the disclaimer. `requestAnimationFrame` for motion; static poster output should also render at 2× via `devicePixelRatio` scaling so exports stay crisp.
 
 ## Library loading (single-file artifacts)
 

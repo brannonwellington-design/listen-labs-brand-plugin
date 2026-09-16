@@ -18,7 +18,7 @@ Generate professional, brand-compliant research reports as self-contained HTML f
 
 1. **Read brand-compliance** — read `skills/_shared/brand-compliance.md` for universal rules.
 2. **Load brand tokens** — call `get_css_variables`, `get_typography`, `get_spacing`, `get_header_convention`, and `get_art_direction` from the brand MCP. Never hardcode tokens.
-3. **Copy the skeleton** — start from `skills/report/references/skeleton.html`. Copy completely, then modify.
+3. **Copy the skeleton** — start from `skills/report/references/skeleton.html`. Copy completely, then modify. For the column grid, baseline lock, and optical alignment of display type, apply `skills/research-artifacts/references/grid-engineering.md` (grid variables in `:root`, subgrid bands, line-heights and media heights as multiples of the baseline, in-page audit before delivery).
 4. **Plan the structure** — outline all sections before writing content. Every report needs at minimum: cover, executive summary, and findings. Reference `skills/report/references/section-patterns.md`.
 5. **Apply emotion coding** — when findings reference emotional data, use emotion callouts from `skills/report/references/emotion-callouts.md`. Emotion tokens are reserved exclusively for Ekman emotion data.
 6. **Embed visualizations** — embed Chart.js charts inline using `/data-viz` patterns. Charts inherit the report's CSS variables automatically.

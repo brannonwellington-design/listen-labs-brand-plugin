@@ -132,6 +132,8 @@ When line heights are also snapped to multiples of 4px, text across adjacent col
 
 ## Grid and Measure
 
+The engineering side of the grid (CSS variables as the single source of truth, subgrid bands, baseline lock, optical ink alignment for display type, the `G`-key overlay and the in-page audit) lives in `skills/research-artifacts/references/grid-engineering.md`. This section covers measure and composition; use both.
+
 ### Reading Measure (Line Length)
 
 Body text must never exceed 720px or approximately 65-75 characters per line. On a 12-column desktop grid:
