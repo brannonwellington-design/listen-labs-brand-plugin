@@ -9,8 +9,8 @@ Output:
 The research-artifacts skill separates brand-independent "physics" from the
 per-brand "voice". The voice for Listen Labs lives in this generated file so
 it can never drift from the values the MCP server and the brand site serve.
-Other brand files in the same folder (e.g. anthropic.md) are authored by hand
-against references/brands/_contract.md.
+Any other brand file added to the same folder is authored by hand against
+references/brands/_contract.md; the plugin ships with Listen Labs only.
 
 Run directly:  python3 generate_brand_file.py
 Also runs automatically via the pre-commit hook.
