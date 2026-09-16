@@ -6,7 +6,7 @@ allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_gui
 
 # Listen Labs Data Visualization Skill
 
-**Path convention.** Paths in this skill and its reference files that begin with `skills/` are relative to the plugin root (the directory that contains this skill's folder, two levels up from this file when installed as a plugin). Paths that begin with `references/` are relative to this skill's own folder.
+**Path convention.** This skill's folder is `${CLAUDE_SKILL_DIR}` and the plugin root is `${CLAUDE_SKILL_DIR}/../..`. Paths in this skill and its reference files that begin with `skills/` are relative to that plugin root (so `skills/_shared/brand-compliance.md` is `${CLAUDE_SKILL_DIR}/../_shared/brand-compliance.md`). Paths that begin with `references/` are relative to this skill's folder.
 
 Generate self-contained, brand-compliant HTML files with Chart.js visualizations that meet Listen Labs design standards. Output should be indistinguishable from hand-crafted professional work.
 

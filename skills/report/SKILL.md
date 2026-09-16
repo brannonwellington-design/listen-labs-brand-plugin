@@ -6,7 +6,7 @@ allowed-tools: Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__plu
 
 # Listen Labs Report Skill
 
-**Path convention.** Paths in this skill and its reference files that begin with `skills/` are relative to the plugin root (the directory that contains this skill's folder, two levels up from this file when installed as a plugin). Paths that begin with `references/` are relative to this skill's own folder.
+**Path convention.** This skill's folder is `${CLAUDE_SKILL_DIR}` and the plugin root is `${CLAUDE_SKILL_DIR}/../..`. Paths in this skill and its reference files that begin with `skills/` are relative to that plugin root (so `skills/_shared/brand-compliance.md` is `${CLAUDE_SKILL_DIR}/../_shared/brand-compliance.md`). Paths that begin with `references/` are relative to this skill's folder.
 
 Generate professional, brand-compliant research reports as self-contained HTML files. Reports open in any browser and print cleanly to PDF. This is the flagship Listen Labs deliverable — every element must meet editorial-quality standards.
 

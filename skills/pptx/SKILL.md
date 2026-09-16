@@ -5,7 +5,7 @@ description: "Use this skill any time a .pptx file is involved — creating slid
 
 # Listen Labs Presentation Skill
 
-**Path convention.** Paths in this skill and its reference files that begin with `skills/` are relative to the plugin root (the directory that contains this skill's folder, two levels up from this file when installed as a plugin). Paths that begin with `references/` are relative to this skill's own folder.
+**Path convention.** This skill's folder is `${CLAUDE_SKILL_DIR}` and the plugin root is `${CLAUDE_SKILL_DIR}/../..`. Paths in this skill and its reference files that begin with `skills/` are relative to that plugin root (so `skills/_shared/brand-compliance.md` is `${CLAUDE_SKILL_DIR}/../_shared/brand-compliance.md`). Paths that begin with `references/` are relative to this skill's folder.
 
 Generate professional, brand-compliant PowerPoint presentations using PptxGenJS. This skill enforces Listen Labs design standards on every slide. It composes with the built-in Anthropic PPTX skill — use their `pptxgenjs.md` for API details and `editing.md` for template editing.
 
