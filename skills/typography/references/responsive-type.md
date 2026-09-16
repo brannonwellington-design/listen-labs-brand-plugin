@@ -6,6 +6,8 @@ Fluid type scaling for Listen Labs layouts. Headings scale smoothly between mobi
 
 ## Principles
 
+> **Container, not viewport.** Artifacts render in panes, so fluid values use container query units (`cqi`, `cqw`) instead of `vw`; the `vw` forms below are the equivalent for a page that owns the whole viewport. Every `clamp()` runs between two sizes that are both on the brand type scale, and line-heights are written in px snapped to the 4px grid at each end (unitless leading pushes display type off the baseline grid — see `grid-engineering.md`).
+
 1. **Headings scale. Body doesn't.** Display, H1, H2, and H3 sizes reduce on smaller screens. Body (16px), caption (12px), and micro (10px) are fixed — they're already at minimum readable sizes.
 2. **Never use `vw` alone for font-size.** Always wrap in `clamp()` with pixel min and max values. Bare `vw` breaks browser zoom (WCAG accessibility violation).
 3. **Hierarchy compresses on mobile.** Desktop might have an 8x ratio between display and caption. Mobile compresses to ~3-4x. This is fine — smaller screens have less competing content, so less contrast is needed.

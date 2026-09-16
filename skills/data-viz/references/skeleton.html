@@ -13,22 +13,26 @@
     /* ── Reset ─────────────────────────────────────────────── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { color-scheme: light dark; }
+    h1, h2, h3 { text-wrap: balance; }
+    p, figcaption { text-wrap: pretty; }
+    .chart-sub, figcaption, .tabular { font-variant-numeric: tabular-nums; }
     :focus-visible {
       outline: 2px solid var(--content-primary);
       outline-offset: 2px;
     }
 
-    /*
-     * Brand tokens — Paper theme (default).
-     *
-     * Always populated from `get_css_variables(theme=<paper|whisp>, mode='both')`
-     * at generation time. The values below are the current Paper light/dark
-     * snapshot. To switch themes, replace both blocks with the output of
-     * get_css_variables for the chosen theme. Token NAMES are identical across
-     * themes — only values change.
-     */
+    /* @brand-tokens:start */
+
+    /* GENERATED from brand_data.py by generate_skeleton_tokens.py — do not edit by hand.
+
+     * Themes: paper (default) + whisp. Pick one per artifact with data-theme on <html>.
+
+     * Mode: follows the OS via prefers-color-scheme; force with data-mode="light|dark" on <html>.
+
+     * Print always uses the chosen theme's light tokens. Token NAMES are identical across themes. */
+
     :root {
-      /* Paper - Light */
+      /* Paper — light (default) */
       --content-primary: #120F08;
       --content-secondary: #6B6861;
       --content-inverse-primary: #F9F4EB;
@@ -43,7 +47,6 @@
       --content-warning: #B85814;
       --content-negative: #B82214;
       --content-positive: #0F8A38;
-
       --surface-highlight: #FBF9F4;
       --surface-primary: #F9F4EB;
       --surface-secondary: #EEE8DD;
@@ -61,7 +64,7 @@
       --surface-positive-primary: #14B84B;
       --surface-positive-secondary: #D6F5E0;
 
-      /* Emotion tokens (shared across themes) */
+      /* Emotion tokens — reserved for the six Ekman emotions */
       --emotion-anger-primary: #BF4040;
       --emotion-anger-secondary: rgba(191, 64, 64, 0.10);
       --emotion-happiness-primary: #D99E26;
@@ -76,14 +79,146 @@
       --emotion-fear-secondary: rgba(149, 64, 191, 0.10);
     }
 
-    /*
-     * Data-viz palette tokens — brand mode (default) and global mode.
-     *
-     * Token NAMES are identical across modes; only resolved values differ.
-     * Charts swap modes by setting `data-dataviz-palette="brand"` or
-     * `data-dataviz-palette="global"` on any ancestor (typically <main>).
-     * Always populated from `get_dataviz_palettes(include_css=true)`.
-     */
+    :root[data-theme="whisp"] {
+      /* Whisp — light (tokens that differ from paper) */
+      --content-primary: #1A1A1A;
+      --content-secondary: #666666;
+      --content-inverse-primary: #E5E5E5;
+      --content-inverse-secondary: #999999;
+      --content-disabled: #B2B2B2;
+      --content-inverse-disabled: #4D4D4D;
+      --content-brand-contrast: #E5E5E5;
+      --surface-highlight: #FFFFFF;
+      --surface-primary: #FAFAFA;
+      --surface-secondary: #F0F0F0;
+      --surface-tertiary: #E0E0E0;
+      --surface-inverse-primary: #1A1A1A;
+      --surface-inverse-secondary: #262626;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-mode="light"]) {
+        /* Paper — dark (tokens that differ from light) */
+        --content-primary: #F9F4EB;
+        --content-secondary: #9E9B94;
+        --content-inverse-primary: #120F08;
+        --content-inverse-secondary: #6B6861;
+        --content-disabled: #504E49;
+        --content-inverse-disabled: #B6B4AF;
+        --content-brand: #3354FF;
+        --surface-highlight: #080603;
+        --surface-primary: #130F06;
+        --surface-secondary: #201C13;
+        --surface-tertiary: #30291D;
+        --surface-inverse-primary: #F9F4EB;
+        --surface-inverse-secondary: #F0E9DB;
+        --surface-brand-secondary: #131939;
+      }
+      :root[data-theme="whisp"]:not([data-mode="light"]) {
+        /* Whisp — dark */
+        --content-primary: #E5E5E5;
+        --content-secondary: #999999;
+        --content-inverse-primary: #1A1A1A;
+        --content-inverse-secondary: #666666;
+        --content-disabled: #4D4D4D;
+        --content-inverse-disabled: #B2B2B2;
+        --content-brand: #3354FF;
+        --surface-highlight: #000000;
+        --surface-primary: #1A1A1A;
+        --surface-secondary: #262626;
+        --surface-tertiary: #333333;
+        --surface-inverse-primary: #FAFAFA;
+        --surface-inverse-secondary: #F0F0F0;
+        --surface-brand-secondary: #131939;
+      }
+    }
+
+    :root[data-mode="dark"] {
+      --content-primary: #F9F4EB;
+      --content-secondary: #9E9B94;
+      --content-inverse-primary: #120F08;
+      --content-inverse-secondary: #6B6861;
+      --content-disabled: #504E49;
+      --content-inverse-disabled: #B6B4AF;
+      --content-brand: #3354FF;
+      --surface-highlight: #080603;
+      --surface-primary: #130F06;
+      --surface-secondary: #201C13;
+      --surface-tertiary: #30291D;
+      --surface-inverse-primary: #F9F4EB;
+      --surface-inverse-secondary: #F0E9DB;
+      --surface-brand-secondary: #131939;
+    }
+    :root[data-theme="whisp"][data-mode="dark"] {
+      --content-primary: #E5E5E5;
+      --content-secondary: #999999;
+      --content-inverse-primary: #1A1A1A;
+      --content-inverse-secondary: #666666;
+      --content-disabled: #4D4D4D;
+      --content-inverse-disabled: #B2B2B2;
+      --content-brand: #3354FF;
+      --surface-highlight: #000000;
+      --surface-primary: #1A1A1A;
+      --surface-secondary: #262626;
+      --surface-tertiary: #333333;
+      --surface-inverse-primary: #FAFAFA;
+      --surface-inverse-secondary: #F0F0F0;
+      --surface-brand-secondary: #131939;
+    }
+
+    @media print {
+      :root, :root:not([data-mode="light"]), :root[data-mode="dark"] {
+        --content-primary: #120F08;
+        --content-secondary: #6B6861;
+        --content-inverse-primary: #F9F4EB;
+        --content-inverse-secondary: #9E9B94;
+        --content-disabled: #B6B4AF;
+        --content-inverse-disabled: #504E49;
+        --content-brand: #0021CC;
+        --content-brand-secondary: #7A85B8;
+        --content-brand-contrast: #F9F4EB;
+        --content-brand-contrast-secondary: #9CA3C9;
+        --content-complimentary: #B88114;
+        --content-warning: #B85814;
+        --content-negative: #B82214;
+        --content-positive: #0F8A38;
+        --surface-highlight: #FBF9F4;
+        --surface-primary: #F9F4EB;
+        --surface-secondary: #EEE8DD;
+        --surface-tertiary: #E2DCCF;
+        --surface-inverse-primary: #120F08;
+        --surface-inverse-secondary: #1F1B14;
+        --surface-brand-primary: #0021CC;
+        --surface-brand-secondary: #D9DDF2;
+        --surface-complimentary-primary: #E5A119;
+        --surface-complimentary-secondary: #F5EBD6;
+        --surface-warning-primary: #CF6317;
+        --surface-warning-secondary: #F5E3D6;
+        --surface-negative-primary: #CF2617;
+        --surface-negative-secondary: #F5D9D6;
+        --surface-positive-primary: #14B84B;
+        --surface-positive-secondary: #D6F5E0;
+      }
+      :root[data-theme="whisp"], :root[data-theme="whisp"]:not([data-mode="light"]), :root[data-theme="whisp"][data-mode="dark"] {
+        --content-primary: #1A1A1A;
+        --content-secondary: #666666;
+        --content-inverse-primary: #E5E5E5;
+        --content-inverse-secondary: #999999;
+        --content-disabled: #B2B2B2;
+        --content-inverse-disabled: #4D4D4D;
+        --content-brand-contrast: #E5E5E5;
+        --surface-highlight: #FFFFFF;
+        --surface-primary: #FAFAFA;
+        --surface-secondary: #F0F0F0;
+        --surface-tertiary: #E0E0E0;
+        --surface-inverse-primary: #1A1A1A;
+        --surface-inverse-secondary: #262626;
+      }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      @page { size: auto; margin: 16mm; }
+    }
+
+    /* Data-viz palette tokens — brand mode (default) */
     :root,
     [data-dataviz-palette="brand"] {
       --dataviz-categorical-1: hsl(229, 100%, 40%);
@@ -117,6 +252,7 @@
       --dataviz-semantic-neutral: #8D8D8D;
     }
 
+    /* Data-viz palette tokens — global (best-practices) mode */
     [data-dataviz-palette="global"] {
       --dataviz-categorical-1: #0072B2;
       --dataviz-categorical-2: #E69F00;
@@ -149,30 +285,15 @@
       --dataviz-semantic-neutral: #8D8D8D;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        /* Paper - Dark (only tokens that differ from light) */
-        --content-primary: #F9F4EB;
-        --content-secondary: #9E9B94;
-        --content-inverse-primary: #120F08;
-        --content-inverse-secondary: #6B6861;
-        --content-disabled: #504E49;
-        --content-inverse-disabled: #B6B4AF;
-        --content-brand: #3354FF;
+    /* @brand-tokens:end */
 
-        --surface-highlight: #080603;
-        --surface-primary: #130F06;
-        --surface-secondary: #201C13;
-        --surface-tertiary: #30291D;
-        --surface-inverse-primary: #F9F4EB;
-        --surface-inverse-secondary: #F0E9DB;
-        --surface-brand-secondary: #131939;
-      }
-    }
+    .chart-unavailable { font-size: 12px; line-height: 16px; color: var(--content-secondary); padding: 24px; border: 1px solid var(--surface-tertiary); border-radius: 8px; }
 
     /* ── Base ──────────────────────────────────────────────── */
+    /* The artifact responds to its CONTAINER (a product-canvas pane, an embed), not the screen. */
+    body { container-type: inline-size; }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
       font-weight: 400;
       background: var(--surface-primary);
       color: var(--content-primary);
@@ -203,17 +324,25 @@
       padding: 80px 24px 48px;
     }
 
+    /* Title states the finding; subtitle names metric, unit, timeframe and n. */
+    .chart-head { margin-bottom: 16px; }
+    .chart-head h1 { font-size: 16px; line-height: 24px; color: var(--content-primary); }
+    .chart-sub { font-size: 12px; line-height: 16px; color: var(--content-secondary); margin-top: 4px; }
+
     figure {
       position: relative;
       width: 100%;
-      height: 400px;
+      height: 400px;            /* re-laid out per container width below — never left to distort */
     }
+    @container (max-width: 600px) { figure { height: 280px; } }
+    @supports not (container-type: inline-size) { @media (max-width: 600px) { figure { height: 280px; } } }
 
     figcaption {
-      font-size: 10px;
-      color: var(--content-secondary);
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--content-disabled);
       margin-top: 12px;
-      text-align: center;
+      text-align: left;
     }
 
     canvas {
@@ -225,6 +354,7 @@
     @media print {
       body { background: #fff; }
       .ll-header { position: static; margin-bottom: 24px; }
+      figure { break-inside: avoid; }
       main { padding-top: 0; }
     }
 
@@ -236,7 +366,7 @@
 </head>
 <body>
 
-  <!-- Branded header -->
+  <!-- Branded header — keep for standalone files/exports; DELETE this element (and the body/main top padding that makes room for it) when the artifact lives inside the Listen Labs product canvas -->
   <div class="ll-header">
     <span class="ll-brand">Listen Labs /</span>
     <span class="ll-title"> Chart Title</span>
@@ -249,20 +379,29 @@
     ColorBrewer RdBu diverging). Token names are identical across modes.
   -->
   <main data-dataviz-palette="brand">
+    <header class="chart-head">
+      <h1>Finding stated as a sentence, not the metric name</h1>
+      <p class="chart-sub">Metric · unit · timeframe · n&nbsp;=&nbsp;24</p>
+    </header>
     <figure>
       <canvas id="chart" role="img" aria-label="Description of the chart data"></canvas>
       <figcaption><!-- Optional caption --></figcaption>
     </figure>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4" onerror="document.querySelectorAll('canvas').forEach(function(c){var m=document.createElement('p');m.className='chart-unavailable';m.textContent='Chart could not load (no network). Open this file online to see the visualization.';c.hidden=true;c.insertAdjacentElement('afterend',m);})"></script>
   <script>
+    // If Chart.js failed to load (offline), the <script onerror> above already swapped each canvas
+    // for a visible notice. This stub absorbs every Chart.* call so the rest of the page still works.
+    if (typeof Chart === 'undefined') {
+      var __chartStub = new Proxy(function () {}, { get: function (t, k) { return k === 'prototype' ? t.prototype : __chartStub; }, apply: function () { return __chartStub; }, construct: function () { return __chartStub; } });
+      window.Chart = __chartStub;
+    }
     // ── Disable animations globally ────────────────────────
     Chart.defaults.animation = false;
 
     // ── Read brand tokens from CSS variables ───────────────
     var style = getComputedStyle(document.documentElement);
-    var brandBlue = style.getPropertyValue('--surface-brand-primary').trim();
     var contentPrimary = style.getPropertyValue('--content-primary').trim();
     var contentSecondary = style.getPropertyValue('--content-secondary').trim();
     var contentDisabled = style.getPropertyValue('--content-disabled').trim();
@@ -274,24 +413,10 @@
     Chart.defaults.color = contentPrimary;
 
     // ── Monochromatic shade generator ──────────────────────
-    // Legacy: kept for backward compatibility. New charts should use
-    // dataVizSeries() below — it reads --dataviz-* tokens and respects the
-    // active palette mode (brand vs. global).
-    function brandShades(count) {
-      var shades = [];
-      var step = 50 / (count + 1);
-      for (var i = 0; i < count; i++) {
-        var lightness = 30 + (step * (i + 1));
-        shades.push('hsl(229, 100%, ' + lightness + '%)');
-      }
-      return shades;
-    }
-
-    // ── Palette-mode-aware helpers ─────────────────────────
-    // All helpers resolve --dataviz-* tokens from the canvas's nearest
-    // ancestor with `data-dataviz-palette`, falling back to :root. Swapping
-    // the attribute on <main> flips every chart inside it between brand and
-    // global without touching this code.
+    // @dataviz-helpers:start
+    // GENERATED by generate_skeleton_tokens.py — palette-mode-aware helpers. Do not edit by hand.
+    // Each helper resolves --dataviz-* tokens against the chart's nearest [data-dataviz-palette] ancestor,
+    // so the same chart code renders in brand or global mode by flipping one attribute.
     function dataVizScope(el) {
       return (el && el.closest && el.closest('[data-dataviz-palette]')) || document.documentElement;
     }
@@ -299,62 +424,56 @@
       return getComputedStyle(scope).getPropertyValue(name).trim();
     }
     function dataVizSeries(count, el) {
-      // Categorical palette. Soft cap 7, hard cap 10. Slots wrap past 8.
-      var scope = dataVizScope(el);
-      if (count > 10) {
-        console.warn('dataVizSeries: ' + count + ' categories exceeds the hard cap (10). Roll up to "Other".');
-      } else if (count > 7) {
-        console.warn('dataVizSeries: ' + count + ' categories exceeds the soft cap (7). Add direct labels rather than relying on the legend.');
-      }
-      var out = [];
-      for (var i = 0; i < count; i++) {
-        var slot = (i % 8) + 1;
-        out.push(dataVizToken(scope, '--dataviz-categorical-' + slot));
-      }
+      // Categorical: slots 1..8 in order. Brand mode is designed for ≤5 (6–8 are neutral grays);
+      // beyond 8 there are no more distinct tokens — roll the data up to "Other" instead of wrapping.
+      var scope = dataVizScope(el), out = [];
+      if (count > 8) console.warn('dataVizSeries: ' + count + ' series exceeds the 8-slot palette — roll up to "Other".');
+      for (var i = 0; i < Math.min(count, 8); i++) out.push(dataVizToken(scope, '--dataviz-categorical-' + (i + 1)));
       return out;
     }
     function dataVizSequential(count, el) {
-      // Ordered/continuous data. Returns `count` evenly-spaced stops from
-      // the 7-stop palette (100=lightest → 700=darkest).
-      var scope = dataVizScope(el);
-      var stops = [100, 200, 300, 400, 500, 600, 700];
-      if (count >= 7) return stops.map(function(s){ return dataVizToken(scope, '--dataviz-sequential-' + s); });
+      // Ordered/continuous data: `count` evenly spaced stops from the 7-stop ramp (100 lightest → 700 darkest).
+      // A single value gets the mid (500) stop so it is visible on the canvas.
+      var scope = dataVizScope(el), stops = [100, 200, 300, 400, 500, 600, 700];
+      if (count <= 1) return [dataVizToken(scope, '--dataviz-sequential-500')];
+      if (count >= 7) return stops.map(function (s) { return dataVizToken(scope, '--dataviz-sequential-' + s); });
       var picked = [];
-      for (var i = 0; i < count; i++) {
-        var idx = Math.round(i * (stops.length - 1) / Math.max(1, count - 1));
-        picked.push(dataVizToken(scope, '--dataviz-sequential-' + stops[idx]));
-      }
+      for (var i = 0; i < count; i++) picked.push(dataVizToken(scope, '--dataviz-sequential-' + stops[Math.round(i * 6 / (count - 1))]));
       return picked;
     }
     function dataVizDiverging(el) {
-      // Symmetric 7-stop palette for data with a meaningful midpoint.
+      // Data with a meaningful midpoint: 7 stops neg-3 … zero … pos-3.
       var scope = dataVizScope(el);
-      var keys = ['neg-3', 'neg-2', 'neg-1', 'zero', 'pos-1', 'pos-2', 'pos-3'];
-      return keys.map(function(k){ return dataVizToken(scope, '--dataviz-diverging-' + k); });
+      return ['neg-3', 'neg-2', 'neg-1', 'zero', 'pos-1', 'pos-2', 'pos-3'].map(function (k) { return dataVizToken(scope, '--dataviz-diverging-' + k); });
     }
     function dataVizHighlight(el) {
-      // "Spotlight" pattern: one accent + 3 neutral grays for de-emphasis.
+      // One focal series + de-emphasized rest.
       var scope = dataVizScope(el);
-      return {
-        accent:  dataVizToken(scope, '--dataviz-highlight-accent'),
-        neutral: [
-          dataVizToken(scope, '--dataviz-highlight-neutral-1'),
-          dataVizToken(scope, '--dataviz-highlight-neutral-2'),
-          dataVizToken(scope, '--dataviz-highlight-neutral-3'),
-        ],
-      };
+      return { accent: dataVizToken(scope, '--dataviz-highlight-accent'),
+               neutral: [1, 2, 3].map(function (n) { return dataVizToken(scope, '--dataviz-highlight-neutral-' + n); }) };
     }
     function dataVizSemantic(el) {
       var scope = dataVizScope(el);
-      return {
-        positive: dataVizToken(scope, '--dataviz-semantic-positive'),
-        negative: dataVizToken(scope, '--dataviz-semantic-negative'),
-        neutral:  dataVizToken(scope, '--dataviz-semantic-neutral'),
-      };
+      return { positive: dataVizToken(scope, '--dataviz-semantic-positive'),
+               negative: dataVizToken(scope, '--dataviz-semantic-negative'),
+               neutral: dataVizToken(scope, '--dataviz-semantic-neutral') };
     }
+    function dataVizTextTokens() {
+      // Re-read text/grid colors (call again on theme change and pass into chart.update()).
+      var s = getComputedStyle(document.documentElement);
+      return { primary: s.getPropertyValue('--content-primary').trim(),
+               secondary: s.getPropertyValue('--content-secondary').trim(),
+               disabled: s.getPropertyValue('--content-disabled').trim(),
+               surface: s.getPropertyValue('--surface-highlight').trim(),
+               hairline: s.getPropertyValue('--surface-tertiary').trim() };
+    }
+    // @dataviz-helpers:end
 
     // ── Chart ──────────────────────────────────────────────
-    var ctx = document.getElementById('chart').getContext('2d');
+    var canvas = document.getElementById('chart');
+    var ctx = canvas.getContext('2d');
+    var accent = dataVizHighlight(canvas).accent;   // single series → highlight accent (never a raw surface token)
+    var text = dataVizTextTokens();
     var chart = new Chart(ctx, {
       type: 'bar', // or 'line'
       data: {
@@ -362,8 +481,8 @@
         datasets: [{
           label: 'Series 1',
           data: [10, 20, 30, 40],
-          backgroundColor: brandBlue,
-          borderColor: brandBlue,
+          backgroundColor: accent,
+          borderColor: accent,
           borderWidth: 1,
           borderRadius: 2,
         }]
@@ -373,8 +492,8 @@
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: true,
-            position: 'bottom',
+            display: false,          // one series: the title carries the label; direct labels beat legends
+            position: 'top',
             labels: {
               font: { family: "'Inter', sans-serif", weight: 400, size: 12 },
               color: contentPrimary,
@@ -386,12 +505,15 @@
             }
           },
           tooltip: {
-            backgroundColor: contentPrimary,
-            titleColor: contentSecondary,
+            backgroundColor: text.surface,     // light card per components.md → Tooltips
+            borderColor: text.hairline,
+            borderWidth: 1,
+            titleColor: text.primary,
+            bodyColor: text.secondary,
             bodyFont: { family: "'Inter', sans-serif", weight: 400, size: 12 },
             titleFont: { family: "'Inter', sans-serif", weight: 400, size: 10 },
             padding: 12,
-            cornerRadius: 4,
+            cornerRadius: 8,
             displayColors: true,
             boxWidth: 8,
             boxHeight: 8,
@@ -424,6 +546,29 @@
         }
       }
     });
+
+    // ── Theme changes: re-read tokens and repaint (Chart.js bakes colors into the canvas) ──
+    function repaintCharts() {
+      var t = dataVizTextTokens();
+      Chart.defaults.color = t.primary;
+      (Chart.instances ? Object.values(Chart.instances) : [chart]).forEach(function (c) {
+        if (!c || !c.options) return;
+        var tip = c.options.plugins && c.options.plugins.tooltip;
+        if (tip) { tip.backgroundColor = t.surface; tip.borderColor = t.hairline; tip.titleColor = t.primary; tip.bodyColor = t.secondary; }
+        if (c.options.scales) Object.keys(c.options.scales).forEach(function (k) {
+          var sc = c.options.scales[k];
+          if (sc.ticks) sc.ticks.color = t.secondary;
+          if (sc.grid && sc.grid.display !== false) sc.grid.color = t.disabled;
+        });
+        if (c.data && c.data.datasets) c.data.datasets.forEach(function (d) {
+          if (d.__tokenRole === 'accent') { var a = dataVizHighlight(c.canvas).accent; d.backgroundColor = a; d.borderColor = a; }
+        });
+        c.update('none');
+      });
+    }
+    chart.data.datasets[0].__tokenRole = 'accent';
+    if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', repaintCharts);
+    new MutationObserver(repaintCharts).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-mode'] });
   </script>
 
 </body>

@@ -10,6 +10,20 @@ if git diff --cached --name-only | grep -qE "^(brand_data\.py|generate_guideline
     echo "GUIDELINES.md synced and staged."
 fi
 
+if git diff --cached --name-only | grep -qE "^(brand_data\.py|generate_brand_file\.py)$"; then
+    echo "Brand data or brand-file generator changed — regenerating the research-artifacts brand file..."
+    python3 "$REPO_DIR/generate_brand_file.py"
+    git add "$REPO_DIR/skills/research-artifacts/references/brands/listen-labs.md"
+    echo "listen-labs.md synced and staged."
+fi
+
+if git diff --cached --name-only | grep -qE "^(brand_data\.py|generate_skeleton_tokens\.py)$"; then
+    echo "Brand data or skeleton stamper changed — restamping skill skeletons..."
+    python3 "$REPO_DIR/generate_skeleton_tokens.py"
+    git add "$REPO_DIR/skills/report/references/skeleton.html" "$REPO_DIR/skills/data-viz/references/skeleton.html"
+    echo "Skeletons restamped and staged."
+fi
+
 if git diff --cached --name-only | grep -qE "^(brand_data\.py|generate_site\.py|templates/|assets/)"; then
     echo "Brand data, site generator, template, or assets changed — regenerating docs/..."
     python3 "$REPO_DIR/generate_site.py"

@@ -1,10 +1,12 @@
 ---
 name: typography
-description: "Use this skill when laying out type-heavy content — HTML pages, dashboards, artifacts, landing pages, emails, documents, or any layout where text hierarchy, spacing, and composition matter. TRIGGER when user asks to design, lay out, or build any interface or page with text. Provides Listen Labs typographic hierarchy, spacing rhythm, lockup patterns, grid rules, and responsive scaling — all using Inter Regular 400 only. This is a foundation skill that /data-viz and /pptx build on."
-allowed-tools: mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_typography mcp__listen-labs-brand__get_spacing mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_art_direction
+description: "Foundation skill for typographic hierarchy, spacing rhythm, lockups, reading measure, and fluid type — all using Inter Regular 400 only. Load it alongside whichever skill owns the deliverable (/research-artifacts for pages, one-pagers, dashboards, and landing pages; /report for longform reports; /data-viz for charts; /pptx for decks) whenever text hierarchy or composition matters. Use it on its own only for pure typography questions (a type scale, a lockup, a heading system). It does not choose or produce the artifact by itself."
+allowed-tools: Read Write Edit mcp__listen-labs-brand__get_full_guidelines mcp__plugin_listen-labs-brand_listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_typography mcp__plugin_listen-labs-brand_listen-labs-brand__get_typography mcp__listen-labs-brand__get_spacing mcp__plugin_listen-labs-brand_listen-labs-brand__get_spacing mcp__listen-labs-brand__get_css_variables mcp__plugin_listen-labs-brand_listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_art_direction mcp__plugin_listen-labs-brand_listen-labs-brand__get_art_direction mcp__listen-labs-brand__get_header_convention mcp__plugin_listen-labs-brand_listen-labs-brand__get_header_convention
 ---
 
 # Listen Labs Typography Skill
+
+**Path convention.** This skill's folder is `${CLAUDE_SKILL_DIR}` and the plugin root is `${CLAUDE_SKILL_DIR}/../..`. Paths in this skill and its reference files that begin with `skills/` are relative to that plugin root (so `skills/_shared/brand-compliance.md` is `${CLAUDE_SKILL_DIR}/../_shared/brand-compliance.md`). Paths that begin with `references/` are relative to this skill's folder.
 
 Achieve premium, editorial-quality hierarchy using only Inter Regular 400. Hierarchy comes from size, tier (visual weight), spacing, and composition — never from font weight.
 
@@ -54,8 +56,8 @@ Every text element in a layout must map to one of these roles. No arbitrary size
 | Body Lead | 18px | 16px | 1.6 | secondary | Sentence case |
 | Body Default | 16px | 16px | 1.6 | secondary | Sentence case |
 | Body Small | 14px | 14px | 1.5 | secondary | Sentence case |
-| Caption / Metadata | 12px | 12px | 1.4 | disabled | Sentence case |
-| Micro / Overline | 10px | 10px | 1.4 | disabled | Title Case |
+| Caption / Metadata | 12px | 12px | 1.4 (16px) | secondary | Sentence case |
+| Micro / Overline | 10px | 10px | 1.6 (16px) | secondary | Title Case — only for labels that repeat information available elsewhere |
 
 ### Line Height Rules
 
@@ -68,7 +70,7 @@ Line height has an inverse relationship with font size. Large text needs tight l
 | 14-20px | 1.5-1.6 | Reading text needs generous leading for comfortable scanning |
 | 10-12px | 1.4 | Small text needs air but not as much as body — it's scanned, not read line by line |
 
-**Snap line heights to multiples of 4px** for vertical rhythm:
+**Snap line heights to multiples of 4px** for vertical rhythm — the ratios in the hierarchy table are targets; the values you write are px: 48→52, 32→36, 24→28, 18→28, 16→24, 14→20, 12→16, 10→16:
 - 16px text × 1.5 = 24px line height (divisible by 4)
 - 14px text × ~1.71 = 24px line height (snap to 24px)
 - 48px text × 1.08 = ~52px line height (snap to 52px)
@@ -84,13 +86,13 @@ A three-tier system replaces bold. Each tier is a distinct opaque token chosen t
 |------|-------|---------|
 | Primary | `content-primary` | Headlines, titles, the single most important element per section |
 | Secondary | `content-secondary` | Body text, descriptions, supporting content — the workhorse tier |
-| Disabled | `content-disabled` | Metadata, timestamps, captions, divider lines, grid lines |
+| Quiet (“disabled tier”) | `content-secondary` at a smaller size | Metadata, timestamps, captions, attributions — quieter through size and spacing, never through the disabled token (`content-disabled` is 1.9:1 on Paper light and is reserved for divider lines, grid lines, placeholders, disabled controls) |
 
 ### Rules
 
 - A heading in `content-primary` paired with body in `content-secondary` produces the same visual contrast as a bold/regular pairing at the same size.
 - **Most running text lives in the secondary tier.** The primary tier is reserved for headings and the most important content. Do not use primary for body text when it appears alongside headings.
-- Captions and timestamps get the triple reduction: smaller size + lower tier + generous surrounding space. This makes them clearly subordinate without needing a lighter font weight.
+- Captions and timestamps get the triple reduction: smaller size + the secondary tier + generous surrounding space. This makes them clearly subordinate without needing a lighter font weight or a color that fails contrast.
 - **If two text elements are within 1.2x size of each other, they MUST differ in tier.** Same size + same tier = no hierarchy = a failure.
 
 ---
@@ -109,7 +111,7 @@ Space above a heading is always greater than space below it. This groups the hea
 | H2 (32px) | 40px | 16px | 2.5:1 |
 | H3 (24px) | 32px | 12px | 2.7:1 |
 | Body paragraph | — | 16px | — |
-| Section break | 64-96px | — | — |
+| Section break | 96px desktop · 64px tablet · 48px mobile | — | — |
 
 ### Paragraph Spacing
 
@@ -118,7 +120,7 @@ Space above a heading is always greater than space below it. This groups the hea
 
 ### Section Breaks
 
-Major sections are separated by 64-96px of vertical space — or a full-width 1px rule in `content-disabled`. This breathing room is the editorial technique that gives layouts their premium, unhurried feel.
+Major sections are separated by 96px desktop / 64px tablet / 48px mobile of vertical space (the canonical rhythm in `skills/_shared/brand-compliance.md`) — or a full-width 1px rule in `content-disabled`. This breathing room is the editorial technique that gives layouts their premium, unhurried feel.
 
 ### The 4px Vertical Rhythm Grid
 
@@ -131,6 +133,8 @@ When line heights are also snapped to multiples of 4px, text across adjacent col
 ---
 
 ## Grid and Measure
+
+The engineering side of the grid (CSS variables as the single source of truth, subgrid bands, baseline lock, optical ink alignment for display type, the `G`-key overlay and the in-page audit) lives in `skills/research-artifacts/references/grid-engineering.md`. This section covers measure and composition; use both.
 
 ### Reading Measure (Line Length)
 
@@ -158,7 +162,7 @@ This asymmetry creates visual sophistication. The right margin is active whitesp
 - **Left-aligned, ragged right for all text.** Never justified.
 - Left alignment creates a strong vertical anchor the eye returns to.
 - Ragged right eliminates uneven word spacing and creates organic texture.
-- Center alignment only for: the Listen Labs branded header and isolated single-line elements (hero headlines on landing pages, stat numbers on feature cards).
+- Center alignment only for: the Listen Labs branded header and an isolated single line (a cover title, a stat number on a tile). Heroes anchor left.
 
 ---
 
@@ -218,12 +222,12 @@ Tables, stat blocks, prices, dates, percentages, and any vertical column of numb
 ```
 
 ### Curly quotes and ellipsis in copy
-Always render literal `"` `"` `'` `'` and `…` in source text — never `"`, `'`, or `...`. This is a content rule (applies to every string Claude writes), not a CSS rule.
+Always render literal `“` `”` `‘` `’` and `…` in source text — never `"`, `'`, or `...`. This is a content rule (applies to every string Claude writes), not a CSS rule.
 
 | Wrong | Right |
 |-------|-------|
-| `"Design is how it works."` | `"Design is how it works."` |
-| `it's, don't` | `it's, don't` |
+| `"Design is how it works."` | `“Design is how it works.”` |
+| `it's, don't` | `it’s, don’t` |
 | `Loading...` | `Loading…` |
 
 ### Non-breaking spaces

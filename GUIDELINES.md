@@ -247,7 +247,7 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 
 ```css
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif; /* metric-compatible fallbacks: layout must not depend on the webfont */
   font-weight: 400;
   /* never add letter-spacing */
 }
@@ -271,13 +271,19 @@ Rules:
 - Both use the same font size — **default is 12px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
 - No letter-spacing added
 - Single line, space-separated with a `/` divider
+- **Where it appears:** Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the wordmark in the navigation instead of the credit line.
 
 HTML example:
 ```html
-<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:12px;">
-  <span style="color: var(--content-secondary)">Listen Labs /</span>
-  <span style="color: var(--content-primary)"> Project Title</span>
-</div>
+<header class="ll-header">
+  <span class="ll-brand">Listen Labs /</span>
+  <span class="ll-title">Project Title</span>
+</header>
+<style>
+  .ll-header { position: absolute; top: 24px; left: 0; right: 0; text-align: center; font-size: 12px; line-height: 16px; }
+  .ll-brand { color: var(--content-secondary); }
+  .ll-title { color: var(--content-primary); }
+</style>
 ```
 
 ---
@@ -404,7 +410,7 @@ Two interchangeable palettes share the same `--dataviz-*` token namespace. Token
 
 Token namespace (same in both modes): `--dataviz-categorical-{1..8}`, `--dataviz-sequential-{100..700}`, `--dataviz-diverging-{neg-3, neg-2, neg-1, zero, pos-1, pos-2, pos-3}`, `--dataviz-highlight-{accent, neutral-1, neutral-2, neutral-3}`, `--dataviz-semantic-{positive, negative, neutral}`. Emotion tokens (`--emotion-*`) remain reserved for the 6 Ekman emotions and are orthogonal to palette mode.
 
-Constraints: soft cap **7** categorical series; hard cap **10** (roll up to "Other" beyond). Brand mode practical cap is 5 — slots 6–8 fall back to neutral grays as a soft signal to switch to `global`. For 5+ series or any multi-line chart, encode redundantly (line-style + marker shape, not just color). Never red/green diverging — both shipped diverging palettes are CVD-safe.
+Constraints: soft cap **7** categorical series; hard cap **8** (roll up to "Other" beyond). Brand mode practical cap is 5 — slots 6–8 fall back to neutral grays as a soft signal to switch to `global`. For 5+ series or any multi-line chart, encode redundantly (line-style + marker shape, not just color). Never red/green diverging — both shipped diverging palettes are CVD-safe.
 
 ### Stroke Weight
 - **1px consistent stroke on all chart elements — axes, grid lines, data lines, borders**

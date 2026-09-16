@@ -19,6 +19,8 @@ Emotion-coded content blocks for Listen Labs reports. These patterns are used EX
 
 ## Callout Pattern
 
+> **Contrast.** Emotion tokens encode the code; they never carry legibility. The emotion label is set in `--content-primary` beside a swatch of the emotion color, not in the emotion color itself (happiness is 2.2:1 on Paper light). Markers, dots, and fills that fall under 3:1 on a light surface take a 1px `--content-primary` ring. Attributions use `--content-secondary`, never `--content-disabled`.
+
 Every emotion callout follows the same structure: colored left border + tinted background + emotion label + quote + attribution.
 
 ### HTML
