@@ -1,6 +1,6 @@
 ---
 name: typography
-description: "Use this skill when laying out type-heavy content — HTML pages, dashboards, artifacts, landing pages, emails, documents, or any layout where text hierarchy, spacing, and composition matter. TRIGGER when user asks to design, lay out, or build any interface or page with text. Provides Listen Labs typographic hierarchy, spacing rhythm, lockup patterns, grid rules, and responsive scaling — all using Inter Regular 400 only. This is a foundation skill that /data-viz and /pptx build on."
+description: "Use this skill when laying out type-heavy content — HTML pages, dashboards, artifacts, landing pages, emails, documents, or any layout where text hierarchy, spacing, and composition matter. TRIGGER when user asks to design, lay out, or build any interface or page with text. Provides Listen Labs typographic hierarchy, spacing rhythm, lockup patterns, grid rules, and responsive scaling — all using Inter Regular 400 only. This is a foundation skill that /research-artifacts, /report, /data-viz, and /pptx build on."
 allowed-tools: mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_typography mcp__listen-labs-brand__get_spacing mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_art_direction
 ---
 

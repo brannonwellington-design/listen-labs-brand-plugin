@@ -1,6 +1,6 @@
 ---
 name: data-viz
-description: Generate professional, brand-compliant data visualizations as self-contained HTML files. Use when creating charts, dashboards, data presentations, or any visual data output. TRIGGER when user asks to chart, graph, plot, visualize, or dashboard any data. Always produces Listen Labs branded output using Chart.js.
+description: "Generate professional, brand-compliant Chart.js data visualizations as self-contained HTML files. This is the Chart.js rendering engine of the plugin: use it when the user asks for Chart.js, wants interactive tooltips/legends, or a chart is embedded in a /report. TRIGGER on chart, graph, plot, visualize, dashboard when Chart.js is the right engine; for chart *selection* (which chart for which data), research deliverables (one-pagers, journey maps, cross-tabs, concept tests, maps), SVG/D3 rendering, or any other brand's styling, /research-artifacts is the front door and delegates here. Always produces Listen Labs branded output."
 allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_dataviz_palettes mcp__listen-labs-brand__get_typography
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_gui
 Generate self-contained, brand-compliant HTML files with Chart.js visualizations that meet Listen Labs design standards. Output should be indistinguishable from hand-crafted professional work.
 
 **Brand compliance is universal.** See `skills/_shared/brand-compliance.md` for the brand-wide rules every output must satisfy (themes, typography, spacing, header, emotion tokens). This skill adds chart-specific rules below.
+
+**Chart selection lives in `/research-artifacts`.** Before picking a chart type, check the selection table in `skills/research-artifacts/references/charts.md` (position beats length beats angle beats area; bars and lines for almost everything; pies only ≤5 slices; never dual-axis; small-n qual data as counts or dots, not percentages; titles state the finding, not the metric; every chart shows its n). This skill is the Chart.js *implementation* of that grammar.
 
 ---
 
@@ -19,7 +21,7 @@ Every visualization follows this exact sequence:
 1. **Read brand-compliance** — read `skills/_shared/brand-compliance.md` for universal rules.
 2. **Load brand tokens** — call `get_css_variables`, `get_data_visualization`, and `get_dataviz_palettes` from the Listen Labs brand MCP for live token values. Never hardcode from memory.
 3. **Copy the skeleton** — start from `skills/data-viz/references/skeleton.html`. Copy it completely, then modify. Never build from scratch.
-4. **Reference chart patterns** — check `skills/data-viz/references/chart-patterns.md` for the correct Chart.js configuration for your chart type.
+4. **Reference chart patterns** — pick the chart type with `skills/research-artifacts/references/charts.md` (selection rules), then check `skills/data-viz/references/chart-patterns.md` for the correct Chart.js configuration for that type.
 5. **Populate with data** — insert the user's data into the Chart.js config. Apply color rules via the `dataViz*` helpers (mode-aware) — never write raw hex.
 6. **Run self-audit** — check every item in the audit checklist below before delivering.
 7. **Write and open** — save as a single `.html` file and open in the browser.

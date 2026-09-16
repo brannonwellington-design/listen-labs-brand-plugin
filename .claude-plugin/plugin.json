@@ -1,0 +1,17 @@
+{
+  "name": "listen-labs-brand",
+  "displayName": "Listen Labs Brand",
+  "description": "Listen Labs brand guidelines (colors, typography, spacing, icons, art direction, data visualization) as MCP tools, plus skills for research artifacts, reports, data-viz, presentations, and typographic layout.",
+  "author": {
+    "name": "Listen Labs"
+  },
+  "repository": "https://github.com/brannonwellington-design/listen-labs-brand-plugin",
+  "homepage": "https://brannonwellington-design.github.io/listen-labs-brand-plugin/",
+  "skills": "./skills/",
+  "mcpServers": {
+    "listen-labs-brand": {
+      "command": "bash",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/run.sh"]
+    }
+  }
+}

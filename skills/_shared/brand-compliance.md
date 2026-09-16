@@ -4,6 +4,8 @@ Every Listen Labs output must satisfy these brand-wide rules, regardless of skil
 
 For full brand specifications, see `GUIDELINES.md` at the repo root or call `get_full_guidelines` from the brand MCP. For live token values, always call the MCP — never hardcode from memory.
 
+**Scope of this file.** The "Themes" and "Universal Rules" sections are the Listen Labs *voice* — the same answers also live, generated from `brand_data.py`, in `skills/research-artifacts/references/brands/listen-labs.md`. The "Typographic Precision" and "Web Output Hygiene" sections are brand-independent craft and apply to every HTML artifact regardless of brand. When `/research-artifacts` is rendering another brand (a file in its `references/brands/`), that brand file replaces the voice rules (fonts, weights, colors, radii, header) while the precision and hygiene rules still apply. Brand-independent layout physics and research-ethics rules live in `skills/research-artifacts/SKILL.md`.
+
 ---
 
 ## Themes

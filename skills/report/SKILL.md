@@ -1,6 +1,6 @@
 ---
 name: report
-description: "Use this skill when creating research reports, insight summaries, study recaps, executive briefings, interview digests, competitive analyses, or any multi-section narrative document. TRIGGER when user mentions 'report', 'summary', 'brief', 'digest', 'findings', 'insights', 'writeup', 'write-up', or 'research document'. Produces self-contained, print-ready HTML files with Listen Labs branding, emotion-coded callouts, and embedded data visualizations."
+description: "Use this skill when creating multi-section longform research reports, insight summaries, study recaps, executive briefings, interview digests, competitive analyses, or any narrative document with a cover, executive summary, and findings. TRIGGER when user mentions 'report', 'summary', 'brief', 'digest', 'findings', 'insights', 'writeup', 'write-up', or 'research document'. Single-screen visuals (one-pagers, journey maps, cross-tabs, concept-test readouts, persona cards, dashboards, maps, diagrams) belong to /research-artifacts instead. Produces self-contained, print-ready HTML files with Listen Labs branding, emotion-coded callouts, and embedded data visualizations."
 allowed-tools: Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_typography mcp__listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_dataviz_palettes mcp__listen-labs-brand__get_art_direction mcp__listen-labs-brand__get_spacing
 ---
 
@@ -8,7 +8,9 @@ allowed-tools: Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__lis
 
 Generate professional, brand-compliant research reports as self-contained HTML files. Reports open in any browser and print cleanly to PDF. This is the flagship Listen Labs deliverable — every element must meet editorial-quality standards.
 
-**Brand compliance is universal.** See `skills/_shared/brand-compliance.md` for the brand-wide rules every output must satisfy. This skill adds report-specific rules below. It composes with `/typography` (hierarchy and layout), `/data-viz` (embedded charts), and the Listen Labs brand MCP.
+**Brand compliance is universal.** See `skills/_shared/brand-compliance.md` for the brand-wide rules every output must satisfy. This skill adds report-specific rules below. It composes with `/typography` (hierarchy and layout), `/data-viz` (embedded charts), `/research-artifacts` (chart selection grammar in `references/charts.md`, research-ethics rules, and the single-screen deliverables a report may link to or embed), and the Listen Labs brand MCP.
+
+**Research ethics apply to every report** (from `/research-artifacts`): verbatims are never paraphrased into marketing copy and are attributed with participant labels (P1, P7), never real names; every quantified claim shows its base (n=24) beside the number; small-n data renders as counts ("7 of 12 participants"), not percentages; compared options get identical visual weight; one story per chart.
 
 ---
 

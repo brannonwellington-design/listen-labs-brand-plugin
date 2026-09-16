@@ -1,19 +1,22 @@
 {
+  "name": "listen-labs",
+  "owner": {
+    "name": "Listen Labs",
+    "url": "https://github.com/brannonwellington-design"
+  },
+  "description": "Listen Labs brand plugin — MCP brand tools and design skills.",
   "plugins": [
     {
-      "id": "listen-labs-brand",
-      "name": "Listen Labs Brand",
-      "description": "Exposes Listen Labs brand guidelines (colors, typography, spacing, icons, art direction, data visualization, presentations, typographic layout, research reports) as MCP tools and skills so Claude can apply them to any design or code output.",
-      "version": "1.5.1",
-      "mcpServers": {
-        "listen-labs-brand": {
-          "command": "python3",
-          "args": ["${pluginDir}/../listen-labs-brand-server.py"]
-        }
+      "name": "listen-labs-brand",
+      "displayName": "Listen Labs Brand",
+      "description": "Listen Labs brand guidelines (colors, typography, spacing, icons, art direction, data visualization) as MCP tools, plus skills for research artifacts, reports, data-viz, presentations, and typographic layout.",
+      "source": "./",
+      "author": {
+        "name": "Listen Labs"
       },
-      "skills": [
-        "${pluginDir}/../skills"
-      ]
+      "repository": "https://github.com/brannonwellington-design/listen-labs-brand-plugin",
+      "category": "design",
+      "keywords": ["brand", "design-system", "research", "data-viz", "listen-labs"]
     }
   ]
 }
