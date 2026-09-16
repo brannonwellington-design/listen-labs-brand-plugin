@@ -12,11 +12,11 @@ curl -sL https://raw.githubusercontent.com/brannonwellington-design/listen-labs-
 
 Then **fully quit** (Cmd+Q on Mac) and reopen your Claude app.
 
-The installer configures both apps that read local MCP config:
-- **Claude Code** (the coding assistant — CLI / Desktop / IDE extensions)
-- **Claude Desktop** (the general chat app with Chat / Cowork / Code tabs)
+The installer configures both Claude apps:
+- **Claude Code** (the coding assistant — CLI / Desktop / IDE extensions): installs this repo as a **plugin** (`listen-labs-brand@listen-labs`), which carries the MCP brand tools *and* all five skills, with auto-update on.
+- **Claude Desktop** (the general chat app with Chat / Cowork / Code tabs): registers the MCP brand tools from a local clone that git-pulls before every launch.
 
-If you only have one of the two installed, the other config file just sits idle until you install that app — no harm done.
+If you only have one of the two installed, the other config just sits idle until you install that app — no harm done. Re-running the installer is safe; it also upgrades older MCP-only installs to the plugin so the skills start loading.
 
 ## What It Does
 
@@ -182,22 +182,44 @@ To add a **second brand** to `/research-artifacts`, copy `skills/research-artifa
 
 ## Auto-Updates
 
-The plugin auto-updates every time Claude starts a new session. When brand guidelines change in this repo, everyone gets the latest version automatically.
+**Claude Code.** The plugin's version is the git commit SHA of `main`, so every push is a new version. Claude Code checks the marketplace for plugin updates shortly after each session starts (within about ten minutes) and loads the new version on the next launch, or immediately if you run `/reload-plugins`. Nothing to reinstall. To pull an update right now: `claude plugin update listen-labs-brand@listen-labs`.
+
+**Claude Desktop.** The MCP server launches through `run.sh`, which does a `git pull` from `main` before starting, so the brand tools are current every session.
 
 ## Manual Setup
 
 If you prefer to set things up manually:
+
+**Claude Code** (coding assistant) — install as a plugin, which brings the tools and the skills together:
+
+```bash
+claude plugin marketplace add brannonwellington-design/listen-labs-brand-plugin
+claude plugin install listen-labs-brand@listen-labs
+```
+
+Then turn on auto-update for the marketplace in `~/.claude/settings.json` (third-party marketplaces default to off):
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "listen-labs": {
+      "source": { "source": "github", "repo": "brannonwellington-design/listen-labs-brand-plugin" },
+      "autoUpdate": true
+    }
+  }
+}
+```
+
+Inside Claude Code the same two steps are `/plugin marketplace add …` and `/plugin install …`. Skills are namespaced by plugin, so they also answer to `/listen-labs-brand:report` and friends.
+
+**Claude Desktop** (general chat app) — it has no plugin system, so register the MCP server directly:
 
 1. Clone the repo:
    ```bash
    git clone https://github.com/brannonwellington-design/listen-labs-brand-plugin.git ~/.listen-labs-brand-plugin
    ```
 
-2. Add this MCP entry to **whichever** app's config file matches the Claude app you use:
-
-   **Claude Code** (coding assistant) — `~/.claude/settings.json`
-
-   **Claude Desktop** (general chat app) — `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS, `~/.config/Claude/claude_desktop_config.json` on Linux
+2. Add this MCP entry to `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS, or `~/.config/Claude/claude_desktop_config.json` on Linux:
 
    ```json
    {
@@ -210,9 +232,9 @@ If you prefer to set things up manually:
    }
    ```
 
-   Use the absolute path to `run.sh` — `~` is not expanded by the MCP launcher in either app.
+   Use the absolute path to `run.sh` — `~` is not expanded by the MCP launcher.
 
-3. Fully quit (Cmd+Q on Mac) and reopen your Claude app.
+3. Fully quit (Cmd+Q on Mac) and reopen the app.
 
 ## Requirements
 
