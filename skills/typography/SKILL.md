@@ -1,10 +1,12 @@
 ---
 name: typography
 description: "Use this skill when laying out type-heavy content — HTML pages, dashboards, artifacts, landing pages, emails, documents, or any layout where text hierarchy, spacing, and composition matter. TRIGGER when user asks to design, lay out, or build any interface or page with text. Provides Listen Labs typographic hierarchy, spacing rhythm, lockup patterns, grid rules, and responsive scaling — all using Inter Regular 400 only. This is a foundation skill that /research-artifacts, /report, /data-viz, and /pptx build on."
-allowed-tools: mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_typography mcp__listen-labs-brand__get_spacing mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_art_direction
+allowed-tools: mcp__listen-labs-brand__get_full_guidelines mcp__plugin_listen-labs-brand_listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_typography mcp__plugin_listen-labs-brand_listen-labs-brand__get_typography mcp__listen-labs-brand__get_spacing mcp__plugin_listen-labs-brand_listen-labs-brand__get_spacing mcp__listen-labs-brand__get_css_variables mcp__plugin_listen-labs-brand_listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_art_direction mcp__plugin_listen-labs-brand_listen-labs-brand__get_art_direction
 ---
 
 # Listen Labs Typography Skill
+
+**Path convention.** Paths in this skill and its reference files that begin with `skills/` are relative to the plugin root (the directory that contains this skill's folder, two levels up from this file when installed as a plugin). Paths that begin with `references/` are relative to this skill's own folder.
 
 Achieve premium, editorial-quality hierarchy using only Inter Regular 400. Hierarchy comes from size, tier (visual weight), spacing, and composition — never from font weight.
 

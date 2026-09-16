@@ -6,6 +6,8 @@ For full brand specifications, see `GUIDELINES.md` at the repo root or call `get
 
 **Scope of this file.** The "Themes" and "Universal Rules" sections are the Listen Labs *voice* — the same answers also live, generated from `brand_data.py`, in `skills/research-artifacts/references/brands/listen-labs.md`. The "Typographic Precision" and "Web Output Hygiene" sections are brand-independent craft and apply to every HTML artifact regardless of brand. When `/research-artifacts` is rendering another brand (a file in its `references/brands/`), that brand file replaces the voice rules (fonts, weights, colors, radii, header) while the precision and hygiene rules still apply. Brand-independent layout physics and research-ethics rules live in `skills/research-artifacts/SKILL.md`.
 
+**Path convention.** Paths in this skill and its reference files that begin with `skills/` are relative to the plugin root (the directory that contains the skill that references this file, two levels up from this file when installed as a plugin). Paths that begin with `references/` are relative to this skill's own folder.
+
 ---
 
 ## Themes

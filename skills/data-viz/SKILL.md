@@ -1,10 +1,12 @@
 ---
 name: data-viz
 description: "Generate professional, brand-compliant Chart.js data visualizations as self-contained HTML files. This is the Chart.js rendering engine of the plugin: use it when the user asks for Chart.js, wants interactive tooltips/legends, or a chart is embedded in a /report. TRIGGER on chart, graph, plot, visualize, dashboard when Chart.js is the right engine; for chart *selection* (which chart for which data), research deliverables (one-pagers, journey maps, cross-tabs, concept tests, maps), SVG/D3 rendering, or any other brand's styling, /research-artifacts is the front door and delegates here. Always produces Listen Labs branded output."
-allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_dataviz_palettes mcp__listen-labs-brand__get_typography
+allowed-tools: Bash(python3 *) Bash(open *) mcp__listen-labs-brand__get_full_guidelines mcp__plugin_listen-labs-brand_listen-labs-brand__get_full_guidelines mcp__listen-labs-brand__get_brand_colors mcp__plugin_listen-labs-brand_listen-labs-brand__get_brand_colors mcp__listen-labs-brand__get_css_variables mcp__plugin_listen-labs-brand_listen-labs-brand__get_css_variables mcp__listen-labs-brand__get_data_visualization mcp__plugin_listen-labs-brand_listen-labs-brand__get_data_visualization mcp__listen-labs-brand__get_dataviz_palettes mcp__plugin_listen-labs-brand_listen-labs-brand__get_dataviz_palettes mcp__listen-labs-brand__get_typography mcp__plugin_listen-labs-brand_listen-labs-brand__get_typography
 ---
 
 # Listen Labs Data Visualization Skill
+
+**Path convention.** Paths in this skill and its reference files that begin with `skills/` are relative to the plugin root (the directory that contains this skill's folder, two levels up from this file when installed as a plugin). Paths that begin with `references/` are relative to this skill's own folder.
 
 Generate self-contained, brand-compliant HTML files with Chart.js visualizations that meet Listen Labs design standards. Output should be indistinguishable from hand-crafted professional work.
 
