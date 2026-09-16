@@ -8,7 +8,7 @@ allowed-tools: Read Write Edit Bash(node *) Bash(npm *) Bash(python *) Bash(pyth
 
 **Path convention.** This skill's folder is `${CLAUDE_SKILL_DIR}` and the plugin root is `${CLAUDE_SKILL_DIR}/../..`. Paths in this skill and its reference files that begin with `skills/` are relative to that plugin root (so `skills/_shared/brand-compliance.md` is `${CLAUDE_SKILL_DIR}/../_shared/brand-compliance.md`). Paths that begin with `references/` are relative to this skill's folder.
 
-Generate professional, brand-compliant PowerPoint presentations using PptxGenJS. This skill enforces Listen Labs design standards on every slide. It composes with the built-in Anthropic PPTX skill — use their `pptxgenjs.md` for API details and `editing.md` for template editing.
+Generate professional, brand-compliant PowerPoint presentations using PptxGenJS. This skill enforces Listen Labs design standards on every slide. If the built-in Anthropic PPTX skill is installed, use its `pptxgenjs.md` for API details and `editing.md` for template editing; if not, `references/slide-patterns.md` is self-sufficient for generation.
 
 **Brand compliance is universal.** See `skills/_shared/brand-compliance.md` for the brand-wide rules every output must satisfy. This skill adds PPTX-specific rules below.
 
@@ -32,7 +32,7 @@ Every presentation follows this exact sequence:
 2. **Choose a theme** — Paper (default) or Whisp (if user specifies). Lock to one theme for the whole deck — never mix.
 3. **Load brand tokens** — call `get_brand_colors(theme=…)`, `get_typography`, `get_spacing`, `get_header_convention`, and `get_art_direction` from the Listen Labs brand MCP. Use the returned hex values to populate the `BRAND` const in your script. Never hardcode from memory.
 4. **Plan the deck** — outline all slides with their type (title, content, data, section, closing) before writing any code. Vary layouts — monotonous repetition is a failure mode.
-5. **Reference slide patterns** — check `skills/pptx/references/slide-patterns.md` for pre-built PptxGenJS code per slide type. Adapt these, never improvise from scratch.
+5. **Reference slide patterns** — check `skills/pptx/references/slide-patterns.md` for pre-built PptxGenJS code per slide type. Start from these; depart from them when the content needs a layout they do not offer, keeping the header helper and the color constants.
 6. **Generate** — write a single Node.js script that produces the complete .pptx file.
 7. **Run QA** — mandatory. Follow the QA workflow below. No presentation ships without at least one fix-and-verify cycle.
 8. **Deliver** — output the .pptx file and confirm slide count.
@@ -80,16 +80,16 @@ Universal typography rules (Inter 400 only, no letter-spacing, no all-caps) come
 
 **PPTX-specific notes:**
 - Size hierarchy must be visually obvious: titles at 36pt vs body at 14–16pt.
-- Left-align body text and bullet lists. Center only slide titles.
+- Left-align body text and bullet lists, and titles by default; center only an isolated title line on a title or closing slide.
 - Use `bullet: true` for lists — never unicode bullet characters.
 - Use `breakLine: true` between array items for multi-line text.
 - PptxGenJS silently ignores `letterSpacing` anyway, but never set `charSpacing` either.
 
 ### Layout and Spacing
 
-- **Slide dimensions:** `LAYOUT_16x9` (10" x 5.625") — never change this.
+- **Slide dimensions:** `LAYOUT_16x9` (10" x 5.625") by default; change the layout only when the venue calls for it (4:3 projector, vertical screen, poster), and keep the 0.6" margins proportionally.
 - **Margins:** 0.6" minimum from all edges. Content lives within a 8.8" x 4.425" safe zone.
-- **Spacing between elements:** 0.4" consistent gaps. Never mix spacing values.
+- **Spacing between elements:** 0.4" default gap; other values come from the same even ladder (0.2", 0.6", 0.8") and stay consistent within a slide.
 - **Even numbers only:** all spacing, sizing, and positioning values use even increments (0.2", 0.4", 0.6", etc.).
 - **Grid discipline:** nothing floats arbitrarily. Align to a consistent left edge (typically 0.6").
 - **One dominant element per slide** — everything else is subordinate.
@@ -109,7 +109,7 @@ In summary:
 - **No gradients.** Solid fills only.
 - **No accent lines under titles.** This is a hallmark of AI-generated slides — use whitespace instead.
 - **No decorative shapes or icons** that don't carry meaning.
-- **No rounded/bubbly elements.** Use `RECTANGLE`, not `ROUNDED_RECTANGLE`, unless specifically needed for a card at 0.08" radius.
+- **No rounded/bubbly elements.** Use `RECTANGLE` by default; `ROUNDED_RECTANGLE` only for a card, at a radius from the brand scale below.
 - **Border radius:** if used, only values from the brand scale (0, 0.02", 0.04", 0.08", 0.12", 0.16").
 
 ---
@@ -121,7 +121,7 @@ Universal brand prohibitions (no bold/light/italic, no serif, no letter-spacing,
 1. Accent lines under titles — a hallmark of AI-generated decks; use whitespace instead
 2. Stock photography unless the user explicitly provides images
 3. Saturated accent colors beyond brand blue
-4. Centered body text or bullet lists — center only slide titles
+4. Centered body text or bullet lists — center only an isolated title line
 5. Unicode bullet characters — use `bullet: true`
 6. Multiple competing focal points on a single slide
 7. Busy or cluttered layouts — every element must earn its place

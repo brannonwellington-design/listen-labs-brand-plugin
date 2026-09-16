@@ -30,6 +30,7 @@ A large headline whose BOX sits exactly on the column line still looks misaligne
 ```js
 async function opticalAlign(sel){
   await document.fonts.ready;
+  if (document.fonts.check && !document.fonts.check('1em Inter')) return;   // webfont not loaded (offline pane): skip — a nudge measured on the fallback font is wrong
   const ctx = document.createElement('canvas').getContext('2d');
   document.querySelectorAll(sel).forEach(el => {
     el.style.marginLeft = '0px';
@@ -55,15 +56,25 @@ Also hang opening quote glyphs of pull-quotes/verbatims outside the text box (ne
 function auditGrid(){
   const cs = getComputedStyle(document.documentElement);
   const bl = parseFloat(cs.getPropertyValue('--bl')), issues = [];
-  document.querySelectorAll('.band > *').forEach(el => {
-    const r = el.getBoundingClientRect(), band = el.parentElement.getBoundingClientRect();
+  const cols = parseInt(cs.getPropertyValue('--cols')), gutter = parseFloat(cs.getPropertyValue('--gutter'));
+  document.querySelectorAll('.band').forEach(band => {
+    const b = band.getBoundingClientRect(), colW = (b.width - gutter * (cols - 1)) / cols;
     // column snap: left edge must sit on a column START, right edge on a column END
     // (build BOTH sets — an item ending "at line N" ends across the gutter; single-edge math lies)
+    const starts = [...Array(cols)].map((_, i) => b.left + i * (colW + gutter));
+    const ends = starts.map(s => s + colW);
+    [...band.children].forEach(el => {
+      if (el.matches('.display, h1, .numeral')) return;           // optically aligned: ink, not box, sits on the line
+      const r = el.getBoundingClientRect();
+      const dl = Math.min(...starts.map(s => Math.abs(r.left - s))), dr = Math.min(...ends.map(e => Math.abs(r.right - e)));
+      if (dl > 0.5) issues.push(['left edge off column line', el, dl.toFixed(1)]);
+      if (dr > 0.5) issues.push(['right edge off column line', el, dr.toFixed(1)]);
+    });
   });
   document.querySelectorAll('h1,h2,p,.k,.v').forEach(el => {
     const top = el.getBoundingClientRect().top + scrollY;
     const off = top % bl;
-    if (Math.min(off, bl - off) > bl/2 * 0.9) issues.push(['baseline drift', el, off.toFixed(1)]);
+    if (Math.min(off, bl - off) > 0.5) issues.push(['baseline drift', el, off.toFixed(1)]);
   });
   console.table(issues); return issues.length;
 }

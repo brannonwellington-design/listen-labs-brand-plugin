@@ -72,7 +72,7 @@ Or just ask for a one-pager, journey map, persona, cross-tab, concept test, work
 - **House policies** (`skills/_shared/brand-compliance.md`) — imagery and logo use, motion, composition variety (the anti-generic rule), and print/PDF behaviour, shared by every skill.
 - **Failure prevention** (`SKILL.md`) — a safe default recipe for ambiguous asks, data sanity guards (empty, single, all-zero, negative), an extreme-input test, degrade-by-design rules, and how to handle impossible asks without shipping a broken chart.
 
-**Output:** A single self-contained `.html` file.
+**Output:** A single self-contained HTML document — written as a file on a machine, returned as the artifact in the product canvas.
 
 ### `/data-viz` — Data Visualization (Chart.js engine)
 
@@ -88,7 +88,7 @@ Or just ask Claude to chart, graph, or visualize any data — the skill auto-tri
 - Two swappable palette modes via one attribute (`data-dataviz-palette="brand|global"`):
   - **brand** (default) — monochromatic brand-blue (`#0021CC`); vermillion ↔ blue diverging
   - **global** — Okabe-Ito categorical, Viridis sequential, ColorBrewer RdBu diverging (CVD-safe, brand-agnostic)
-- Practical cap 5 categorical series in brand mode (soft cap 7, hard cap 10 with an “Other” roll-up); redundant encoding (line-style + marker shape) for ≥5 series
+- Practical cap 5 categorical series in brand mode (soft cap 7, hard cap 8 with an “Other” roll-up); redundant encoding (line-style + marker shape) for ≥5 series
 - 1px strokes on all chart elements
 - 2px rounded corners on bars, 1px gap between inline bars
 - Inter 400 for all labels — no bold, no other fonts
@@ -97,7 +97,7 @@ Or just ask Claude to chart, graph, or visualize any data — the skill auto-tri
 - Branded header on standalone outputs (omitted inside the product canvas)
 - Light/dark mode via `prefers-color-scheme`
 
-**Output:** A single self-contained `.html` file that opens in your browser.
+**Output:** A single self-contained HTML document — a file that opens in your browser, or the artifact itself in the product canvas.
 
 ### `/pptx` — Presentations
 
@@ -159,7 +159,7 @@ Or just ask Claude to create a report, summary, brief, or write-up — the skill
 - Print-ready `@media print` stylesheet for clean PDF export
 - Light/dark mode via `prefers-color-scheme`
 
-**Output:** A single self-contained `.html` file that opens in any browser and prints cleanly to PDF.
+**Output:** A single self-contained HTML document that opens in any browser, prints cleanly to PDF, or renders as the artifact in the product canvas.
 
 ---
 

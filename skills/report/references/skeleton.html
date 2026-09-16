@@ -302,31 +302,30 @@
 
     /* ── Report Container ─────────────────────────────────── */
     .report {
-      max-width: 800px;
+      max-width: 800px;         /* reading measure; figures may break out with .full-bleed */
       margin: 0 auto;
-      padding: 0 48px;
+      padding: 80px 48px 0;     /* top padding makes room for the credit line — remove both in the product canvas */
     }
+    .full-bleed { width: 100cqw; margin-left: calc(50% - 50cqw); }
 
     @container (max-width: 768px) {
-      .report { padding: 0 24px; }
+      .report { padding: 80px 24px 0; }
     }
     @supports not (container-type: inline-size) {
       @media (max-width: 768px) {
-      .report { padding: 0 24px; }
+      .report { padding: 80px 24px 0; }
     }
     }
 
     /* ── Branded Header ───────────────────────────────────── */
     .ll-header {
       text-align: center;
-      position: fixed;
-      top: 0;
+      position: absolute;       /* body is a container (layout containment), so `fixed` would scroll anyway */
+      top: 24px;
       left: 0;
       right: 0;
-      padding: 24px 0 12px;
       font-size: 12px;
-      z-index: 10;
-      background: var(--surface-primary);
+      line-height: 16px;
     }
     .ll-header .ll-brand { color: var(--content-secondary); }
     .ll-header .ll-title { color: var(--content-primary); }
@@ -359,6 +358,7 @@
       max-width: 600px;
     }
     .cover .meta {
+      font-variant-numeric: tabular-nums;
       font-size: 12px;
       line-height: 16px;
       color: var(--content-disabled);
@@ -400,6 +400,9 @@
       .section-heading { font-size: 24px; line-height: 28px; }
       .section-intro { font-size: 16px; line-height: 24px; }
     }
+    @container (max-width: 480px) {
+      .section { padding-top: 48px; }
+    }
     @supports not (container-type: inline-size) {
       @media (max-width: 768px) {
       .section { padding-top: 64px; }
@@ -440,7 +443,7 @@
     .participant-quote {
       margin: 24px 0;
       padding-left: 24px;
-      border-left: 2px solid var(--surface-brand-primary);
+      border-left: 2px solid var(--content-brand);
       max-width: 720px;
     }
     .participant-quote .text {
@@ -464,6 +467,7 @@
       max-width: 720px;
     }
     .stat-block .number {
+      font-variant-numeric: tabular-nums;
       font-size: 48px;
       line-height: 52px;
       color: var(--content-brand);
@@ -584,15 +588,15 @@
     /* Force light-mode rendering on paper. Theme-agnostic dark text on white. */
     @media print {
       body { background: #fff; }
-      .ll-header { position: static; padding: 0; margin-bottom: 24px; background: transparent; }
-      .cover { min-height: auto; page-break-after: always; padding: 96px 0; }
-      .section { page-break-before: auto; }
-      .finding { page-break-inside: avoid; }
-      .stat-block { page-break-inside: avoid; }
-      .participant-quote { page-break-inside: avoid; }
-      .emotion-callout { page-break-inside: avoid; }
-      .chart-container { page-break-inside: avoid; }
-      .report-table { page-break-inside: avoid; }
+      .ll-header { position: static; margin-bottom: 24px; }
+      .report { padding-top: 0; }
+      .cover { min-height: auto; break-after: page; padding: 96px 0; }
+      .finding { break-inside: avoid; }
+      .stat-block { break-inside: avoid; }
+      .participant-quote { break-inside: avoid; }
+      .emotion-callout { break-inside: avoid; }
+      .chart-container { break-inside: avoid; }
+      .report-table { break-inside: avoid; }
       .no-print { display: none; }
     }
 
@@ -657,7 +661,7 @@
         <p>Description of the finding with supporting context and analysis.</p>
 
         <div class="participant-quote">
-          <div class="text">"Participant quote that supports this finding."</div>
+          <div class="text">“Participant quote that supports this finding.”</div>
           <div class="attribution">Participant 7, Senior Designer</div>
         </div>
 
@@ -673,7 +677,7 @@
       <!-- Example emotion callout -->
       <div class="emotion-callout surprise">
         <div class="emotion-label">Surprise</div>
-        <div class="emotion-text">"I didn't expect the system to respond that way — it was actually delightful."</div>
+        <div class="emotion-text">“I didn’t expect the system to respond that way — it was actually delightful.”</div>
         <div class="emotion-attribution">Participant 3, Product Manager</div>
       </div>
 
@@ -700,31 +704,16 @@
     // ── Chart.js setup (if charts are used) ────────────────
     Chart.defaults.animation = false;
     var style = getComputedStyle(document.documentElement);
-    var brandBlue = style.getPropertyValue('--surface-brand-primary').trim();
     var contentPrimary = style.getPropertyValue('--content-primary').trim();
-    var contentSecondary = style.getPropertyValue('--content-secondary').trim();
-    var contentDisabled = style.getPropertyValue('--content-disabled').trim();
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.font.weight = 400;
     Chart.defaults.font.size = 12;
     Chart.defaults.color = contentPrimary;
 
-    // Legacy: kept for backward compatibility. New charts should use
-    // dataVizSeries() — it respects the active palette mode (brand vs global).
-    function brandShades(count) {
-      var shades = [];
-      var step = 50 / (count + 1);
-      for (var i = 0; i < count; i++) {
-        var lightness = 30 + (step * (i + 1));
-        shades.push('hsl(229, 100%, ' + lightness + '%)');
-      }
-      return shades;
-    }
-
-    // ── Palette-mode-aware helpers (mirrors /data-viz skeleton.html) ──
-    // Resolve --dataviz-* tokens from each chart's nearest ancestor with
-    // `data-dataviz-palette`. Pass the canvas element so the helper finds the
-    // right scope. Default mode (no attribute set) is brand.
+    // @dataviz-helpers:start
+    // GENERATED by generate_skeleton_tokens.py — palette-mode-aware helpers. Do not edit by hand.
+    // Each helper resolves --dataviz-* tokens against the chart's nearest [data-dataviz-palette] ancestor,
+    // so the same chart code renders in brand or global mode by flipping one attribute.
     function dataVizScope(el) {
       return (el && el.closest && el.closest('[data-dataviz-palette]')) || document.documentElement;
     }
@@ -732,48 +721,50 @@
       return getComputedStyle(scope).getPropertyValue(name).trim();
     }
     function dataVizSeries(count, el) {
-      var scope = dataVizScope(el);
-      if (count > 10) console.warn('dataVizSeries: ' + count + ' categories exceeds the hard cap (10).');
-      else if (count > 7) console.warn('dataVizSeries: ' + count + ' exceeds the soft cap (7); add direct labels.');
-      var out = [];
-      for (var i = 0; i < count; i++) out.push(dataVizToken(scope, '--dataviz-categorical-' + ((i % 8) + 1)));
+      // Categorical: slots 1..8 in order. Brand mode is designed for ≤5 (6–8 are neutral grays);
+      // beyond 8 there are no more distinct tokens — roll the data up to "Other" instead of wrapping.
+      var scope = dataVizScope(el), out = [];
+      if (count > 8) console.warn('dataVizSeries: ' + count + ' series exceeds the 8-slot palette — roll up to "Other".');
+      for (var i = 0; i < Math.min(count, 8); i++) out.push(dataVizToken(scope, '--dataviz-categorical-' + (i + 1)));
       return out;
     }
     function dataVizSequential(count, el) {
-      var scope = dataVizScope(el);
-      var stops = [100, 200, 300, 400, 500, 600, 700];
-      if (count >= 7) return stops.map(function(s){ return dataVizToken(scope, '--dataviz-sequential-' + s); });
+      // Ordered/continuous data: `count` evenly spaced stops from the 7-stop ramp (100 lightest → 700 darkest).
+      // A single value gets the mid (500) stop so it is visible on the canvas.
+      var scope = dataVizScope(el), stops = [100, 200, 300, 400, 500, 600, 700];
+      if (count <= 1) return [dataVizToken(scope, '--dataviz-sequential-500')];
+      if (count >= 7) return stops.map(function (s) { return dataVizToken(scope, '--dataviz-sequential-' + s); });
       var picked = [];
-      for (var i = 0; i < count; i++) {
-        var idx = Math.round(i * (stops.length - 1) / Math.max(1, count - 1));
-        picked.push(dataVizToken(scope, '--dataviz-sequential-' + stops[idx]));
-      }
+      for (var i = 0; i < count; i++) picked.push(dataVizToken(scope, '--dataviz-sequential-' + stops[Math.round(i * 6 / (count - 1))]));
       return picked;
     }
     function dataVizDiverging(el) {
+      // Data with a meaningful midpoint: 7 stops neg-3 … zero … pos-3.
       var scope = dataVizScope(el);
-      return ['neg-3','neg-2','neg-1','zero','pos-1','pos-2','pos-3']
-        .map(function(k){ return dataVizToken(scope, '--dataviz-diverging-' + k); });
+      return ['neg-3', 'neg-2', 'neg-1', 'zero', 'pos-1', 'pos-2', 'pos-3'].map(function (k) { return dataVizToken(scope, '--dataviz-diverging-' + k); });
     }
     function dataVizHighlight(el) {
+      // One focal series + de-emphasized rest.
       var scope = dataVizScope(el);
-      return {
-        accent:  dataVizToken(scope, '--dataviz-highlight-accent'),
-        neutral: [
-          dataVizToken(scope, '--dataviz-highlight-neutral-1'),
-          dataVizToken(scope, '--dataviz-highlight-neutral-2'),
-          dataVizToken(scope, '--dataviz-highlight-neutral-3'),
-        ],
-      };
+      return { accent: dataVizToken(scope, '--dataviz-highlight-accent'),
+               neutral: [1, 2, 3].map(function (n) { return dataVizToken(scope, '--dataviz-highlight-neutral-' + n); }) };
     }
     function dataVizSemantic(el) {
       var scope = dataVizScope(el);
-      return {
-        positive: dataVizToken(scope, '--dataviz-semantic-positive'),
-        negative: dataVizToken(scope, '--dataviz-semantic-negative'),
-        neutral:  dataVizToken(scope, '--dataviz-semantic-neutral'),
-      };
+      return { positive: dataVizToken(scope, '--dataviz-semantic-positive'),
+               negative: dataVizToken(scope, '--dataviz-semantic-negative'),
+               neutral: dataVizToken(scope, '--dataviz-semantic-neutral') };
     }
+    function dataVizTextTokens() {
+      // Re-read text/grid colors (call again on theme change and pass into chart.update()).
+      var s = getComputedStyle(document.documentElement);
+      return { primary: s.getPropertyValue('--content-primary').trim(),
+               secondary: s.getPropertyValue('--content-secondary').trim(),
+               disabled: s.getPropertyValue('--content-disabled').trim(),
+               surface: s.getPropertyValue('--surface-highlight').trim(),
+               hairline: s.getPropertyValue('--surface-tertiary').trim() };
+    }
+    // @dataviz-helpers:end
 
     // ── Add chart instances below ──────────────────────────
   </script>

@@ -20,7 +20,7 @@ Generate professional, brand-compliant research reports as self-contained HTML f
 
 1. **Read brand-compliance** — read `skills/_shared/brand-compliance.md` for universal rules.
 2. **Load brand tokens** — call `get_css_variables`, `get_typography`, `get_spacing`, `get_header_convention`, and `get_art_direction` from the brand MCP. Never hardcode tokens.
-3. **Copy the skeleton** — start from `skills/report/references/skeleton.html`. Copy completely, then modify. For the column grid, baseline lock, and optical alignment of display type, apply `skills/research-artifacts/references/grid-engineering.md` (grid variables in `:root`, subgrid bands, line-heights and media heights as multiples of the baseline, in-page audit before delivery).
+3. **Start from the skeleton** — `skills/report/references/skeleton.html` carries the token block, print rules, and section styles; start there unless the material needs a structure it does not have, and then keep its head, tokens, and print block. For the column grid, baseline lock, and optical alignment of display type, apply `skills/research-artifacts/references/grid-engineering.md` (grid variables in `:root`, subgrid bands, line-heights and media heights as multiples of the baseline, in-page audit before delivery).
 4. **Plan the structure** — outline all sections before writing content. Every report needs at minimum: cover, executive summary, and findings. Reference `skills/report/references/section-patterns.md`.
 5. **Apply emotion coding** — when findings reference emotional data, use emotion callouts from `skills/report/references/emotion-callouts.md`. Emotion tokens are reserved exclusively for Ekman emotion data.
 6. **Embed visualizations** — embed Chart.js charts inline using `/data-viz` patterns. Charts inherit the report's CSS variables automatically.
@@ -31,7 +31,7 @@ Generate professional, brand-compliant research reports as self-contained HTML f
 
 ## Report Structure
 
-Every report follows this section order. Sections can be omitted if irrelevant, but the order is fixed.
+This is the default section order. Omit sections that do not apply; add or reorder when the material genuinely asks for it (a comparison study may put findings side by side; a diary study may run chronologically). The cover and an executive summary always come first.
 
 | # | Section | Required | Purpose |
 |---|---------|----------|---------|
@@ -51,7 +51,7 @@ Every report follows this section order. Sections can be omitted if irrelevant, 
 
 ### Page Layout
 
-- **Max content width:** 800px, centered with `margin: 0 auto`
+- **Reading column:** 800px, centered with `margin: 0 auto`; body text measure ≤720px inside it. Charts, tables, and images may break out to full width with `.full-bleed` when they need the room.
 - **Page padding:** 48px horizontal on desktop, 24px on mobile
 - **Section spacing:** 96px between major sections (cover, exec summary, findings, etc.)
 - **Subsection spacing:** 48px between subsections within a major section
@@ -75,7 +75,7 @@ The cover is the first thing anyone sees. It must be simple, confident, and bran
 [12px, content-disabled]                 Date  ·  Author  ·  Participant Count
 ```
 
-The cover takes a full viewport height (`min-height: 100vh`) with content vertically centered. No decorative elements. The title block lockup does all the work.
+The cover fills the viewport or pane (`min-height: 100vh`, which measures the pane inside an iframe) with content vertically centered. No decorative elements. The title block lockup does all the work.
 
 ### Typography Hierarchy
 
@@ -102,11 +102,7 @@ Follow the `/typography` skill hierarchy table. For reports specifically:
 
 ### Section Dividers
 
-Major sections are separated by either:
-- **96px of vertical whitespace** (preferred — cleaner), or
-- **A full-width 1px rule** in `content-disabled` with 48px above and 48px below
-
-Never use both. Pick one style and use it consistently throughout a report.
+The canonical between-section rhythm lives in `skills/_shared/brand-compliance.md` (96 / 64 / 48px, or a single 1px rule with 48px above and below — one style per report, never both).
 
 ### Block Quotes and Participant Quotes
 
@@ -116,7 +112,7 @@ Participant quotes are a core report element. They use a left border accent:
 .participant-quote {
   margin: 24px 0;
   padding-left: 24px;
-  border-left: 2px solid var(--surface-brand-primary);
+  border-left: 2px solid var(--content-brand);
 }
 .participant-quote .text {
   font-size: 16px;
@@ -132,7 +128,7 @@ Participant quotes are a core report element. They use a left border accent:
 }
 ```
 
-The 2px brand-blue left border signals "this is a direct quote" without decoration. Attribution in disabled opacity signals metadata.
+The 2px `--content-brand` left border (it tracks the theme in dark mode; `--surface-brand-primary` does not) signals "this is a direct quote" without decoration. Attribution in disabled opacity signals metadata.
 
 ### Data Tables
 
@@ -193,7 +189,7 @@ Charts are embedded inline using Chart.js (same patterns as `/data-viz`). They i
 - Chart container: `width: 100%; height: 320px; margin: 24px 0;`
 - Charts get a `<figcaption>` in 12px disabled opacity below them
 - Set `data-dataviz-palette="brand"` (default — monochromatic brand-blue) or `"global"` (Okabe-Ito / Viridis / RdBu, brand-agnostic, CVD-safe, ≥6 categorical series) on the `<figure class="chart-container">` to choose the palette per chart
-- Follow all `/data-viz` rules: 1px strokes, 2px bar radius, soft cap 7 / hard cap 10 categorical series, redundant encoding for 5+ series
+- Follow all `/data-viz` rules: 1px strokes, 2px bar radius, practical cap 5 (brand) / soft cap 7 / hard cap 8 categorical series with an “Other” roll-up beyond, redundant encoding for 5+ series
 
 ---
 
@@ -205,18 +201,7 @@ When report findings reference emotional data, use emotion callouts. See `skills
 
 ## Print Stylesheet
 
-Every report must print cleanly. The skeleton includes these print rules:
-
-```css
-@media print {
-  body { background: #fff; }
-  .cover { page-break-after: always; }
-  .section { page-break-inside: avoid; }
-  .finding { page-break-inside: avoid; }
-  .chart-container { page-break-inside: avoid; }
-  .no-print { display: none; }
-}
-```
+Every report must print cleanly. The skeleton's generated print block re-declares the theme's light tokens, prints the page background white, keeps callout and stat backgrounds (`print-color-adjust: exact`), sets `@page` margins, puts the cover on its own page (`break-after: page`), and prevents findings, stat blocks, quotes, emotion callouts, charts, and tables from splitting (`break-inside: avoid`). Do not hand-edit it; add page-break rules for new block types in the same style.
 
 - Cover page gets its own printed page
 - Sections and findings avoid splitting across pages
@@ -242,10 +227,10 @@ Universal brand prohibitions (no bold/light/italic, no serif, no letter-spacing,
 
 Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` PLUS the report-specific items below:
 
-- [ ] Skeleton was used as starting point
-- [ ] Cover section has: branded header, title, subtitle, date, metadata
+- [ ] Started from the skeleton, or departed from it for a reason the material needed (tokens and print block kept either way)
+- [ ] Cover section has: title, subtitle, date, metadata — plus the branded header on standalone/exported reports, omitted inside the product canvas
 - [ ] Executive summary is present and contains 3–5 key findings
-- [ ] All sections follow the fixed order (cover → exec summary → findings → recommendations)
+- [ ] Sections follow the default order (cover → exec summary → findings → recommendations) unless the material asked for a different one, and that departure reads as deliberate
 - [ ] Section spacing is consistent (96px between sections OR 1px rules — not both)
 - [ ] Typography hierarchy matches the report hierarchy table
 - [ ] Body text uses `content-secondary`, headings use `content-primary`
@@ -255,8 +240,8 @@ Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` 
 - [ ] Tables use minimal styling (no zebra stripes, no heavy borders)
 - [ ] Print stylesheet works (cover on own page, no split sections)
 - [ ] Dark mode works via prefers-color-scheme
-- [ ] Content width does not exceed 800px
+- [ ] Text stays within the 800px reading column (≤720px measure); any full-bleed figure is deliberate
 - [ ] File is self-contained (single HTML, no external dependencies except CDN fonts/Chart.js)
-- [ ] File opens correctly in browser
+- [ ] File context: opens correctly in a browser. Product canvas: renders correctly in the pane
 
 If ANY item fails, fix it before delivering.

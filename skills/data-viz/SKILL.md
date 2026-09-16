@@ -22,7 +22,7 @@ Every visualization follows this exact sequence:
 
 1. **Read brand-compliance** — read `skills/_shared/brand-compliance.md` for universal rules.
 2. **Load brand tokens** — call `get_css_variables`, `get_data_visualization`, and `get_dataviz_palettes` from the Listen Labs brand MCP for live token values. Never hardcode from memory.
-3. **Copy the skeleton** — start from `skills/data-viz/references/skeleton.html`. Copy it completely, then modify. Never build from scratch.
+3. **Start from the skeleton** — `skills/data-viz/references/skeleton.html` carries the token block, palette helpers, theme repaint, and print rules; start there unless the chart needs a structure it does not have, and then keep its head, tokens, and helpers.
 4. **Reference chart patterns** — pick the chart type with `skills/research-artifacts/references/charts.md` (selection rules), then check `skills/data-viz/references/chart-patterns.md` for the correct Chart.js configuration for that type.
 5. **Populate with data** — insert the user's data into the Chart.js config. Apply color rules via the `dataViz*` helpers (mode-aware) — never write raw hex.
 6. **Run self-audit** — check every item in the audit checklist below before delivering.
@@ -54,7 +54,7 @@ Set the active mode on `<main>` (or any ancestor of the chart):
 <main data-dataviz-palette="global"> <!-- best-practices, brand-agnostic -->
 ```
 
-Defaulting matters: charts with no `data-dataviz-palette` attribute resolve to brand mode and look the same as before this skill was extended.
+Defaulting matters: charts with no `data-dataviz-palette` attribute resolve to brand mode.
 
 #### Token namespace (same in both modes)
 
@@ -81,7 +81,7 @@ Use the helpers in `skeleton.html` (`dataVizSeries(n)`, `dataVizSequential(n)`, 
 #### Caps and accessibility rules (apply in both modes)
 
 - **Soft cap: 7 categories.** Beyond 7, add direct labels rather than relying on the legend.
-- **Hard cap: 10 categories.** Beyond 10, roll up to "Other".
+- **Hard cap: 8 categories** — the palette has eight slots. Beyond 8, roll up to “Other”.
 - **Brand mode practical cap: 5.** Past 5, slots 6–8 fall back to neutral grays as a soft signal — switch to `global` mode if you need more distinct categories.
 - **Redundant encoding for ≥5 series or any multi-line chart.** Pair color with line-style (solid/dashed/dotted) and marker shape. Never rely on color alone (WCAG 1.4.1).
 - **Contrast ≥3:1** for chart elements vs. background; **≥4.5:1** for data labels.
@@ -98,13 +98,13 @@ Use the helpers in `skeleton.html` (`dataVizSeries(n)`, `dataVizSequential(n)`, 
 
 ### Bar Charts
 - **2px border radius** on all bar sections (`borderRadius: 2`).
-- **1px gap** between inline bars (`barPercentage: 0.9`, `categoryPercentage: 0.85` — tune so visual gap is ~1px).
+- **1px gap** between bars that touch inside a group or stack (a 1px `--surface-primary` border on grouped/stacked bars); **20–40% of bar width** between categories (`barPercentage: 0.9`, `categoryPercentage: 0.7–0.8`).
 - **No bar borders** unless needed for contrast on very light fills.
 
 ### Line Charts
 - **1px line weight** (`borderWidth: 1`).
 - **No fill** by default (`fill: false`). Only add area fill if the user specifically requests it, and use 10% opacity of the line color.
-- **Small, clean data points** — 3px radius circles, no special point styles.
+- **Small, clean data points** — 3px radius (6px diameter) circles, no special point styles.
 
 ### Layout and Responsiveness
 - **All elements must flex horizontally** without distortion. Circles stay circular, squares stay square. Use `maintainAspectRatio: false` with a constrained container height.
@@ -120,23 +120,7 @@ Use the helpers in `skeleton.html` (`dataVizSeries(n)`, `dataVizSequential(n)`, 
 
 ## Chart.js Setup
 
-```javascript
-// Disable animations globally
-Chart.defaults.animation = false;
-
-// Get brand tokens from CSS variables
-var style = getComputedStyle(document.documentElement);
-var brandBlue = style.getPropertyValue('--surface-brand-primary').trim();
-var contentPrimary = style.getPropertyValue('--content-primary').trim();
-var contentSecondary = style.getPropertyValue('--content-secondary').trim();
-var contentDisabled = style.getPropertyValue('--content-disabled').trim();
-
-// Global font defaults
-Chart.defaults.font.family = "'Inter', sans-serif";
-Chart.defaults.font.weight = 400;
-Chart.defaults.font.size = 12;
-Chart.defaults.color = contentPrimary;
-```
+The skeleton already contains the setup: animation off, Inter 400 defaults, an offline stub if Chart.js fails to load, and a theme repaint hook that re-reads tokens and calls `chart.update()` when the color scheme or `data-theme`/`data-mode` changes (Chart.js bakes colors into the canvas, so this is what makes dark mode work). Do not retype it.
 
 ### Palette helpers (mode-aware)
 
@@ -150,6 +134,7 @@ dataVizSequential(5, canvas);  // → 5 evenly-spaced sequential stops
 dataVizDiverging(canvas);      // → 7 diverging stops (neg-3 → pos-3)
 dataVizHighlight(canvas);      // → { accent, neutral: [g1, g2, g3] }
 dataVizSemantic(canvas);       // → { positive, negative, neutral }
+dataVizTextTokens();           // → { primary, secondary, disabled, surface, hairline } for ticks, grid, tooltips — call again on theme change
 ```
 
 ### Legacy: `brandShades()`
@@ -185,11 +170,11 @@ function brandShades(count) {
 
 Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` PLUS the chart-specific items below:
 
-- [ ] Skeleton was used as the starting point
+- [ ] Started from the skeleton, or departed from it deliberately (tokens, helpers, and print block kept)
 - [ ] All colors via CSS custom properties — no raw hex in JS/chart config
 - [ ] Palette mode is set explicitly on the chart's wrapper (`<main>` in a standalone chart, the `<figure>` in a report) via `data-dataviz-palette="brand"` or `"global"`
 - [ ] Data series use the right palette type (categorical/sequential/diverging/highlight/semantic) for the data shape
-- [ ] Categorical series count is within caps (≤5 brand, ≤7 global; ≤10 hard with "Other" rollup)
+- [ ] Categorical series count is within caps (≤5 brand, ≤7 soft, ≤8 hard with an “Other” roll-up)
 - [ ] Multi-line / ≥5-series charts use redundant encoding (line-style + marker shape, not just color)
 - [ ] No raw `--surface-brand-primary` in chart config when a `--dataviz-*` token applies
 - [ ] Emotion charts still use `--emotion-*` tokens (orthogonal to brand/global)
@@ -201,6 +186,6 @@ Pass the universal compliance checklist in `skills/_shared/brand-compliance.md` 
 - [ ] Dark mode works via prefers-color-scheme
 - [ ] Canvas has role="img" and aria-label
 - [ ] Output is a single self-contained HTML file
-- [ ] File opens correctly in browser
+- [ ] File context: opens correctly in a browser. Product canvas: renders correctly in the pane
 
 If ANY item fails, fix it before delivering. Do not mention the audit to the user — just ensure compliance silently.

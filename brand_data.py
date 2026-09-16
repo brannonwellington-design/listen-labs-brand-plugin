@@ -185,7 +185,7 @@ TYPOGRAPHY = {
     "letter_spacing": "Default only — never override letter-spacing",
     "type_scale_px": [6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128],
     "case_rules": "Standard sentence/title case for headlines and body. Title Case is used for the project header (Listen Labs / Title) and sparse metadata labels.",
-    "css": "body {\n  font-family: 'Inter', sans-serif;\n  font-weight: 400;\n  /* never add letter-spacing */\n}",
+    "css": "body {\n  font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif; /* metric-compatible fallbacks: layout must not depend on the webfont */\n  font-weight: 400;\n  /* never add letter-spacing */\n}",
 }
 
 SPACING = {
@@ -236,10 +236,15 @@ HEADER = {
     "default_font_size": "12px",
     "notes": "Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.",
     "where_it_appears": "Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the wordmark in the navigation instead of the credit line.",
-    "html_example": '''<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:12px;">
-  <span style="color: var(--content-secondary)">Listen Labs /</span>
-  <span style="color: var(--content-primary)"> Project Title</span>
-</div>''',
+    "html_example": '''<header class="ll-header">
+  <span class="ll-brand">Listen Labs /</span>
+  <span class="ll-title">Project Title</span>
+</header>
+<style>
+  .ll-header { position: absolute; top: 24px; left: 0; right: 0; text-align: center; font-size: 12px; line-height: 16px; }
+  .ll-brand { color: var(--content-secondary); }
+  .ll-title { color: var(--content-primary); }
+</style>''',
 }
 
 DATA_VISUALIZATION = {
@@ -385,8 +390,8 @@ DATAVIZ_RULES = {
     "swap_mechanism": 'Set data-dataviz-palette="brand|global" on any ancestor of the chart (typically <main> or :root). All --dataviz-* tokens cascade and resolve to the active mode\'s values. Charts can omit the attribute entirely to inherit the brand default.',
     "category_caps": {
         "soft_max": 7,
-        "hard_max": 10,
-        "rule": "Beyond 7 categories, require direct data labels rather than legend lookup. Beyond 10, roll up to 'Other'. Brand mode practical cap is 5 (monochromatic limits); past that the palette degrades to neutral grays — switch to global mode if you need more distinct categories.",
+        "hard_max": 8,
+        "rule": "Beyond 7 categories, require direct data labels rather than legend lookup. Beyond 8 (the palette has eight categorical slots), roll up to 'Other'. Brand mode practical cap is 5 (monochromatic limits); past that the palette degrades to neutral grays — switch to global mode if you need more distinct categories.",
     },
     "redundant_encoding": "For 5+ series or any line chart with multiple lines, encode redundantly: line-style (solid/dashed/dotted) + marker shape (circle/triangle/square) in addition to color. Never rely on color alone (WCAG 1.4.1).",
     "contrast": {

@@ -69,7 +69,7 @@ Two themes. `paper` (warm cream/brown) is the default for all deliverables. `whi
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif; /* metric-compatible fallbacks: layout must not depend on the webfont */
   font-weight: 400;
   color: var(--content-primary);
   background: var(--surface-primary);
@@ -144,10 +144,15 @@ Interpolation: icon size ≈ text size + 2px, stroke ≈ scaled proportionally f
 ## Header convention
 
 ```html
-<div style="text-align:center; position:absolute; top:24px; left:0; right:0; font-family:'Inter',sans-serif; font-weight:400; font-size:12px;">
-  <span style="color: var(--content-secondary)">Listen Labs /</span>
-  <span style="color: var(--content-primary)"> Project Title</span>
-</div>
+<header class="ll-header">
+  <span class="ll-brand">Listen Labs /</span>
+  <span class="ll-title">Project Title</span>
+</header>
+<style>
+  .ll-header { position: absolute; top: 24px; left: 0; right: 0; text-align: center; font-size: 12px; line-height: 16px; }
+  .ll-brand { color: var(--content-secondary); }
+  .ll-title { color: var(--content-primary); }
+</style>
 ```
 Title Case always, both parts same size (12px default), top center, 24px from top. Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.
 
@@ -232,7 +237,7 @@ Two interchangeable modes with IDENTICAL token names. Default is **brand** (mono
 ### Palette rules
 
 - Brand mode practical cap: **5 categorical series** (slots 6–8 degrade to neutral grays as a soft signal to switch to global mode).
-- Soft max 7 categories (beyond that: direct data labels, not legend lookup). Hard max 10 (beyond: roll up to "Other").
+- Soft max 7 categories (beyond that: direct data labels, not legend lookup). Hard max 8 (beyond: roll up to "Other").
 - For 5+ series or any line chart with multiple lines, encode redundantly: line-style (solid/dashed/dotted) + marker shape (circle/triangle/square) in addition to color. Never rely on color alone (WCAG 1.4.1).
 - Contrast: All categorical colors must hit ≥3:1 against the chart background; data labels must hit ≥4.5:1.
 - Never use red/green for diverging data. Default RdBu (global) and vermillion/blue (brand) are both CVD-safe.
@@ -249,7 +254,7 @@ Two interchangeable modes with IDENTICAL token names. Default is **brand** (mono
 
 ## Strokes (general)
 
-1px everywhere — dividers, diagram edges, borders. Heavier weight is never emphasis; emphasis comes from scale and color role.
+1px for structure — dividers, diagram edges, borders, axes, grid. 2px only for the named emphasis devices: a story line in a multi-line chart, the participant-quote left border, a winner underline in a matrix, an accent rule in a lockup. Heavier weight is never general emphasis; emphasis comes from scale and color role.
 
 ## Emotion tokens (product module)
 

@@ -13,7 +13,7 @@ Universal rules for every component: `font-family` inherits (Inter 400); text is
 | Inverse (on dark surfaces) | `--surface-inverse-primary` | `--surface-primary` | none | Toggles and controls on a dark band. |
 | Quiet | transparent | `--content-secondary` | none | Tertiary actions, "Cancel", inline controls. Underline on hover. |
 
-Sizes: XL 32px tall (12px/16px text, padding 8px 16px, radius 8) is the default; L 24px (12px/16px, padding 4px 12px, radius 8) for dense toolbars; never taller than 32px — hit area comes from padding/margin outside the visual box. Hover: secondary → `--surface-secondary` background; primary → no color change, cursor only (brand blue does not have a lighter "hover blue"). Active: 1px inset border `--content-disabled`. Disabled: text `--content-disabled`, border `--surface-tertiary`, no background change, `cursor: not-allowed`. Icon + label: Lucide icon at text size + 2px (14×14 for 12px text), 8px gap, icon colored like the label.
+Sizes: XL 32px tall (12px/16px text, `height: 32px; padding: 0 16px`, radius 8) is the default; L 24px (12px/16px, `height: 24px; padding: 0 12px`, radius 8) for dense toolbars; never taller than 32px — hit area comes from padding/margin outside the visual box. Hover: secondary → `--surface-secondary` background; primary → no color change, cursor only (brand blue does not have a lighter "hover blue"). Active: 1px inset border `--content-disabled`. Disabled: text `--content-disabled`, border `--surface-tertiary`, no background change, `cursor: not-allowed`. Icon + label: Lucide icon at text size + 2px (14×14 for 12px text), 8px gap, icon colored like the label.
 
 ```css
 .btn { display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 16px; border-radius:8px;
@@ -40,7 +40,7 @@ Height XL 32px (L 24px in dense tables); padding 0 12px; radius 8; 1px `--surfac
 
 ## Chips, tags, badges
 
-Height M 20px (S 16px inline), padding 0 8px, radius 4, 10px/16px text. Neutral: `--surface-secondary` background, `--content-secondary` text. Selected/filter-on: `--surface-brand-secondary` background, `--content-brand` text. Status chips use the status tokens (`--surface-positive-secondary` + `--content-positive`, negative, warning). Never emotion tokens for a badge.
+Height M 20px (S 16px inline), padding 0 8px, radius 4, 10px/16px text (chips are micro labels; the same information also appears in full elsewhere). Neutral: `--surface-secondary` background, `--content-secondary` text. Selected/filter-on: `--surface-brand-secondary` background, `--content-brand` text. Status chips use the status tokens (`--surface-positive-secondary` + `--content-positive`, negative, warning). Never emotion tokens for a badge.
 
 ## Tooltips and popovers
 
@@ -64,7 +64,7 @@ Header row 12px Title Case `--content-primary` with a 1px `--content-disabled` r
 
 ## Stat tiles / KPI rows
 
-One number per tile: 48px numeral (`--content-primary`, `tabular-nums`, `text-wrap: balance` on its label), 12px label beneath in `--content-secondary`, optional delta chip using semantic tokens, n= in `--content-disabled`. Tiles align numerals on one baseline across the row (equalize label heights); when they stack, a 1px hairline separates them. Never more than four tiles in a row; never a tile with two competing numbers.
+One number per tile: 48px numeral (`--content-primary`, `tabular-nums`, `text-wrap: balance` on its label), 12px label beneath in `--content-secondary`, optional delta chip using semantic tokens, n= in `--content-disabled`. Tiles align numerals on one baseline across the row (equalize label heights); when they stack, a 1px hairline separates them. Up to four tiles per row at desktop width, wrapping beyond that (six KPIs become 4 + 2, or 3 + 3); never a tile with two competing numbers.
 
 ## Empty, loading, and error states
 

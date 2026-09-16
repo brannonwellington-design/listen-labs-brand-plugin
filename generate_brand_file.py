@@ -261,7 +261,7 @@ Two interchangeable modes with IDENTICAL token names. Default is **{rules["defau
 
 ## Strokes (general)
 
-1px everywhere — dividers, diagram edges, borders. Heavier weight is never emphasis; emphasis comes from scale and color role.
+1px for structure — dividers, diagram edges, borders, axes, grid. 2px only for the named emphasis devices: a story line in a multi-line chart, the participant-quote left border, a winner underline in a matrix, an accent rule in a lockup. Heavier weight is never general emphasis; emphasis comes from scale and color role.
 
 ## Emotion tokens (product module)
 
