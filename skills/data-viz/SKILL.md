@@ -26,7 +26,7 @@ Every visualization follows this exact sequence:
 4. **Reference chart patterns** — pick the chart type with `skills/research-artifacts/references/charts.md` (selection rules), then check `skills/data-viz/references/chart-patterns.md` for the correct Chart.js configuration for that type.
 5. **Populate with data** — insert the user's data into the Chart.js config. Apply color rules via the `dataViz*` helpers (mode-aware) — never write raw hex.
 6. **Run self-audit** — check every item in the audit checklist below before delivering.
-7. **Write and open** — save as a single `.html` file and open it in the default browser (`open` on macOS, `xdg-open` on Linux, `start` on Windows; if none applies, print the absolute path).
+7. **Deliver for the context** — in a file context, save as a single `.html` file and open it in the default browser (`open` on macOS, `xdg-open` on Linux, `start` on Windows; if none applies, print the absolute path). In the Listen Labs product canvas, return the complete HTML document as the artifact instead — no file writes, no open commands.
 
 ---
 
@@ -176,7 +176,7 @@ function brandShades(count) {
 - **Single `.html` file.** All CSS inline in `<style>`. All JS inline in `<script>`. No external dependencies except Google Fonts and Chart.js CDN.
 - **Chart.js CDN**: `https://cdn.jsdelivr.net/npm/chart.js@4`
 - **Inter font**: `https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap`
-- **File location**: Write to the current working directory with a descriptive filename (e.g., `revenue-by-quarter.html`).
+- **File location** (file context only): Write to the current working directory with a descriptive filename (e.g., `revenue-by-quarter.html`). In the product canvas, the HTML document itself is the deliverable.
 - **Auto-open**: After writing, open the file with the platform command (`open` macOS · `xdg-open` Linux · `start` Windows); otherwise print the absolute path.
 
 ---

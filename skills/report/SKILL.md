@@ -25,7 +25,7 @@ Generate professional, brand-compliant research reports as self-contained HTML f
 5. **Apply emotion coding** — when findings reference emotional data, use emotion callouts from `skills/report/references/emotion-callouts.md`. Emotion tokens are reserved exclusively for Ekman emotion data.
 6. **Embed visualizations** — embed Chart.js charts inline using `/data-viz` patterns. Charts inherit the report's CSS variables automatically.
 7. **Audit** — run the self-audit checklist. No report ships without passing every item.
-8. **Write and open** — save as a single `.html` file and open it in the default browser (`open` on macOS, `xdg-open` on Linux, `start` on Windows; if none applies, print the absolute path).
+8. **Deliver for the context** — in a file context, save as a single `.html` file and open it in the default browser (`open` on macOS, `xdg-open` on Linux, `start` on Windows; if none applies, print the absolute path). In the Listen Labs product canvas, return the complete HTML document as the artifact instead — no file writes, no open commands.
 
 ---
 

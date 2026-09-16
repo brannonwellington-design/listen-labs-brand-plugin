@@ -84,9 +84,9 @@ For explorable views (dashboards, explorers) follow Shneiderman's mantra: overvi
 
 ## Library loading (single-file artifacts)
 
-From cdnjs only, pinned versions, `<script>` UMD builds before your inline script:
+Order of preference: **no library** (plain SVG + JS covers bars, lines, dots, slopes, pies, heatmaps, small multiples, simple diagrams) → D3 only for maps, sankeys, and force layouts → Chart.js only when the user asks for it or a `/report` embeds it. In the product canvas, assume external requests may be blocked: any `<script src>` gets an `onerror` handler that replaces the chart with a designed "could not load" notice, and the artifact must still read correctly without the chart (title, subtitle, values in a table or list). When a library is used, from cdnjs only, pinned versions, `<script>` UMD builds before your inline script:
 - D3: `https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js`
 - TopoJSON client: `https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js`
 - Dagre (workflow layout): `https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js`
-World geometry: fetch `https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json` at runtime; if the render target blocks external fetches, inline the TopoJSON into the file instead.
+World geometry: inline the TopoJSON into the file by default (countries-110m is ~100 KB); fetch `https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json` at runtime only in a file context where network is known to be available, and never as the only path.
 Plain SVG + JS with no library is preferred for simple bars/lines — fewer dependencies, faster loads.

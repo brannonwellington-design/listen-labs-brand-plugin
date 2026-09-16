@@ -48,7 +48,7 @@ Height M 20px (S 16px inline), padding 0 8px, radius 4, 10px/16px text. Neutral:
 
 ## Navigation and page header
 
-Top nav: a single 64px band (48px mobile), `--surface-primary` background, 1px `--surface-tertiary` bottom hairline, contents on the page grid. Left: the Listen Labs wordmark (`assets/listen-labs-logo.svg` from the plugin root, rendered at 20px tall, `currentColor` so it follows the theme). Right: up to five text links (12px, `--content-secondary`, 24px gap) and at most one button (secondary; primary only if the page has a single conversion). Sticky nav is allowed; it keeps its background and hairline. Mobile: links collapse behind a Lucide `menu` button (32×32 hit area 44) into a full-width list with 48px rows. The branded credit line (`Listen Labs / Title`) is for artifacts and documents; a website uses the nav instead, not both.
+Top nav: a single 64px band (48px mobile), `--surface-primary` background, 1px `--surface-tertiary` bottom hairline, contents on the page grid. Left: the Listen Labs wordmark (paste the SVG markup from `assets/listen-labs-logo.svg` at the plugin root inline — never a path or URL — rendered at 20px tall, `currentColor` so it follows the theme). Right: up to five text links (12px, `--content-secondary`, 24px gap) and at most one button (secondary; primary only if the page has a single conversion). Sticky nav is allowed; it keeps its background and hairline. Mobile: links collapse behind a Lucide `menu` button (32×32 hit area 44) into a full-width list with 48px rows. The branded credit line (`Listen Labs / Title`) is for artifacts and documents; a website uses the nav instead, not both.
 
 ## Footer
 

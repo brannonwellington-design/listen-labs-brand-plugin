@@ -89,6 +89,9 @@ Full policy in the **Motion** section below. Gate every transition and animate *
 }
 ```
 
+### Container-based responsiveness
+Artifacts are often rendered inside a pane (the Listen Labs product canvas, a dashboard slot, an embed) whose width is not the screen's. Put `container-type: inline-size` on the artifact's root element and express breakpoints as `@container` queries (600px and 900px are the usual thresholds), keeping `@media` queries only as a fallback. Charts and diagrams measure their own container with `ResizeObserver`; nothing reads `window.innerWidth`, and no layout decision depends on `100vh`.
+
 ### Mobile rules
 - **Touch targets ≥ 44×44px** for every interactive element on mobile. This is the *hit area*, not the visual size: a brand button keeps its 32px visual height (XL component height) and gains the rest through padding, margin, or a transparent `::before` hit layer.
 - **No hover-only states.** Active/focus states must convey the same information without hover.
@@ -106,7 +109,7 @@ Full policy in the **Motion** section below. Gate every transition and animate *
 - **Default is no imagery.** Listen Labs artifacts carry their weight with type, numbers, and data. Add an image only when it IS the content (a product frame, a participant-provided artifact, a map).
 - **Never stock photography, never generated "people".** Invented humans undermine research credibility. Persona identity is a monochrome geometric mark, not a face.
 - **When a hero or illustrative image is genuinely wanted** (a campaign page, a cover), the sanctioned source is the Listen Labs Brand Hub image recipes: if the `Listen_Labs_Brand_Hub` MCP is connected, call `list_recipes` → `get_recipe` and hand the finished Midjourney prompt to the user rather than drawing an illustration by hand. Otherwise state that an image slot is reserved and leave a `--surface-secondary` placeholder with the exact size.
-- **The wordmark** lives at `assets/listen-labs-logo.svg` (plugin root). Inline it as SVG with `fill="currentColor"` so it follows the theme; render at 20px tall in nav and footers, 16px in a credit line; clear space equal to its height on all sides; never recolor it brand blue, never stretch, never place on a busy surface. Websites use the wordmark in the nav; artifacts and documents use the text credit line (`Listen Labs / Title`) — not both.
+- **The wordmark** lives at `assets/listen-labs-logo.svg` (plugin root). Read that file and paste its SVG markup inline with `fill="currentColor"` so it follows the theme — never reference the path or a URL from the artifact, which must stay self-contained; render at 20px tall in nav and footers, 16px in a credit line; clear space equal to its height on all sides; never recolor it brand blue, never stretch, never place on a busy surface. Websites use the wordmark in the nav; artifacts and documents use the text credit line (`Listen Labs / Title`) — not both.
 - **Icons:** Lucide only, inline SVG, sized and stroked per the icon table, colored as the accompanying text. An icon on every list item is decoration; an icon that disambiguates is information.
 
 ---
@@ -177,7 +180,7 @@ Before delivering any output, verify:
 - [ ] Touch targets ≥ 44×44px on mobile
 - [ ] No hover-only states
 - [ ] Tables wrap in `overflow-x-auto` with `min-width: 640px`
-- [ ] Tested at 375px / 768px / 1280px — no horizontal scroll, no broken layouts
+- [ ] Tested at 375px / 768px / 1280px container widths — no horizontal scroll, no broken layouts; breakpoints are `@container` queries on a `container-type: inline-size` root
 - [ ] Print check: light tokens re-declared in `@media print`, `print-color-adjust: exact`, nothing essential hover-only
 - [ ] No stock or generated imagery; wordmark from `assets/listen-labs-logo.svg` if used, credit line OR nav, not both
 - [ ] Motion: none by default; any transition is `opacity`/`transform`, ≤400ms, with a reduced-motion path
