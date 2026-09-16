@@ -289,6 +289,8 @@
     .chart-unavailable { font-size: 12px; line-height: 16px; color: var(--content-secondary); padding: 24px; border: 1px solid var(--surface-tertiary); border-radius: 8px; }
 
     /* ── Base ──────────────────────────────────────────────── */
+    /* The artifact responds to its CONTAINER (a product-canvas pane, an embed), not the screen. */
+    body { container-type: inline-size; }
     body {
       font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
       font-weight: 400;
@@ -305,8 +307,13 @@
       padding: 0 48px;
     }
 
-    @media (max-width: 768px) {
+    @container (max-width: 768px) {
       .report { padding: 0 24px; }
+    }
+    @supports not (container-type: inline-size) {
+      @media (max-width: 768px) {
+      .report { padding: 0 24px; }
+    }
     }
 
     /* ── Branded Header ───────────────────────────────────── */
@@ -361,8 +368,13 @@
     }
     .cover .meta .divider { color: var(--content-disabled); }
 
-    @media (max-width: 768px) {
+    @container (max-width: 768px) {
       .cover .title { font-size: 32px; line-height: 36px; }
+    }
+    @supports not (container-type: inline-size) {
+      @media (max-width: 768px) {
+      .cover .title { font-size: 32px; line-height: 36px; }
+    }
     }
 
     /* ── Section ──────────────────────────────────────────── */
@@ -383,10 +395,17 @@
       max-width: 720px;
     }
 
-    @media (max-width: 768px) {
+    @container (max-width: 768px) {
       .section { padding-top: 64px; }
       .section-heading { font-size: 24px; line-height: 28px; }
       .section-intro { font-size: 16px; line-height: 24px; }
+    }
+    @supports not (container-type: inline-size) {
+      @media (max-width: 768px) {
+      .section { padding-top: 64px; }
+      .section-heading { font-size: 24px; line-height: 28px; }
+      .section-intro { font-size: 16px; line-height: 24px; }
+    }
     }
 
     /* ── Subsection / Finding ─────────────────────────────── */
@@ -400,9 +419,15 @@
       margin-bottom: 12px;
     }
 
-    @media (max-width: 768px) {
+    @container (max-width: 768px) {
       .finding { padding-top: 32px; }
       .finding-heading { font-size: 20px; line-height: 24px; }
+    }
+    @supports not (container-type: inline-size) {
+      @media (max-width: 768px) {
+      .finding { padding-top: 32px; }
+      .finding-heading { font-size: 20px; line-height: 24px; }
+    }
     }
 
     /* ── Body Text ────────────────────────────────────────── */
