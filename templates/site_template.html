@@ -73,6 +73,16 @@
   }
   .logo-stage svg { height: 48px; width: auto; }   /* 2 × leading */
   .logo-stage svg path { fill: var(--content-primary); }
+  .logo-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  @media (max-width: 768px) { .logo-tiles { grid-template-columns: repeat(2, 1fr); } }
+  .logo-tile { background: var(--surface-highlight); border: 1px solid var(--hairline); border-radius: 8px; padding: 24px; }
+  .logo-tile-stage { height: 72px; display: flex; align-items: center; }
+  .logo-tile-stage svg { height: 32px; width: auto; }
+  .logo-tile-stage svg path { fill: var(--content-primary); }
+  .logo-tile-meta { margin-top: 16px; font-size: 12px; line-height: 16px; color: var(--content-secondary); }
+  .logo-tile-links { margin-top: 4px; font-size: 12px; line-height: 16px; }
+  .logo-rules { margin: 0; padding-left: 16px; }
+  .logo-rules li { margin-bottom: 8px; }
   .btn-row { display: flex; gap: 16px; flex-wrap: wrap; }
   .btn {
     font-family: 'Inter', sans-serif; font-weight: 400;
@@ -362,11 +372,11 @@
         <div class="big-num c1-3">01</div>
         <div class="c3-5">
           <h2 class="h-sec">Logo</h2>
-          <p class="micro">One locked SVG — mark plus wordmark, 105×23 viewBox. Never redrawn. Renders in content-primary on any brand surface.</p>
+          <p class="micro">Four locked variants — the full lockup is the default. Never redrawn. Inline the SVG with <code>currentColor</code> and it renders in content-primary on any brand surface.</p>
         </div>
         <div class="c5-13">
           <div class="logo-stage">
-            <svg id="logoDisplay" width="105" height="23" viewBox="0 0 105 23" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Listen Labs logo">
+            <svg id="logoDisplay" viewBox="{{LOGO_VIEWBOX}}" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Listen Labs logo">
               {{LOGO_PATHS}}
             </svg>
           </div>
@@ -379,7 +389,18 @@
             <button class="btn" id="downloadSvg" type="button">Download .svg</button>
           </div>
         </div>
-        <p class="micro c9-13">listen-labs-logo.svg · exports at original fidelity with black fills · scales to any size without loss</p>
+        <p class="micro c9-13">listen-labs-logo.svg · the full lockup · exports at original fidelity with the brand fill · scales to any size without loss</p>
+      </div>
+      <div class="band">
+        <div class="c1-13 logo-tiles">
+{{LOGO_TILES}}
+        </div>
+      </div>
+      <div class="band">
+        <div class="c3-5"><p class="micro">Usage</p></div>
+        <ul class="micro c5-13 logo-rules">
+{{LOGO_RULES}}
+        </ul>
       </div>
     </div>
   </div>
@@ -798,8 +819,8 @@ document.querySelectorAll('.guides .cols').forEach(function (h) {
   window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(align, 120); });
 })();
 /* LOGO ASSET — pristine source for copy/download (original black fills) */
-var LOGO_SVG = '<svg width="105" height="23" viewBox="0 0 105 23" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-  document.getElementById('logoDisplay').innerHTML.replace(/<path /g, '<path fill="black" ').replace(/\s{2,}/g, ' ').trim() +
+var LOGO_SVG = '<svg viewBox="{{LOGO_VIEWBOX}}" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+  document.getElementById('logoDisplay').innerHTML.replace(/<path /g, '<path fill="{{LOGO_FILL}}" ').replace(/\s{2,}/g, ' ').trim() +
   '</svg>';
 
 var copyBtn = document.getElementById('copySvg');

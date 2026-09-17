@@ -221,6 +221,14 @@ Dark: `{diff_inline("whisp", "dark")}`
 
 Interpolation: {data.ICONS["interpolation"]}.
 
+## Logo
+
+Default: `assets/{data.LOGO['variants'][data.LOGO['default_variant']]['file']}.svg` (mark + full wordmark). Inline the markup with fills set to `currentColor`, or call `get_logo` on the brand MCP.
+
+{chr(10).join(f"- **{k}** — `assets/{v['file']}.svg` · min {v['min_height_px']}px · {v['description']}" for k, v in data.LOGO['variants'].items())}
+
+{chr(10).join("- " + r for r in data.LOGO['rules'])}
+
 ## Header convention
 
 ```html

@@ -6,7 +6,7 @@
 
 > Answers the contract in `_contract.md`. Fields map 1:1; voice section at the bottom.
 
-> **Source: `brand_data.py` (the same data the Listen Labs brand MCP serves) · Snapshot: 2026-09-16.**
+> **Source: `brand_data.py` (the same data the Listen Labs brand MCP serves) · Snapshot: 2026-09-17.**
 > This file is regenerated from the repo's single source of truth, so it matches `get_full_guidelines` exactly.
 > If the brand MCP is connected, you may still call it to confirm live values. Copy values verbatim, never approximate.
 
@@ -141,6 +141,22 @@ Lucide only, inline SVG, colored same as accompanying text. Icon line weight sho
 
 Interpolation: icon size ≈ text size + 2px, stroke ≈ scaled proportionally from 0.75px (at 8px text) to 2px (at 24px text).
 
+## Logo
+
+Default: `assets/listen-labs-logo.svg` (mark + full wordmark). Inline the markup with fills set to `currentColor`, or call `get_logo` on the brand MCP.
+
+- **lockup** — `assets/listen-labs-logo.svg` · min 20px · Mark + the full “Listen Labs” wordmark. The default everywhere the brand is named: nav, footers, covers, decks, exports.
+- **lockup-short** — `assets/listen-labs-logo-short.svg` · min 20px · Mark + “Listen”. Only when the full lockup would drop below its minimum height (narrow nav on phones, compact toolbars, tiny stages).
+- **wordmark-short** — `assets/listen-labs-wordmark-short.svg` · min 18px · The “Listen” wordmark alone, no mark. Rare: only beside another instance of the mark, or in a lockup with a partner brand.
+- **mark** — `assets/listen-labs-mark.svg` · min 16px · The mark alone. Favicons, avatars, app icons, social thumbnails, and anywhere the name is already written next to it.
+
+- Default to the full lockup. Step down to the short lockup only when the full one cannot meet its minimum height; use the mark alone only where the name is redundant or the space is square.
+- In HTML, inline the SVG markup from assets/ and set fill="currentColor" on its paths so it follows the theme (content-primary on light, inverse on dark bands). Never link to the file path or a URL from an artifact.
+- Use the -white files only where currentColor is impossible: PNG in decks and email, or an SVG placed on a fixed dark surface.
+- Clear space on every side equals the height of the mark (the square-and-curve glyph); nothing else enters it.
+- Never recolor the logo brand blue or any other color, never stretch, rotate, outline, add a shadow, or place it on a busy surface; on photography use the mark on a solid surface tile.
+- Websites and product surfaces use the lockup in the navigation; standalone artifacts and documents use the text credit line (Listen Labs / Title); never both on the same page.
+
 ## Header convention
 
 ```html
@@ -156,7 +172,7 @@ Interpolation: icon size ≈ text size + 2px, stroke ≈ scaled proportionally f
 ```
 Title Case always, both parts same size (12px default), top center, 24px from top. Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.
 
-**Where it appears:** Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the wordmark in the navigation instead of the credit line.
+**Where it appears:** Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the logo lockup in the navigation instead of the credit line.
 
 ## Data-viz palette tokens
 

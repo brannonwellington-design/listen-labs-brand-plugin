@@ -33,6 +33,7 @@ The plugin adds these tools to Claude:
 | `get_data_visualization` | Chart rules, color usage, stroke weights |
 | `get_dataviz_palettes` | Swappable data-viz palettes (`brand` monochromatic / `global` best-practices) + caps and CVD rules |
 | `get_art_direction` | Design philosophy, composition principles |
+| `get_logo` | Ready-to-inline SVG for any logo variant (lockup, short lockup, mark, wordmark) in `currentColor`, light, or white, plus PNG paths and usage rules |
 | `get_full_guidelines` | Everything above in one call |
 
 ## Where the skills run
@@ -167,7 +168,7 @@ Or just ask Claude to create a report, summary, brief, or write-up — the skill
 
 The one-page brand guideline lives at **`docs/index.html`** and is generated from `brand_data.py` — the same source of truth the MCP tools read. Edit `brand_data.py`, commit, and the page, `docs/tokens.css`, `docs/tokens.json`, `GUIDELINES.md`, and the `/research-artifacts` brand file (`skills/research-artifacts/references/brands/listen-labs.md`) all regenerate automatically via the pre-commit hook.
 
-Serve it with GitHub Pages: **Settings → Pages → Deploy from a branch → `main` / `docs`**. The page includes the logo SVG (copy/download), all Paper tokens, the full spec, a toggleable layout grid (press `G`), and the plugin install command — so one URL serves humans grabbing assets and routes Claude users into the plugin.
+Serve it with GitHub Pages: **Settings → Pages → Deploy from a branch → `main` / `docs`**. The page includes every logo variant (copy/download), all Paper tokens, the full spec, a toggleable layout grid (press `G`), and the plugin install command — so one URL serves humans grabbing assets and routes Claude users into the plugin.
 
 Developer endpoints served alongside the page:
 

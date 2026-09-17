@@ -103,6 +103,10 @@ In summary:
 - Project title in `content-primary` token (or `content-inverse-primary` on dark slides)
 - Top center, 10pt, Inter 400, 0.2" from top
 
+### Logo
+
+The title and closing slides carry the lockup as an image, not text: `slide.addImage({ path: '<plugin root>/assets/listen-labs-logo.png', h: 0.4, w: 0.4 * (2080 / 282), x: 0.6, y: 0.6 })` on light slides, the `-white.png` twin on dark slides (resolve the plugin root from `${CLAUDE_PLUGIN_ROOT}` or the skill's own directory). Minimum height 0.28" (≈20px at 72dpi); clear space around it equal to the mark's height; never stretch (always compute `w` from the PNG's 2080×282 ratio). Content slides carry the text credit line, not the logo — never both on one slide.
+
 ### Shadows, Effects, and Decoration
 
 - **No drop shadows.** Never use `shadow` on any element.

@@ -255,6 +255,25 @@ body {
 
 ---
 
+## Logo
+
+Files live in `assets/` at the plugin root (SVG + PNG, plus `-white` twins for dark surfaces). Default: **listen-labs-logo.svg** (the full lockup). Call `get_logo` on the brand MCP for ready-to-inline markup.
+
+| Variant | File | Min height | Use |
+| --- | --- | --- | --- |
+| lockup | `listen-labs-logo.svg` | 20px | Mark + the full “Listen Labs” wordmark. The default everywhere the brand is named: nav, footers, covers, decks, exports. |
+| lockup-short | `listen-labs-logo-short.svg` | 20px | Mark + “Listen”. Only when the full lockup would drop below its minimum height (narrow nav on phones, compact toolbars, tiny stages). |
+| wordmark-short | `listen-labs-wordmark-short.svg` | 18px | The “Listen” wordmark alone, no mark. Rare: only beside another instance of the mark, or in a lockup with a partner brand. |
+| mark | `listen-labs-mark.svg` | 16px | The mark alone. Favicons, avatars, app icons, social thumbnails, and anywhere the name is already written next to it. |
+
+Rules:
+- Default to the full lockup. Step down to the short lockup only when the full one cannot meet its minimum height; use the mark alone only where the name is redundant or the space is square.
+- In HTML, inline the SVG markup from assets/ and set fill="currentColor" on its paths so it follows the theme (content-primary on light, inverse on dark bands). Never link to the file path or a URL from an artifact.
+- Use the -white files only where currentColor is impossible: PNG in decks and email, or an SVG placed on a fixed dark surface.
+- Clear space on every side equals the height of the mark (the square-and-curve glyph); nothing else enters it.
+- Never recolor the logo brand blue or any other color, never stretch, rotate, outline, add a shadow, or place it on a busy surface; on photography use the mark on a solid surface tile.
+- Websites and product surfaces use the lockup in the navigation; standalone artifacts and documents use the text credit line (Listen Labs / Title); never both on the same page.
+
 ## Header / Title Convention
 
 Most Listen Labs outputs include a branded header at the top center:
@@ -271,7 +290,7 @@ Rules:
 - Both use the same font size — **default is 12px** for standalone pages, features, slides, tools, and artifacts. Only deviate if the context clearly calls for a larger display treatment.
 - No letter-spacing added
 - Single line, space-separated with a `/` divider
-- **Where it appears:** Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the wordmark in the navigation instead of the credit line.
+- **Where it appears:** Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the logo lockup in the navigation instead of the credit line.
 
 HTML example:
 ```html

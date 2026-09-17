@@ -33,7 +33,7 @@ Emotion tokens (`emotion-anger-*`, `emotion-happiness-*`, etc.) are shared acros
 6. **Even-number spacing, 4px base.** All padding, margin, gap, width, height, and offset values are multiples of 4.
 7. **Border radius from the brand scale.** Only 0, 2, 4, 8, 12, 16.
 8. **No drop shadows. No gradients. No decorative elements without informational purpose.**
-9. **Branded header** (`Listen Labs / Title`) on standalone artifacts that leave the product — HTML files, PDFs, posters, decks, exported images. **Omit it inside the Listen Labs product canvas**, where the product chrome already carries the brand; websites use the wordmark in the nav instead. Call `get_header_convention` for the spec.
+9. **Branded header** (`Listen Labs / Title`) on standalone artifacts that leave the product — HTML files, PDFs, posters, decks, exported images. **Omit it inside the Listen Labs product canvas**, where the product chrome already carries the brand; websites use the logo lockup in the nav instead. Call `get_header_convention` for the spec.
 10. **Emotion tokens are reserved.** Use `emotion-*` only for the six Ekman emotion data — never for general categories, status indicators, or decoration.
 11. **`--content-disabled` is never a text color.** At 1.9:1 on Paper light it fails every text floor. Use it for hairlines, grid lines, placeholders, and disabled controls; captions, metadata, and attributions use `--content-secondary` at a smaller size (that size step is what makes the tier feel quieter). Emotion tokens are data encodings, not text colors: an emotion name is set in `--content-primary` beside its swatch.
 12. **Colors stay within the active theme palette.** No introducing colors outside Paper/Whisp tokens. The one sanctioned exception is the `global` data-viz palette mode (Okabe-Ito / Viridis / RdBu), which exists for accessibility and brand-agnostic charts and is reached only through the `--dataviz-*` tokens.
@@ -110,7 +110,12 @@ Artifacts are often rendered inside a pane (the Listen Labs product canvas, a da
 - **Default is no imagery.** Listen Labs artifacts carry their weight with type, numbers, and data. Add an image only when it IS the content (a product frame, a participant-provided artifact, a map).
 - **Never stock photography, never generated "people".** Invented humans undermine research credibility. Persona identity is a monochrome geometric mark, not a face.
 - **When a hero or illustrative image is genuinely wanted** (a campaign page, a cover), the sanctioned source is the Listen Labs Brand Hub image recipes: if the `Listen_Labs_Brand_Hub` MCP is connected, call `list_recipes` → `get_recipe` and hand the finished Midjourney prompt to the user rather than drawing an illustration by hand. Otherwise state that an image slot is reserved and leave a `--surface-secondary` placeholder with the exact size.
-- **The wordmark** lives at `assets/listen-labs-logo.svg` (plugin root). Read that file and paste its SVG markup inline with `fill="currentColor"` so it follows the theme — never reference the path or a URL from the artifact, which must stay self-contained; render at 20px tall in nav and footers, 16px in a credit line; clear space equal to its height on all sides; never recolor it brand blue, never stretch, never place on a busy surface. Websites use the wordmark in the nav; artifacts and documents use the text credit line (`Listen Labs / Title`) — not both.
+- **The logo** ships in four variants under `assets/` at the plugin root, each as SVG and PNG, plus `-white` twins for dark surfaces where `currentColor` cannot be used:
+  - `listen-labs-logo.svg` — mark + the full “listen labs” wordmark. **The default** everywhere the brand is named: nav, footers, covers, decks, exports. Minimum height 20px.
+  - `listen-labs-logo-short.svg` — mark + “listen”. Only when the full lockup cannot meet its minimum height (a narrow phone nav, a compact toolbar, a tiny stage).
+  - `listen-labs-mark.svg` — the mark alone. Favicons, avatars, app icons, social thumbnails, and anywhere the name is already written beside it. Minimum 16px.
+  - `listen-labs-wordmark-short.svg` — “listen” alone, no mark. Rare; only beside another instance of the mark or in a partner lockup.
+  In HTML, read the file and paste its SVG markup inline with every path's fill set to `currentColor` so it follows the theme (or call `get_logo` on the brand MCP, which returns it that way); size it with CSS `height`, never `width` alone. Never reference the path or a URL from an artifact, which must stay self-contained. Use the `-white` PNG/SVG only for decks, email, or a fixed dark surface. Clear space on every side equals the height of the mark. Never recolor it brand blue or any other color, never stretch, rotate, outline, shadow, or place it on a busy surface. Websites and product surfaces use the lockup in the nav; standalone artifacts and documents use the text credit line (`Listen Labs / Title`) — never both on one page.
 - **Icons:** Lucide only, inline SVG, sized and stroked per the icon table, colored as the accompanying text. An icon on every list item is decoration; an icon that disambiguates is information.
 
 ---
@@ -162,7 +167,7 @@ Before delivering any output, verify:
 - [ ] Spacing values are multiples of 4px (even numbers)
 - [ ] Border radius from scale only (0, 2, 4, 8, 12, 16)
 - [ ] No drop shadows, no gradients, no decorative ornament
-- [ ] Branded header present on standalone/exported artifacts; omitted inside the product canvas; nav wordmark (not the credit line) on websites
+- [ ] Branded header present on standalone/exported artifacts; omitted inside the product canvas; nav lockup (not the credit line) on websites
 - [ ] Emotion tokens used only for Ekman emotion data
 - [ ] Colors stay within the active theme palette
 
@@ -183,7 +188,7 @@ Before delivering any output, verify:
 - [ ] Tables wrap in an `overflow-x: auto` container with `min-width: 640px`
 - [ ] Tested at 375px / 768px / 1280px container widths — no horizontal scroll, no broken layouts; breakpoints are `@container` queries on a `container-type: inline-size` root
 - [ ] Print check: light tokens re-declared in `@media print`, `print-color-adjust: exact`, nothing essential hover-only
-- [ ] No stock or generated imagery; wordmark from `assets/listen-labs-logo.svg` if used, credit line OR nav, not both
+- [ ] No stock or generated imagery; logo is the full lockup from `assets/listen-labs-logo.svg` unless a smaller variant is justified, inlined with `currentColor`; credit line OR nav, not both
 - [ ] Motion: none by default; any transition is `opacity`/`transform`, ≤400ms, with a reduced-motion path
 - [ ] Composition chosen deliberately (dominant element, one signature lockup, left anchor, surface rhythm) — not the default you always reach for
 
