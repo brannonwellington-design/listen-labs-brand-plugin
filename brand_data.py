@@ -4,7 +4,7 @@ spacing, icons, header conventions, data viz rules, art direction, and CSS
 variable blocks.
 
 Imported by:
-- listen-labs-brand-server.py (exposes this data via MCP tools)
+- listen-labs-brand-server.py (exposes this data via MCP tools, including the logo)
 - generate_guidelines.py (renders this data into GUIDELINES.md)
 
 Edit values here. The pre-commit hook regenerates GUIDELINES.md automatically.
@@ -235,7 +235,7 @@ HEADER = {
     "project_title_color": "content-primary",
     "default_font_size": "12px",
     "notes": "Both parts use the same font size. Default 12px for standalone pages/artifacts. Single line, space-separated with / divider. No letter-spacing.",
-    "where_it_appears": "Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the wordmark in the navigation instead of the credit line.",
+    "where_it_appears": "Standalone artifacts and documents that leave the product: HTML files, PDFs, posters, decks, exported images. OMIT it inside the Listen Labs product canvas — the product chrome already carries the brand, and a second credit line reads as a watermark. Websites use the logo lockup in the navigation instead of the credit line.",
     "html_example": '''<header class="ll-header">
   <span class="ll-brand">Listen Labs /</span>
   <span class="ll-title">Project Title</span>
@@ -467,6 +467,53 @@ ART_DIRECTION = {
         "Arbitrary border radius values outside the scale",
         "Multiple competing focal points",
         "Decorative elements that don't carry meaning",
+    ],
+}
+
+# ─── Logo ────────────────────────────────────────────────────────────────────
+# Files live in assets/ at the plugin root. Every variant ships as SVG (paths
+# only, one flat fill) and PNG (for decks, email, and anything that cannot
+# inline SVG). "-white" files carry the cream fill for dark surfaces where
+# currentColor cannot be used; in HTML, inline the default file and set
+# fill="currentColor" so the logo follows the theme.
+
+LOGO = {
+    "default_variant": "lockup",
+    "fill_light": "#120F08",   # = content-primary (paper light)
+    "fill_dark": "#F9F4EB",    # = content-inverse-primary / paper dark canvas text
+    "variants": {
+        "lockup": {
+            "file": "listen-labs-logo",
+            "description": "Mark + the full “Listen Labs” wordmark. The default everywhere the brand is named: nav, footers, covers, decks, exports.",
+            "viewbox": "0 0 520 71",
+            "min_height_px": 20,
+        },
+        "lockup-short": {
+            "file": "listen-labs-logo-short",
+            "description": "Mark + “Listen”. Only when the full lockup would drop below its minimum height (narrow nav on phones, compact toolbars, tiny stages).",
+            "viewbox": "0 0 307 71",
+            "min_height_px": 20,
+        },
+        "wordmark-short": {
+            "file": "listen-labs-wordmark-short",
+            "description": "The “Listen” wordmark alone, no mark. Rare: only beside another instance of the mark, or in a lockup with a partner brand.",
+            "viewbox": "0 0 226 65",
+            "min_height_px": 18,
+        },
+        "mark": {
+            "file": "listen-labs-mark",
+            "description": "The mark alone. Favicons, avatars, app icons, social thumbnails, and anywhere the name is already written next to it.",
+            "viewbox": "0 0 51 69",
+            "min_height_px": 16,
+        },
+    },
+    "rules": [
+        "Default to the full lockup. Step down to the short lockup only when the full one cannot meet its minimum height; use the mark alone only where the name is redundant or the space is square.",
+        "In HTML, inline the SVG markup from assets/ and set fill=\"currentColor\" on its paths so it follows the theme (content-primary on light, inverse on dark bands). Never link to the file path or a URL from an artifact.",
+        "Use the -white files only where currentColor is impossible: PNG in decks and email, or an SVG placed on a fixed dark surface.",
+        "Clear space on every side equals the height of the mark (the square-and-curve glyph); nothing else enters it.",
+        "Never recolor the logo brand blue or any other color, never stretch, rotate, outline, add a shadow, or place it on a busy surface; on photography use the mark on a solid surface tile.",
+        "Websites and product surfaces use the lockup in the navigation; standalone artifacts and documents use the text credit line (Listen Labs / Title); never both on the same page.",
     ],
 }
 

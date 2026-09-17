@@ -77,12 +77,31 @@ def build_markers():
     m["CSS_TOKENS_DARK"] = css_decls(DARK, 4)
     m["VERSION_LINE"] = f"Grid Edition · {today.strftime('%B %Y')}"
 
-    # Logo: strip fill so the page recolors it via CSS; export JS re-adds black.
+    # Logo: strip fills so the page recolors via CSS; export JS re-adds the brand fill.
     logo_svg = open(LOGO_PATH).read()
     paths = re.findall(r"<path [^>]*/>", logo_svg)
-    m["LOGO_PATHS"] = "\n              ".join(
-        p.replace(' fill="black"', "") for p in paths
-    )
+    m["LOGO_PATHS"] = "\n              ".join(re.sub(r' fill="[^"]*"', "", p) for p in paths)
+    m["LOGO_VIEWBOX"] = re.search(r'viewBox="([^"]+)"', logo_svg).group(1)
+    m["LOGO_FILL"] = data.LOGO["fill_light"]
+
+    # Variant tiles + downloads; the SVG/PNG files are copied into docs/assets/ below.
+    tiles = []
+    for key, v in data.LOGO["variants"].items():
+        svg = open(os.path.join(SCRIPT_DIR, "assets", v["file"] + ".svg")).read()
+        inner = "".join(re.sub(r' fill="[^"]*"', "", x) for x in re.findall(r"<path [^>]*/>", svg))
+        tiles.append(
+            f'            <div class="logo-tile">\n'
+            f'              <div class="logo-tile-stage"><svg viewBox="{v["viewbox"]}" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Listen Labs {key}">{inner}</svg></div>\n'
+            f'              <div class="logo-tile-meta"><span class="tier-1">{key}</span>{" · default" if key == data.LOGO["default_variant"] else ""} · min {v["min_height_px"]}px</div>\n'
+            f'              <div class="logo-tile-links">'
+            f'<a class="quiet-link" href="assets/{v["file"]}.svg" download>SVG</a> · '
+            f'<a class="quiet-link" href="assets/{v["file"]}-white.svg" download>SVG white</a> · '
+            f'<a class="quiet-link" href="assets/{v["file"]}.png" download>PNG</a> · '
+            f'<a class="quiet-link" href="assets/{v["file"]}-white.png" download>PNG white</a></div>\n'
+            f'            </div>'
+        )
+    m["LOGO_TILES"] = "\n".join(tiles)
+    m["LOGO_RULES"] = "\n".join(f"            <li>{r}</li>" for r in data.LOGO["rules"])
 
     m["BRAND_PRIMARY"] = LIGHT["surface"]["surface-brand-primary"]
     m["BRAND_DARK"] = DARK["content"]["content-brand"]
@@ -320,6 +339,12 @@ def main():
     os.makedirs(DOCS_DIR, exist_ok=True)
     markers = build_markers()
 
+    # Ship the logo files with the site so the download links work on GitHub Pages.
+    import shutil
+    docs_assets = os.path.join(DOCS_DIR, "assets")
+    os.makedirs(docs_assets, exist_ok=True)
+    for fn in os.listdir(os.path.join(SCRIPT_DIR, "assets")):
+        shutil.copy(os.path.join(SCRIPT_DIR, "assets", fn), os.path.join(docs_assets, fn))
     with open(os.path.join(DOCS_DIR, "index.html"), "w") as f:
         f.write(render_index(markers))
     with open(os.path.join(DOCS_DIR, "tokens.css"), "w") as f:
@@ -331,7 +356,7 @@ def main():
     if not os.path.exists(nojekyll):
         open(nojekyll, "w").close()
 
-    print("Generated docs/index.html, docs/tokens.css, docs/tokens.json")
+    print("Generated docs/index.html, docs/tokens.css, docs/tokens.json, docs/assets/")
 
 
 if __name__ == "__main__":

@@ -9,8 +9,11 @@ Run with: python3 listen-labs-brand-server.py
 """
 
 import json
+import re
 import os
 import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Make brand_data importable when this script is invoked directly (the file
 # lives next to brand_data.py but its directory isn't always on sys.path,
@@ -19,6 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from brand_data import (
     ART_DIRECTION,
+    LOGO,
     COLORS,
     CSS_VARIABLES,
     DATA_VISUALIZATION,
@@ -137,6 +141,17 @@ TOOLS = [
         "inputSchema": {"type": "object", "properties": {}},
     },
     {
+        "name": "get_logo",
+        "description": "Get the Listen Labs logo as ready-to-inline SVG markup plus the usage rules. Variants: 'lockup' (mark + 'listen labs', the default), 'lockup-short' (mark + 'listen'), 'wordmark-short' ('listen' only), 'mark' (the mark alone, for favicons/avatars). Color: 'currentColor' (default — inline it and it follows the theme), 'light' (near-black fill for light surfaces), 'white' (cream fill for dark surfaces). Also returns the plugin-relative PNG path for decks and email.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "variant": {"type": "string", "enum": ["lockup", "lockup-short", "wordmark-short", "mark"], "default": "lockup"},
+                "color": {"type": "string", "enum": ["currentColor", "light", "white"], "default": "currentColor"},
+            },
+        },
+    },
+    {
         "name": "get_full_guidelines",
         "description": "Get the complete Listen Labs brand guidelines in one call — colors, typography, spacing, icons, header, data visualization, art direction, and CSS variables. Use this when you need everything at once.",
         "inputSchema": {"type": "object", "properties": {}},
@@ -236,6 +251,33 @@ def handle_get_art_direction(_args):
     return json.dumps(ART_DIRECTION, indent=2)
 
 
+def handle_get_logo(args):
+    variant = (args or {}).get("variant") or LOGO["default_variant"]
+    color = (args or {}).get("color") or "currentColor"
+    v = LOGO["variants"][variant]
+    base = os.path.join(SCRIPT_DIR, "assets", v["file"])
+    svg_path = base + ("-white.svg" if color == "white" else ".svg")
+    with open(svg_path) as f:
+        svg = f.read()
+    if color == "currentColor":
+        svg = re.sub(r'fill="#[0-9A-Fa-f]{6}"', 'fill="currentColor"', svg)
+    # drop the fixed width/height so the inline SVG sizes by CSS (viewBox keeps the aspect ratio)
+    svg = re.sub(r'\s(width|height)="\d+"', "", svg, count=2)
+    svg = svg.replace("<svg ", '<svg role="img" aria-label="Listen Labs" ', 1)
+    return json.dumps({
+        "variant": variant,
+        "color": color,
+        "description": v["description"],
+        "viewbox": v["viewbox"],
+        "min_height_px": v["min_height_px"],
+        "svg": svg,
+        "png": f"assets/{v['file']}{'-white' if color == 'white' else ''}.png",
+        "how_to_use": "Paste `svg` inline where the logo goes and size it with CSS height (never width alone). With color=currentColor it inherits the surrounding text color, so it follows light/dark automatically. Use `png` (path relative to the plugin root) for decks, email, and anything that cannot inline SVG.",
+        "rules": LOGO["rules"],
+        "variants": {k: {"description": x["description"], "min_height_px": x["min_height_px"]} for k, x in LOGO["variants"].items()},
+    }, indent=2)
+
+
 def handle_get_full_guidelines(_args):
     return json.dumps({
         "colors": COLORS,
@@ -248,6 +290,7 @@ def handle_get_full_guidelines(_args):
         "dataviz_rules": DATAVIZ_RULES,
         "dataviz_css": DATAVIZ_CSS,
         "art_direction": ART_DIRECTION,
+        "logo": LOGO,
         "css_variables": CSS_VARIABLES,
     }, indent=2)
 
@@ -262,6 +305,7 @@ HANDLERS = {
     "get_data_visualization": handle_get_data_visualization,
     "get_dataviz_palettes": handle_get_dataviz_palettes,
     "get_art_direction": handle_get_art_direction,
+    "get_logo": handle_get_logo,
     "get_full_guidelines": handle_get_full_guidelines,
 }
 

@@ -48,11 +48,11 @@ Height M 20px (S 16px inline), padding 0 8px, radius 4, 10px/16px text (chips ar
 
 ## Navigation and page header
 
-Top nav: a single 64px band (48px mobile), `--surface-primary` background, 1px `--surface-tertiary` bottom hairline, contents on the page grid. Left: the Listen Labs wordmark (paste the SVG markup from `assets/listen-labs-logo.svg` at the plugin root inline — never a path or URL — rendered at 20px tall, `currentColor` so it follows the theme). Right: up to five text links (12px, `--content-secondary`, 24px gap) and at most one button (secondary; primary only if the page has a single conversion). Sticky nav is allowed; it keeps its background and hairline. Mobile: links collapse behind a Lucide `menu` button (32×32 hit area 44) into a full-width list with 48px rows. The branded credit line (`Listen Labs / Title`) is for artifacts and documents; a website uses the nav instead, not both.
+Top nav: a single 64px band (48px mobile), `--surface-primary` background, 1px `--surface-tertiary` bottom hairline, contents on the page grid. Left: the Listen Labs lockup (paste the SVG markup from `assets/listen-labs-logo.svg` at the plugin root inline, fills set to `currentColor` — never a path or URL — rendered at 24px tall on desktop, 20px on phones; below ~360px pane width switch to `listen-labs-logo-short.svg` rather than shrinking under 20px). Right: up to five text links (12px, `--content-secondary`, 24px gap) and at most one button (secondary; primary only if the page has a single conversion). Sticky nav is allowed; it keeps its background and hairline. Mobile: links collapse behind a Lucide `menu` button (32×32 hit area 44) into a full-width list with 48px rows. The branded credit line (`Listen Labs / Title`) is for artifacts and documents; a website uses the nav instead, not both.
 
 ## Footer
 
-One band, `--surface-secondary` background, 96px top padding / 64px bottom (64/48 mobile), 1px hairline above. Columns on the grid: wordmark + one-line description, 2–3 link groups (12px Title Case group labels in `--content-secondary`, 14px links), legal line 12px `--content-disabled`. No social-icon rainbow: Lucide icons at 16px in `--content-secondary`.
+One band, `--surface-secondary` background, 96px top padding / 64px bottom (64/48 mobile), 1px hairline above. Columns on the grid: the lockup at 20px + one-line description, 2–3 link groups (12px Title Case group labels in `--content-secondary`, 14px links), legal line 12px `--content-disabled`. No social-icon rainbow: Lucide icons at 16px in `--content-secondary`.
 
 ## Sections and bands
 

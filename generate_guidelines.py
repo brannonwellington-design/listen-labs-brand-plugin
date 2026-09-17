@@ -220,6 +220,15 @@ All emotion secondary tokens are 10% opacity in both light and dark mode.
 
 ---
 
+## Logo
+
+Files live in `assets/` at the plugin root (SVG + PNG, plus `-white` twins for dark surfaces). Default: **{data.LOGO['variants'][data.LOGO['default_variant']]['file']}.svg** (the full lockup). Call `get_logo` on the brand MCP for ready-to-inline markup.
+
+| Variant | File | Min height | Use |
+| --- | --- | --- | --- |
+{"".join(f"| {k} | `{v['file']}.svg` | {v['min_height_px']}px | {v['description']} |" + chr(10) for k, v in data.LOGO['variants'].items())}
+Rules:
+{"".join("- " + r + chr(10) for r in data.LOGO['rules'])}
 ## Header / Title Convention
 
 Most Listen Labs outputs include a branded header at the top center:
