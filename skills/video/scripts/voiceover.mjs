@@ -161,6 +161,14 @@ const execOf = sc => {
 };
 let acc = 0; const clips = [], words = [], transcript = [];
 const first = t => norm(t).trim().split(' ')[0];
+story.scenes.forEach(sc => { delete sc.revealShift; });
+// A scene's own minimum: the brand's kinetic hold for its must-read text, counted after its ~0.5s entrance,
+// and never cut before its data reveal (with any cue shift) has landed plus a breath.
+const holdMin = sc => {
+  const h = sc.head || {}, words = (h.title || h.l1 || '').split(/\s+/).filter(Boolean).length + (h.big ? 1 : 0), nums = h.big ? 1 : 0;
+  const [, revealEnd] = execOf(sc).reveal(sc.data);
+  return Math.max(0.5 + Math.max(1.2, 0.3 + 0.2 * words + 0.3 * nums), (sc.revealShift || 0) + revealEnd + 0.4);
+};
 for (const [i, b] of BEATS.entries()) {
   const scs = b.scenes.map(id => byId[id]);
   let r = null, audioDur = 0, trimmed = null;
@@ -173,21 +181,26 @@ for (const [i, b] of BEATS.entries()) {
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', file, '-af', `atrim=${lead.toFixed(3)}:${endT.toFixed(3)},asetpts=PTS-STARTPTS`, '-ar', '44100', trimmed]);
     r.words.forEach(w => { w.start -= lead; w.end -= lead; });
     audioDur = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trimmed]).toString();
-    const need = LEAD_IN + audioDur + TAIL, MIN = 1.2, PRE = 0.25;
+    const need = LEAD_IN + audioDur + TAIL, PRE = 0.25;
     const cueAt = {};
     for (const [sid, word] of Object.entries(b.cues || {})) { const w = r.words.find(x => first(x.text) === first(word)); if (w) cueAt[sid] = LEAD_IN + w.start; }
     if (scs.length > 1 && Object.keys(cueAt).some(id => id !== scs[0].id)) {
       // cue words set the scene boundaries inside a beat: each cued scene arrives just before its word is spoken
       const starts = [0];
       for (let k = 1; k < scs.length; k++) {
-        const earliest = starts[k - 1] + (cueAt[scs[k].id] != null ? MIN : Math.max(MIN, scs[k - 1].dur));
+        const earliest = starts[k - 1] + (cueAt[scs[k].id] != null ? holdMin(scs[k - 1]) : Math.max(holdMin(scs[k - 1]), scs[k - 1].dur));
         starts[k] = cueAt[scs[k].id] != null ? Math.max(earliest, cueAt[scs[k].id] - PRE) : earliest;
       }
-      scs.forEach((sc, k) => { sc.dur = +(k < scs.length - 1 ? starts[k + 1] - starts[k] : Math.max(MIN, sc.dur, need - starts[k])).toFixed(2); });
+      // provisional cue shifts for the last scene, so its minimum includes its delayed reveal
+      const lastSc = scs[scs.length - 1], lastCue = cueAt[lastSc.id];
+      if (lastCue != null) lastSc.revealShift = Math.max(0, lastCue - starts[scs.length - 1] - execOf(lastSc).reveal(lastSc.data)[0]);
+      // the last scene ends when the line and its own hold are done — not at its planned length
+      scs.forEach((sc, k) => { sc.dur = +(k < scs.length - 1 ? starts[k + 1] - starts[k] : Math.max(holdMin(sc), need - starts[k])).toFixed(2); });
     } else {
       // no inner cues: the beat lasts as long as its line plus a held beat — its scenes stretch together, never shorter than planned
       const planned = scs.reduce((a, sc) => a + sc.dur, 0);
       if (need > planned) scs.forEach(sc => { sc.dur = +(sc.dur * need / planned).toFixed(2); });
+      scs.forEach(sc => { sc.dur = +Math.max(sc.dur, holdMin(sc)).toFixed(2); });
     }
   }
   let t = acc; scs.forEach(sc => { sc.start = t; t += sc.dur; });
@@ -197,7 +210,8 @@ for (const [i, b] of BEATS.entries()) {
       const w = r.words.find(x => first(x.text) === first(word));
       if (!w) throw new Error(`${b.id}: cue “${word}” not found in narration`);
       const sc = byId[sid], at = acc + LEAD_IN + w.start, [revealStart] = execOf(sc).reveal(sc.data);
-      if (at < sc.start - 0.05) console.log(`  warning: “${word}” is spoken ${(sc.start - at).toFixed(2)}s before scene ${sid} appears — reorder the line or the beat`);
+      // tolerance 0.25s: there are no lips to sync, and the scene is on screen before the word finishes
+      if (at < sc.start - 0.25) console.log(`  warning: “${word}” is spoken ${(sc.start - at).toFixed(2)}s before scene ${sid} appears — reorder the line or the beat`);
       sc.revealShift = Math.max(0, +(at - sc.start - revealStart).toFixed(2));
       if (sc.revealShift) shifts.push(`${sid} +${sc.revealShift}s on “${word}”`);
     }
