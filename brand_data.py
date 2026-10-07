@@ -600,7 +600,8 @@ MOTION = {
         },
         "narration": {
             "rate": "Budget ≈1.9 spoken words per second — measured for the house voice (Matilda, eleven_v4: 72 words → 38.8s of speech, Oct 2026); research norms of 2.3–2.5 wps for human narrators run fast for this voice. eleven_v4 ignores the speed setting, so length is controlled by word count, not by speeding the voice. Always measure real duration from TTS timestamps, never estimate.",
-            "audio_is_the_clock": "Voiceover is generated per scene first; each scene lasts as long as its narration plus its hold. Reveals are scheduled on word timestamps (the counter lands as its number is spoken).",
+            "audio_is_the_clock": "Voiceover is generated before the render; scene timing follows the narration. Reveals are scheduled on word timestamps (the counter lands as its number is spoken).",
+            "modes": "Under 45s: narrate the beats, not the scenes — about one line per 2–3 scenes, telling the story while fast scenes play under it; cue words set the scene boundaries inside a beat (each cued scene arrives ~0.25s before its word, 1.2s minimum per scene). 45s and longer: narrate scene by scene, literal reads. A 30s voiced cut holds ~55 words in ~6 lines.",
         },
         "captions": {
             "rules": "≤42 characters per line; ≤2 lines (≤3 on 9:16); ≤20 characters per second; each caption 0.8–7s on screen; start on speech onset, never more than 2s late; break after punctuation or before conjunctions, never between article and noun.",
@@ -613,7 +614,7 @@ MOTION = {
         },
         "accessibility": [
             "Captions on every video (WCAG 1.2.2) and a transcript alongside (1.2.8).",
-            "Every number and takeaway that appears on screen is also spoken (integrated audio description, WCAG 1.2.5).",
+            "45s and longer: every number and takeaway on screen is also spoken (integrated audio description, WCAG 1.2.5). Under 45s (beat narration): any number the voice does speak matches the screen exactly, and the transcript lists every on-screen figure and headline as the media alternative (WCAG 1.2.3).",
             "Never more than three flashes per second. Flicker of thin lines counts by total area against the 341×256px limit (WCAG 2.3.1) — rapid redraws are designed out, not argued about.",
             "Text on video meets 4.5:1 (3:1 at 24px+ design size), same as the web floors.",
         ],

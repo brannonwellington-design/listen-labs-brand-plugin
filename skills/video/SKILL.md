@@ -51,7 +51,7 @@ Two toggles, both off by default:
 ## Time physics (brand-independent)
 
 - **Determinism.** Every frame is a pure function of its time. No CSS transitions or animations, no wall clock, no unseeded randomness, no network during render, chart-library animation off. Author times in seconds; convert to frames.
-- **Audio is the clock.** When there is narration, scenes are as long as their narration plus hold — never the reverse. Reveals land on the word that names them.
+- **Audio is the clock.** When there is narration, timing follows it — never the reverse. Reveals land on the word that names them. **Under 45s, narrate beats, not scenes** (one line across 2–3 scenes, cue words placing the scene cuts); **45s and longer, narrate scene by scene.**
 - **Two paces.** *Kinetic* (default for ≤60s and unvoiced video): fast cuts, one stat per scene, 10–12 scenes in 30s, built to be looped — the viewer reads the must-read number and line, everything else is glanceable. *Explainer* (default for voiced 90s+): narration carries the story and every word on screen gets read. The brand's pacing presets name the pace; never apply explainer holds to a kinetic cut.
 - **Hold before you cut.** Must-read text stays settled for the brand's hold-time formula for the pace (Listen Labs kinetic: `max(1.2, 0.3 + 0.2 × must-read words + 0.3 × numbers)`; explainer: `max(1.0, 0.5 + 0.33 × words) + 1.0s per number`), counted from when its entrance ends. If a scene can't satisfy it, cut words — never let it flash past.
 - **Variety is part of the physics.** Never reuse a scene template or chart form within a video of 90s or less (one bookend excepted). Rotate the dominant element, layout anchor, and surface every scene. Repetition reads as a stall, and in short-form a stall loses the viewer. **Across videos too:** every generation for the same study or customer must feel made for it, so executions rotate through the selector and its history — never hand-copy a previous video's scenes.
@@ -63,7 +63,7 @@ Two toggles, both off by default:
 
 Everything in `/research-artifacts` Research Ethics applies. In addition:
 
-- **Exact numbers, spoken exactly.** The narration speaks the figure on screen (“sixty-three percent”), never a rounding of it. Approximation words (“nearly”, “about”) only describe a comparison the facts support, never replace a figure.
+- **Exact numbers, spoken exactly.** Any figure the narration speaks is the figure on screen (“sixty-three percent”), never a rounding of it. In scene-by-scene narration every on-screen number is spoken; in beat narration (under 45s) the transcript lists every on-screen figure. Approximation words (“nearly”, “about”) only describe a comparison the facts support, never replace a figure.
 - **Animated data is real data.** Counters land on the exact value; bars grow from the true baseline; intermediate frames are valid charts. Illustrative motion uses the real data (actual combinations, actual respondents) or is plainly abstract and carries no number. Random marks that look like data are forbidden.
 - **Verbatims are sacred in sound and picture.** On-screen quotes are verbatim and attributed (P#). A clip is never trimmed or spliced so it changes meaning; an omission inside a quote shows as `…`. Music is muted under participant voices.
 - **The AI voice is disclosed.** The end card and the video metadata say the narration is an AI voice. A quote read by the AI voice is labelled on screen: “Participant quote · read by AI voice”. Never imply a participant said something in the synthetic voice.

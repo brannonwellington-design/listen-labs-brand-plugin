@@ -34,7 +34,11 @@ node scripts/build-video.mjs voice/story.pinned.voiced.json --out video.html    
 node scripts/render-video.mjs video.html video.mp4 --audio voice/narration.wav
 ```
 
-Storyboard fields: each scene's `narration` (numbers written as words) and optional `cue` (the word on which its data reveal starts); story-level `narrateQuotes` (default false), `voice: { id, model, seed, settings }`, `targetSeconds`. Before any audio is generated, the script checks that every headline number is spoken exactly, that no digits appear in narration, that quote text stays out of narration when `narrateQuotes` is off, and that the word count fits `targetSeconds` at ~2.4 words/s.
+**Two narration modes** (chosen from `targetSeconds`, or set `narrationMode`):
+- **`beats` — under 45s.** `story.beats` groups consecutive scenes under one line: `{ "id": "open", "scenes": ["hook", "weekly"], "narration": "Three hundred seltzer drinkers, and ninety-three percent drink it weekly.", "cues": { "hook": "Three", "weekly": "ninety-three" } }`. The voice tells the story; fast scenes play under it. Cue words set the cuts inside a beat (each cued scene arrives ~0.25s before its word; 1.2s minimum per scene), so the voice never runs ahead of the picture. A cue on a number word requires that number to be spoken exactly; uncued on-screen numbers are carried by the transcript. About 6 lines / 55 words for 30s.
+- **`scenes` — 45s and longer.** Each scene's own `narration` and `cue`; every on-screen number is spoken.
+
+Storyboard fields (scenes mode): each scene's `narration` (numbers written as words) and optional `cue` (the word on which its data reveal starts); story-level `narrateQuotes` (default false), `voice: { id, model, seed, settings }`, `targetSeconds`. Before any audio is generated, the script checks that every headline number is spoken exactly, that no digits appear in narration, that quote text stays out of narration when `narrateQuotes` is off, and that the word count fits `targetSeconds` at ~2.4 words/s.
 
 `--provider say` is a dev stand-in (macOS voice, offline, nothing leaves the machine) for testing timing and layout without an API key; its word timings are estimated, the transcript says so, and it is never shipped.
 

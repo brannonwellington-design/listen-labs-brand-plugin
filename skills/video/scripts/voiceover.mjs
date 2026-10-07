@@ -50,30 +50,53 @@ function spokenForms(v) {
   return [...forms].map(f => (dec ? `${f} point ${ONES[dec]}` : f));
 }
 const norm = s => ' ' + s.toLowerCase().replace(/[’']/g, "'").replace(/[-–—]/g, ' ').replace(/[^a-z0-9' ]/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
+/* ---------- beats: what each narration line covers ----------
+   'scenes' mode (45s and longer): every narrated scene is its own beat — literal reads.
+   'beats' mode (under 45s): story.beats groups consecutive scenes under one line, e.g.
+     { "id": "open", "scenes": ["hook", "weekly"], "narration": "…", "cues": { "hook": "Three", "weekly": "ninety-three" } }
+   Scenes in no beat play under silence. */
+const MODE = story.narrationMode || (story.targetSeconds && story.targetSeconds < 45 ? 'beats' : 'scenes');
+const byId = Object.fromEntries(story.scenes.map(sc => [sc.id, sc]));
+const BEATS = [];
+if (MODE === 'beats') {
+  if (!story.beats) { console.error('beats mode needs story.beats (or set narrationMode: "scenes")'); process.exit(1); }
+  const owner = {}; story.beats.forEach(b => b.scenes.forEach(id => { if (!byId[id]) { console.error(`beat ${b.id}: unknown scene ${id}`); process.exit(1); } owner[id] = b; }));
+  story.scenes.forEach((sc, i) => {
+    const b = owner[sc.id];
+    if (!b) BEATS.push({ id: sc.id, scenes: [sc.id] });
+    else if (b.scenes[0] === sc.id) {
+      const idx = b.scenes.map(id => story.scenes.findIndex(x => x.id === id));
+      if (idx.some((v, k) => k && v !== idx[k - 1] + 1)) { console.error(`beat ${b.id}: its scenes must be consecutive in the storyboard`); process.exit(1); }
+      BEATS.push(b);
+    }
+  });
+} else story.scenes.forEach(sc => BEATS.push({ id: sc.id, scenes: [sc.id], narration: sc.narration, cues: sc.cue ? { [sc.id]: sc.cue } : {} }));
+
+const NUM_WORDS = new Set([...ONES, ...TENS.filter(Boolean), 'hundred', 'thousand', 'a']);
 const problems = [];
-story.scenes.forEach(sc => {
-  const big = sc.head && sc.head.big;
-  if (big && sc.narration) {
-    const unitWord = big.unit === '%' ? ' percent' : big.unit === '×' ? ' times' : '';
-    const ok = spokenForms(big.value).some(f => norm(sc.narration).includes(norm(f + unitWord)));
-    if (!ok) problems.push(`${sc.id}: headline ${big.value}${big.unit || ''} is not spoken exactly (expected e.g. “${spokenForms(big.value)[0]}${unitWord}”)`);
-  }
-  if (big && !sc.narration) problems.push(`${sc.id}: headline ${big.value}${big.unit || ''} appears on screen but is never narrated`);
-  if (sc.narration && /\d/.test(sc.narration)) problems.push(`${sc.id}: write numbers as words in narration so the voice can’t misread them`);
-  const isQuote = sc.family === 'quote' || sc.template === 'quote';
-  if (isQuote && !story.narrateQuotes && sc.narration) {
-    const words = norm(sc.data.text).trim().split(' ').filter(w => w.length > 3);
-    const shared = words.filter(w => norm(sc.narration).includes(` ${w} `));
-    if (shared.length >= Math.min(4, words.length)) problems.push(`${sc.id}: narration repeats the quote, but narrateQuotes is off — introduce it instead`);
-  }
+BEATS.forEach(b => {
+  const scs = b.scenes.map(id => byId[id]);
+  if (b.narration && /\d/.test(b.narration)) problems.push(`${b.id}: write numbers as words in narration so the voice can’t misread them`);
+  scs.forEach(sc => {
+    const big = sc.head && sc.head.big, unitWord = big && (big.unit === '%' ? ' percent' : big.unit === '×' ? ' times' : '');
+    const spoken = big && b.narration && spokenForms(big.value).some(f => norm(b.narration).includes(norm(f + unitWord)));
+    const cue = b.cues && b.cues[sc.id], cueIsNumber = cue && NUM_WORDS.has(norm(cue).trim().split(' ')[0]);
+    if (MODE === 'scenes' && big && !b.narration) problems.push(`${sc.id}: headline ${big.value}${big.unit || ''} appears on screen but is never narrated`);
+    if (big && (MODE === 'scenes' ? b.narration : cueIsNumber) && !spoken) problems.push(`${sc.id}: headline ${big.value}${big.unit || ''} is not spoken exactly (expected e.g. “${spokenForms(big.value)[0]}${unitWord}”)`);
+    const isQuote = sc.family === 'quote' || sc.template === 'quote';
+    if (isQuote && !story.narrateQuotes && b.narration) {
+      const qw = norm(sc.data.text).trim().split(' ').filter(w => w.length > 3), shared = qw.filter(w => norm(b.narration).includes(` ${w} `));
+      if (shared.length >= Math.min(4, qw.length)) problems.push(`${sc.id}: narration repeats the quote, but narrateQuotes is off — introduce it instead`);
+    }
+  });
 });
-if (story.targetSeconds) {   // word budget at the measured house-voice rate
-  // ≈1.9 words/s measured for the house voice, minus the per-scene lead-in and hold
-  const words = story.scenes.reduce((a, sc) => a + (sc.narration ? sc.narration.split(/\s+/).length : 0), 0);
-  const narrated = story.scenes.filter(sc => sc.narration).length, budget = Math.round(Math.max(0, story.targetSeconds - narrated * (LEAD_IN + TAIL)) * 1.9);
+if (story.targetSeconds) {   // word budget at the measured house-voice rate (≈1.9 words/s), minus each line's lead-in and hold
+  const words = BEATS.reduce((a, b) => a + (b.narration ? b.narration.split(/\s+/).length : 0), 0);
+  const lines = BEATS.filter(b => b.narration).length, budget = Math.round(Math.max(0, story.targetSeconds - lines * (LEAD_IN + TAIL)) * 1.9);
   if (words > budget * 1.1) problems.push(`narration is ${words} words; a ${story.targetSeconds}s video holds about ${budget} — cut lines or choose a longer length`);
 }
 if (problems.length) { console.error('Narration check failed:\n  ' + problems.join('\n  ')); process.exit(1); }
+console.log(`narration mode: ${MODE} (${BEATS.filter(b => b.narration).length} lines over ${story.scenes.length} scenes)`);
 
 /* ---------- providers ---------- */
 function wordsFromAlignment(al) {
@@ -87,7 +110,7 @@ function wordsFromAlignment(al) {
   return words;
 }
 const recentIds = []; let idStitching = true;   // falls back to text context when the account can't use request IDs (high-privacy / zero-retention)
-async function elevenlabs(sc, i, file) {
+async function elevenlabs(sc, i, file) {   // sc: a beat (narration + scenes)
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) throw new Error('ELEVENLABS_API_KEY is not set');
   const voice = VOICE || story.voice?.id || BRAND_VOICE.house.id;
@@ -96,8 +119,8 @@ async function elevenlabs(sc, i, file) {
     text: sc.narration, model_id: story.voice?.model || MODEL, seed: story.voice?.seed ?? 7, apply_text_normalization: 'on',
     voice_settings: story.voice?.settings || BRAND_VOICE.settings,
   };
-  const prevText = story.scenes.slice(0, i).map(s => s.narration).filter(Boolean).slice(-2).join(' ');
-  const nextText = story.scenes.slice(i + 1).map(s => s.narration).filter(Boolean).slice(0, 1).join(' ');
+  const prevText = BEATS.slice(0, i).map(s => s.narration).filter(Boolean).slice(-2).join(' ');
+  const nextText = BEATS.slice(i + 1).map(s => s.narration).filter(Boolean).slice(0, 1).join(' ');
   const send = () => {
     const b = { ...body };
     if (idStitching && recentIds.length) b.previous_request_ids = recentIds.slice(-3);   // stitching: prosody carries across scenes
@@ -137,33 +160,60 @@ const execOf = sc => {
   return sc.family ? FAMILIES[sc.family][sc.execution] : TEMPLATES[sc.template];
 };
 let acc = 0; const clips = [], words = [], transcript = [];
-for (const [i, sc] of story.scenes.entries()) {
-  sc.start = acc;
-  if (sc.narration) {
-    const file = path.join(OUT_DIR, `${String(i + 1).padStart(2, '0')}-${sc.id}.${PROVIDER === 'say' ? 'wav' : 'mp3'}`);
-    const r = PROVIDER === 'elevenlabs' ? await elevenlabs(sc, i, file) : say(sc, i, file);
+const first = t => norm(t).trim().split(' ')[0];
+for (const [i, b] of BEATS.entries()) {
+  const scs = b.scenes.map(id => byId[id]);
+  let r = null, audioDur = 0, trimmed = null;
+  if (b.narration) {
+    const file = path.join(OUT_DIR, `${String(i + 1).padStart(2, '0')}-${b.id}.${PROVIDER === 'say' ? 'wav' : 'mp3'}`);
+    r = PROVIDER === 'elevenlabs' ? await elevenlabs(b, i, file) : say(b, i, file);
     // trim silence the engine leaves at both ends, so pacing is set by the words, not by padding
-    const lead = Math.max(0, (r.words[0]?.start ?? 0) - 0.03), endT = (r.words[r.words.length - 1]?.end ?? 0) + 0.08, trimmed = file.replace(/\.(\w+)$/, '.trim.wav');
+    const lead = Math.max(0, (r.words[0]?.start ?? 0) - 0.03), endT = (r.words[r.words.length - 1]?.end ?? 0) + 0.08;
+    trimmed = file.replace(/\.(\w+)$/, '.trim.wav');
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', file, '-af', `atrim=${lead.toFixed(3)}:${endT.toFixed(3)},asetpts=PTS-STARTPTS`, '-ar', '44100', trimmed]);
     r.words.forEach(w => { w.start -= lead; w.end -= lead; });
-    const audioDur = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trimmed]).toString();
-    // scene lasts as long as its narration plus a held beat — never shorter than the storyboard asked for
-    sc.dur = Math.max(sc.dur, +(LEAD_IN + audioDur + TAIL).toFixed(2));
-    if (sc.cue) {   // the data reveal starts on the cue word
-      const first = t => norm(t).trim().split(' ')[0], w = r.words.find(x => first(x.text) === first(sc.cue));
-      if (!w) throw new Error(`${sc.id}: cue “${sc.cue}” not found in narration`);
-      const [revealStart] = execOf(sc).reveal(sc.data);
-      sc.revealShift = Math.max(0, +(LEAD_IN + w.start - revealStart).toFixed(2));
+    audioDur = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trimmed]).toString();
+    const need = LEAD_IN + audioDur + TAIL, MIN = 1.2, PRE = 0.25;
+    const cueAt = {};
+    for (const [sid, word] of Object.entries(b.cues || {})) { const w = r.words.find(x => first(x.text) === first(word)); if (w) cueAt[sid] = LEAD_IN + w.start; }
+    if (scs.length > 1 && Object.keys(cueAt).some(id => id !== scs[0].id)) {
+      // cue words set the scene boundaries inside a beat: each cued scene arrives just before its word is spoken
+      const starts = [0];
+      for (let k = 1; k < scs.length; k++) {
+        const earliest = starts[k - 1] + (cueAt[scs[k].id] != null ? MIN : Math.max(MIN, scs[k - 1].dur));
+        starts[k] = cueAt[scs[k].id] != null ? Math.max(earliest, cueAt[scs[k].id] - PRE) : earliest;
+      }
+      scs.forEach((sc, k) => { sc.dur = +(k < scs.length - 1 ? starts[k + 1] - starts[k] : Math.max(MIN, sc.dur, need - starts[k])).toFixed(2); });
+    } else {
+      // no inner cues: the beat lasts as long as its line plus a held beat — its scenes stretch together, never shorter than planned
+      const planned = scs.reduce((a, sc) => a + sc.dur, 0);
+      if (need > planned) scs.forEach(sc => { sc.dur = +(sc.dur * need / planned).toFixed(2); });
     }
-    clips.push({ file: trimmed, at: sc.start + LEAD_IN });
-    r.words.forEach(w => words.push({ text: w.text, start: sc.start + LEAD_IN + w.start, end: sc.start + LEAD_IN + w.end, scene: sc.id }));
-    transcript.push(`[${sc.start.toFixed(1)}s] ${sc.narration}`);
-    console.log(`${sc.id}: ${audioDur.toFixed(2)}s narration → scene ${sc.dur}s${sc.revealShift ? `, reveal +${sc.revealShift}s on “${sc.cue}”` : ''}${r.estimated ? ' (timings estimated)' : ''}`);
   }
-  const isQuote = sc.family === 'quote' || sc.template === 'quote';
-  if (isQuote) transcript.push(`[${sc.start.toFixed(1)}s] On screen: ${sc.data.text} ${sc.data.who}${story.narrateQuotes ? ' (read by AI voice)' : ''}`);
-  if (sc.template === 'endRow') sc.data.disclosure = story.narrateQuotes ? 'Narrated by an AI voice, including participant quotes.' : 'Narrated by an AI voice.';
-  acc += sc.dur;
+  let t = acc; scs.forEach(sc => { sc.start = t; t += sc.dur; });
+  const shifts = [];
+  if (r) {
+    for (const [sid, word] of Object.entries(b.cues || {})) {   // each cued scene's data reveal starts on its word
+      const w = r.words.find(x => first(x.text) === first(word));
+      if (!w) throw new Error(`${b.id}: cue “${word}” not found in narration`);
+      const sc = byId[sid], at = acc + LEAD_IN + w.start, [revealStart] = execOf(sc).reveal(sc.data);
+      if (at < sc.start - 0.05) console.log(`  warning: “${word}” is spoken ${(sc.start - at).toFixed(2)}s before scene ${sid} appears — reorder the line or the beat`);
+      sc.revealShift = Math.max(0, +(at - sc.start - revealStart).toFixed(2));
+      if (sc.revealShift) shifts.push(`${sid} +${sc.revealShift}s on “${word}”`);
+    }
+    clips.push({ file: trimmed, at: acc + LEAD_IN });
+    r.words.forEach(w => words.push({ text: w.text, start: acc + LEAD_IN + w.start, end: acc + LEAD_IN + w.end, scene: b.id }));
+    transcript.push(`[${acc.toFixed(1)}s] ${b.narration}`);
+  }
+  scs.forEach(sc => {   // on-screen content, so numbers the voice doesn't read stay accessible (media alternative)
+    const h = sc.head || {}, big = h.big ? `${h.big.value.toLocaleString('en-US')}${h.big.unit || ''} ` : '';
+    if (h.title || h.l1) transcript.push(`[${sc.start.toFixed(1)}s]   On screen: ${big}${h.title || h.l1}${h.l2 ? ' — ' + h.l2 : ''}`.replace(/&#160;/g, ' '));
+    const isQuote = sc.family === 'quote' || sc.template === 'quote';
+    if (isQuote) transcript.push(`[${sc.start.toFixed(1)}s]   On screen: ${sc.data.text} ${sc.data.who}${story.narrateQuotes ? ' (read by AI voice)' : ''}`);
+    if (sc.template === 'endRow') sc.data.disclosure = story.narrateQuotes ? 'Narrated by an AI voice, including participant quotes.' : 'Narrated by an AI voice.';
+  });
+  console.log(`${b.id}${b.scenes.length > 1 ? ` (${b.scenes.join(', ')})` : ''}: ${b.narration ? audioDur.toFixed(2) + 's narration' : 'silent'} → ${(t - acc).toFixed(2)}s${shifts.length ? ' · ' + shifts.join(', ') : ''}${r && r.estimated ? ' (timings estimated)' : ''}`);
+  acc = t;
 }
 const TOTAL = acc;
 

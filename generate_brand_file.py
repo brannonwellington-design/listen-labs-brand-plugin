@@ -205,7 +205,7 @@ def motion_md(M, heading="##"):
 - **Edges:** {v["edges"]}
 - **Credit zone:** {v["credit_zone"]}
 - **Scene structure:** {v["scene_structure"]}
-- **Narration:** {v["narration"]["rate"]} {v["narration"]["audio_is_the_clock"]}
+- **Narration:** {v["narration"]["rate"]} {v["narration"]["audio_is_the_clock"]} {v["narration"]["modes"]}
 - **Voice:** {v["voice"]["provider"]} `{v["voice"]["model"]}` · house voice **{v["voice"]["house"]["name"]}** ({v["voice"]["house"]["character"]}, `{v["voice"]["house"]["id"]}`) · alternates {", ".join(f'**{a["name"]}** (`{a["id"]}`)' for a in v["voice"]["alternates"])}. {v["voice"]["rules"]}
 
 | Preset | Pace | Words | Scenes | Avg scene | Ideas | Default transition | Max on-screen words |
