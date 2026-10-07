@@ -124,6 +124,9 @@ def build_height_table(heights):
     return "\n".join(rows)
 
 
+from generate_brand_file import motion_md
+
+
 def generate(data):
     C = data.COLORS
     T = data.TYPOGRAPHY
@@ -357,6 +360,9 @@ Reserved tokens:
 ### General Rules
 {dataviz_general}
 
+---
+
+{motion_md(data.MOTION)}
 ---
 
 ## Medium-Specific Notes

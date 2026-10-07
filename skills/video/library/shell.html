@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F9F4EB">
+<title>%%TITLE%%</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+<style>
+/* ===== Listen Labs tokens — Paper theme (source: brand_data.py via references/brands/listen-labs.md) ===== */
+:root {
+  --content-primary: #120F08;
+  --content-secondary: #6B6861;
+  --content-disabled: #B6B4AF;
+  --content-brand: #0021CC;
+  --content-brand-contrast: #F9F4EB;
+  --surface-primary: #F9F4EB;
+  --surface-secondary: #EEE8DD;
+  --surface-brand-primary: #0021CC;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --content-primary: #F9F4EB;
+    --content-secondary: #9E9B94;
+    --content-disabled: #504E49;
+    --content-brand: #3354FF;
+    --surface-primary: #130F06;
+    --surface-secondary: #201C13;
+  }
+}
+
+/* ===== Page (player chrome) ===== */
+html, body { margin: 0; background: var(--surface-primary); }
+body {
+  font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  font-weight: 400;
+  color: var(--content-primary);
+  container-type: inline-size;
+}
+.player {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  padding: 24px 16px;
+}
+.stage-frame {
+  width: min(100%, 432px);
+  aspect-ratio: 9 / 16;
+  background: var(--surface-secondary);
+}
+.stage { display: block; width: 100%; height: 100%; }
+.stage text { font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif; font-weight: 400; font-variant-numeric: tabular-nums; }
+.controls {
+  width: min(100%, 432px);
+  display: grid; grid-template-columns: auto auto 1fr auto auto; gap: 8px; align-items: center;
+  font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums;
+}
+.controls button {
+  min-width: 44px; height: 44px; padding: 0 12px;
+  font: inherit; color: var(--content-primary);
+  background: transparent; border: 1px solid var(--content-disabled); border-radius: 8px; cursor: pointer;
+}
+.controls input[type=range] { width: 100%; min-width: 0; height: 44px; accent-color: var(--content-brand); }
+.controls .time { color: var(--content-secondary); min-width: 88px; text-align: right; }
+:focus-visible { outline: 2px solid var(--content-brand); outline-offset: 2px; }
+.hint { font-size: 12px; line-height: 16px; color: var(--content-secondary); text-align: center; max-width: 432px; text-wrap: pretty; }
+@container (max-width: 400px) {
+  .controls { grid-template-columns: auto 1fr auto; }
+  .controls .scene-btn { display: none; }
+}
+
+/* ===== Export mode (?export): bare 540×960 stage for frame capture ===== */
+body.export .player { padding: 0; gap: 0; }
+body.export .stage-frame { width: 540px; height: 960px; }
+body.export .controls, body.export .hint { display: none; }
+</style>
+</head>
+<body>
+
+<!-- Player -->
+<main class="player">
+  <div class="stage-frame">
+    <svg id="stage" class="stage" viewBox="0 0 540 960" role="img"
+         aria-label="%%ARIA%%"></svg>
+  </div>
+  <div class="controls">
+    <button id="prev" class="scene-btn" aria-label="Previous scene">‹</button>
+    <button id="play" aria-label="Play or pause">Play</button>
+    <input id="scrub" type="range" min="0" max="30" step="0.0333" value="0" aria-label="Timeline">
+    <span class="time" id="time">0.0 / 30.0&#160;s</span>
+    <button id="next" class="scene-btn" aria-label="Next scene">›</button>
+  </div>
+  <p class="hint">1080&#160;×&#160;1920 · 30&#160;fps · 30&#160;s. The MP4 is rendered frame by frame from this file.</p>
+</main>
+
+<script>
+%%SCRIPT%%
+</script>
+</body>
+</html>

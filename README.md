@@ -13,7 +13,7 @@ curl -sL https://raw.githubusercontent.com/brannonwellington-design/listen-labs-
 Then **fully quit** (Cmd+Q on Mac) and reopen your Claude app.
 
 The installer configures both Claude apps:
-- **Claude Code** (the coding assistant — CLI / Desktop / IDE extensions): installs this repo as a **plugin** (`listen-labs-brand@listen-labs`), which carries the MCP brand tools *and* all five skills, with auto-update on.
+- **Claude Code** (the coding assistant — CLI / Desktop / IDE extensions): installs this repo as a **plugin** (`listen-labs-brand@listen-labs`), which carries the MCP brand tools *and* all six skills, with auto-update on.
 - **Claude Desktop** (the general chat app with Chat / Cowork / Code tabs): registers the MCP brand tools from a local clone that git-pulls before every launch.
 
 If you only have one of the two installed, the other config just sits idle until you install that app — no harm done. Re-running the installer is safe; it also upgrades older MCP-only installs to the plugin so the skills start loading.
@@ -33,6 +33,7 @@ The plugin adds these tools to Claude:
 | `get_data_visualization` | Chart rules, color usage, stroke weights |
 | `get_dataviz_palettes` | Swappable data-viz palettes (`brand` monochromatic / `global` best-practices) + caps and CVD rules |
 | `get_art_direction` | Design philosophy, composition principles |
+| `get_motion` | Duration and easing tokens (UI and video registers), choreography, transitions, reduced motion, and video specs: canvases, safe zones, hold times, pacing presets, narration, captions, audio |
 | `get_logo` | Ready-to-inline SVG for any logo variant (lockup, short lockup, mark, wordmark) in `currentColor`, light, or white, plus PNG paths and usage rules |
 | `get_full_guidelines` | Everything above in one call |
 
@@ -42,7 +43,7 @@ Two delivery contexts share the same rules. On a **machine** (Claude Code, Claud
 
 ## Skills
 
-Five skills share one brand source. `/research-artifacts` is the front door for anything a researcher or stakeholder will look at; the others are specialists it hands off to.
+Six skills share one brand source. `/research-artifacts` is the front door for anything a researcher or stakeholder will look at; the others are specialists it hands off to.
 
 | Ask for… | Skill |
 |---|---|
@@ -51,6 +52,7 @@ Five skills share one brand source. `/research-artifacts` is the front door for 
 | Slide deck (.pptx) | `/pptx` |
 | A Chart.js chart, or a chart inside a report | `/data-viz` |
 | Type-heavy page or editorial layout | `/typography` |
+| Video, motion graphic, or a “video companion” for a study (MP4, 9:16 to 16:9, 30s–4min) | `/video` |
 
 ### `/research-artifacts` — Research Deliverables (any brand)
 
@@ -142,6 +144,23 @@ Foundation skill for creating premium, editorial-quality hierarchy using only In
 - Contrast minimums, alignment rules, and the "tiny next to huge" editorial technique
 
 **Philosophy:** Swiss International Style and modern editorial design (Kinfolk, Cereal, Monocle) translated for responsive digital interfaces.
+
+### `/video` — Research Videos
+
+Turn study data into a branded motion-graphics video: a study “video companion”, animated explainer, or social clip, rendered to MP4.
+
+```
+/video
+```
+
+**How it's built:**
+- **Three customer controls** — length (30s · 60s · 90s · 2min · 4min), depth (headline · standard · deep, on a validated length × depth grid), aspect (9:16 · 4:5 · 1:1 · 16:9) — plus two toggles: real participant clips (consent-gated) and whether the AI voice reads quotes.
+- **Storyboard as contract** (`references/storyboard.md`) — a fact sheet built from the study, a story arc, scene templates with per-aspect layouts and data limits, and storyboard JSON whose every number cites a fact; validated before any audio or render.
+- **Motion & data** (`references/motion-and-data.md`) — choreography and transitions from the brand's motion tokens, and honest data animation: true baselines, fixed scales, staged transitions, object constancy, counters that land exactly, no data-like decoration.
+- **Narration, captions & audio** (`references/narration-captions-audio.md`) — writing for the ear, numbers spoken exactly as shown, ElevenLabs per-scene voiceover with word timestamps driving the timeline, Netflix/BBC caption rules, loudness targets, and AI-voice disclosure.
+- **Render & QA** (`references/render.md`, `scripts/render-video.mjs`) — deterministic HTML frames rendered by headless Chrome into ffmpeg, plus automated and visual checks.
+
+Every frame still obeys `/research-artifacts` physics, chart grammar, and research ethics.
 
 ### `/report` — Research Reports
 

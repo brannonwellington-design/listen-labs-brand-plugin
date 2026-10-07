@@ -1,0 +1,30 @@
+{
+  "_generated_from": "brand_data.py MOTION.video.voice",
+  "provider": "ElevenLabs",
+  "model": "eleven_v4",
+  "house": {
+    "name": "Matilda",
+    "id": "XrExE9yKIg1WjnnlVkGX",
+    "character": "knowledgeable, professional; female, American"
+  },
+  "alternates": [
+    {
+      "name": "River",
+      "id": "SAz9YHcvj6GT2YYXdXww",
+      "character": "relaxed, neutral; gender-neutral, American"
+    },
+    {
+      "name": "Daniel",
+      "id": "onwK4e9ZLuTAKqWW03F9",
+      "character": "steady broadcaster; male, British"
+    }
+  ],
+  "settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "style": 0,
+    "use_speaker_boost": true,
+    "speed": 1
+  },
+  "rules": "House voice by default; an alternate only by request. Never a cloned or customer-supplied voice. Premade voice IDs are public; the API key lives only in the environment (ELEVENLABS_API_KEY), never in files."
+}

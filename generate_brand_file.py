@@ -136,6 +136,93 @@ def bullets(items):
     return "\n".join(f"- {i}" for i in items)
 
 
+def motion_md(M, heading="##"):
+    """Render the MOTION block. Shared by generate_brand_file.py and generate_guidelines.py."""
+    sub = heading + "#"
+    v = M["video"]
+    dur = lambda reg: " · ".join(f"`{k}` {ms}ms" for k, ms in M["duration_ms"][reg].items())
+    ease = lambda reg: "\n".join(f"  - `{k}`: `{c}`" for k, c in M["easing"][reg].items())
+    trans = "\n".join(f"| {k.replace('_', '-')} | {t['duration']} | {t['use']} |" for k, t in M["transitions"].items() if k != "budget")
+    canv = "\n".join(f"| {r} | {c['output_px'][0]}×{c['output_px'][1]} | {c['design_px'][0]}×{c['design_px'][1]} |" for r, c in v["canvases"].items() if r != "note")
+    def inset(z):
+        return f"{z['top']} / {z['right']} / {z['bottom']} / {z['left']}"
+    safe = "\n".join(f"| {r} | {inset(z['clean'])} | {inset(z['social'])} |" for r, z in v["safe_zones_design_px"].items() if r != "note")
+    tmin = " · ".join(f"{k.replace('_', ' ')} {px}px" for k, px in v["type_minimums_design_px"].items() if k != "note")
+    pace = "\n".join(f"| {k.replace('_', ' ')} | {p['pace']} | {p['narration_words']} | {p['scenes']} | {p['avg_scene_s']}s | {p['ideas']} | {p['default_transition']} | {p['max_on_screen_words']} |" for k, p in v["pacing_presets"].items())
+    return f"""{heading} Motion
+
+{M["philosophy"]}
+
+- **UI (productive):** {M["registers"]["ui"]}
+- **Video (expressive):** {M["registers"]["video"]}
+
+{sub} Tokens
+
+- UI durations: {dur("ui")}
+- UI easing:
+{ease("ui")}
+- Video durations: {dur("video")} (snap to whole frames)
+- Video easing:
+{ease("video")}
+- Linear: {M["easing"]["linear"]}
+- {M["easing"]["forbidden"]}
+
+{sub} Choreography
+
+{chr(10).join("- " + r for r in M["choreography"])}
+
+{sub} Transitions
+
+| Transition | Duration | Use |
+|---|---|---|
+{trans}
+
+{M["transitions"]["budget"]}
+
+**Reduced motion.** {M["reduced_motion"]}
+
+{sub} Video
+
+- **Frame rate:** {v["frame_rate"]}
+- **Determinism:** {v["determinism"]}
+- **Canvases:** {v["canvases"]["note"]}
+
+| Ratio | Output px | Design px |
+|---|---|---|
+{canv}
+
+- **Type minimums (design px):** {tmin}. {v["type_minimums_design_px"]["note"]}
+- **Safe zones** (design px, top / right / bottom / left). {v["safe_zones_design_px"]["note"]}
+
+| Ratio | Clean | Social |
+|---|---|---|
+{safe}
+
+- **Pace:** kinetic — {v["pace"]["kinetic"]} Explainer — {v["pace"]["explainer"]}
+- **Hold time:** kinetic `{v["hold_time"]["kinetic"]}` Explainer `{v["hold_time"]["explainer"]}` {v["hold_time"]["counting"]} {v["hold_time"]["climax"]}
+- **Variety:** {v["variety"]}
+- **Line weight:** {v["line_weight"]}
+- **Edges:** {v["edges"]}
+- **Credit zone:** {v["credit_zone"]}
+- **Scene structure:** {v["scene_structure"]}
+- **Narration:** {v["narration"]["rate"]} {v["narration"]["audio_is_the_clock"]} {v["narration"]["modes"]}
+- **Voice:** {v["voice"]["provider"]} `{v["voice"]["model"]}` · house voice **{v["voice"]["house"]["name"]}** ({v["voice"]["house"]["character"]}, `{v["voice"]["house"]["id"]}`) · alternates {", ".join(f'**{a["name"]}** (`{a["id"]}`)' for a in v["voice"]["alternates"])}. {v["voice"]["rules"]}
+
+| Preset | Pace | Words | Scenes | Avg scene | Ideas | Default transition | Max on-screen words |
+|---|---|---|---|---|---|---|---|
+{pace}
+
+- **Captions:** {v["captions"]["rules"]} {v["captions"]["placement"]}
+- **Audio:** {v["audio"]["loudness"]} {v["audio"]["music"]}
+- **Accessibility:**
+{chr(10).join("  - " + a for a in v["accessibility"])}
+
+```css
+{data.MOTION_CSS}
+```
+"""
+
+
 def generate():
     ad = data.ART_DIRECTION
     hdr = data.HEADER
@@ -288,6 +375,7 @@ Two interchangeable modes with IDENTICAL token names. Default is **{rules["defau
 - Typography voice: Inter 400 ONLY — never bold, never light. Hierarchy by SIZE, color role, and position, never weight. Never override letter-spacing. Sentence case; Title Case only for the header and sparse metadata labels. Big numerals for key stats is the signature move.
 - Avoid list (each instantly reads as off-brand): {avoid}.
 
+{motion_md(data.MOTION)}
 ## Precision & hygiene (Listen Labs house rules)
 
 The brand-independent typographic precision rules (curly quotes, `…`, non-breaking value/unit spaces, `tabular-nums`, `text-wrap: balance` / `pretty`) and the web-output hygiene rules (`color-scheme`, `theme-color`, `:focus-visible`, `prefers-reduced-motion`, 44px touch targets, no hover-only states, scrollable tables) live in `skills/_shared/brand-compliance.md`. Apply them to every Listen Labs artifact; they are also sound defaults for any other brand unless that brand's file says otherwise.
@@ -295,7 +383,18 @@ The brand-independent typographic precision rules (curly quotes, `…`, non-brea
     return md
 
 
+def write_voice_json():
+    """Machine-readable voice config for skills/video/scripts/voiceover.mjs (generated — edit brand_data.py)."""
+    import json
+    p = os.path.join(SCRIPT_DIR, "skills", "video", "library", "voice.json")
+    with open(p, "w") as f:
+        json.dump({"_generated_from": "brand_data.py MOTION.video.voice", **data.MOTION["video"]["voice"]}, f, indent=2)
+        f.write("\n")
+    print(f"Generated {os.path.relpath(p, SCRIPT_DIR)}")
+
+
 def main():
+    write_voice_json()
     md = generate()
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:

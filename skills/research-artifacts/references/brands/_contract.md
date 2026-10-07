@@ -40,3 +40,6 @@ Every file in `brands/` answers ALL of these fields. The CSS variable names are 
 
 ## 8. Art direction
 - Philosophy (one line). The feel (3–5 phrases). The avoid list (what instantly reads as off-brand).
+
+## 9. Motion
+- Duration and easing tokens for UI (productive) and video (expressive), the transition vocabulary with each transition's meaning, and the brand's signature move if it has one. Mark as (derived — Listen Labs defaults) when the brand publishes no motion spec; the physics in `skills/video/SKILL.md` (determinism, honest data animation, hold times, captions, accessibility) apply to every brand regardless.

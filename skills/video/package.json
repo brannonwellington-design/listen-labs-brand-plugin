@@ -1,0 +1,8 @@
+{
+  "name": "listen-labs-video",
+  "private": true,
+  "description": "Scripts for the /video skill (all .mjs). Only write-storyboard.mjs (API mode) needs a dependency; the rest run on Node built-ins + Chrome + ffmpeg. No \"type\": \"module\" \u2014 library.js is loaded both as a browser script and via require().",
+  "dependencies": {
+    "@anthropic-ai/sdk": "*"
+  }
+}
