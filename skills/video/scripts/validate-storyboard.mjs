@@ -162,6 +162,9 @@ story.scenes.forEach(sc => {
   /* small bases read as counts */
   cited.filter(f => f.base != null && f.base < 50 && f.unit === '%').forEach(f => W(where, `${f.id} has a small base (n = ${f.base}) — show it as a count (“${f.count} of ${f.base}”)`));
 
+  /* labels and quotes that won't fit — caught here, before render (qa-video.mjs re-checks the rendered frames) */
+  [...(d.items || []), d.a, d.b].filter(it => it && typeof it.label === 'string').forEach(it => { if (it.label.length > 22) E(where, `label “${it.label}” is ${it.label.length} characters — keep chart labels under ~18`); });
+  if (isQuote && (d.text || '').split(/\s+/).length > 34) W(where, `quote is ${(d.text || '').split(/\s+/).length} words — may not fit 16:9 even at the smaller size; pick a shorter verbatim`);
   /* layout fit */
   if (sc.note && textW(sc.note, 16) > 476) E(where, `note too long for 9:16 (${Math.round(textW(sc.note, 16))}px > 476px) — shorten it`);
   if (h.l1 && textW(h.l1, 32) > 476 * 2) W(where, 'line 1 wraps to 3+ lines at 9:16 — shorten it');
