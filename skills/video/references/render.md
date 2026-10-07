@@ -29,6 +29,8 @@ This is the whole stack: an HTML file, headless Chrome, and ffmpeg. No video fra
 
 ## QA pass (run on every render)
 
+`scripts/qa-video.mjs` implements the automated half. Notes from building it: overlap is judged on **ink boxes** (cap height above the baseline, descender depth only when the string has descenders) — browser text boxes include the full line height and flag every numeral sitting on its headline; contrast is measured against the **actual backdrop** (the filled shape behind the text, not the scene background), so a value inside a circle is judged on the circle; end dots are judged by their **center**, because a line that ends on the margin carries its dot on the margin by design. Tested against planted problems — an unsourced on-screen value, a 60-word quote overflowing 16:9, a label off the canvas, a 10 Hz strobe — and caught all four, while the real renders pass clean.
+
 **Automated**
 - `ffprobe`: resolution, fps, frame count = `round(TOTAL × FPS)`, duration, pixel format, audio stream present when expected.
 - Overflow: at each scene's settled time, every text element's bounding box sits inside the safe-zone content box and the canvas; no two text boxes intersect.
