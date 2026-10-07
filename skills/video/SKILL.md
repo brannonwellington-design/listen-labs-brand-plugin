@@ -18,7 +18,7 @@ The architecture is the same as the rest of the plugin, extended in time:
 4. **Motion & data** (`references/motion-and-data.md`) — choreography, transitions, count-ups, bars, lines, object constancy, and the anti-patterns.
 5. **Narration, captions & audio** (`references/narration-captions-audio.md`) — writing for the ear, spoken numbers, ElevenLabs timing, captions, the mix, disclosure.
 6. **Render & QA** (`references/render.md`, `scripts/render-video.mjs`) — deterministic HTML frames → headless Chrome → ffmpeg, and the checks every render passes.
-7. **Reference example** (`references/examples/seltzer-30s-kinetic.html`) — the approved kinetic 30s cut, aspect-aware (9:16 and 16:9 from one file): twelve different chart forms, one line weight, every figure on the margins, counters that land exactly, surface wipes. Start new compositions from its structure (data block, knobs, one draw function per scene, wipe engine, player) rather than from scratch — and never reuse its scene sequence wholesale; the story comes from the new study.
+7. **Reference examples** (`references/examples/`) — `seltzer-30s-kinetic.html`, the approved kinetic 30s cut, and `genz-ai-30s.html`, the generalization test on a different study; both aspect-aware (9:16 and 16:9 from one file). The seltzer cut shows twelve different chart forms, one line weight, every figure on the margins, counters that land exactly, surface wipes. Start new compositions from its structure (data block, knobs, one draw function per scene, wipe engine, player) rather than from scratch — and never reuse its scene sequence wholesale; the story comes from the new study.
 
 ## The three controls
 

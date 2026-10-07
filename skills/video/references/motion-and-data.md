@@ -50,6 +50,15 @@ Line art is the house style for data in video — stems, rings, axes, tracks, st
 
 A figure that runs *almost* the full width reads as a mistake, because the eye can't find what it's aligned to. **Horizontal figures span the content box, margin to margin** (`get_motion` → `video.edges`): tracks, axes, strike lines, unit grids, rows of circles. When a figure needs room for values, the values move — above the line, or into a value column right-aligned at the margin — and the plot ends where that column begins, so the figure as a whole still ends on the margin. Circular forms center on the frame. Name the content box once (`M`, `R`) and derive every extent from it; a hand-typed `x1 = 452` is how drift starts. In QA, overlay the margins on the contact sheet and check that every figure starts and ends on them.
 
+## Labels that survive new data
+
+Hand-picked label positions are tuned to one dataset; the next study's values put them off the frame or on top of each other. The Gen Z test (second study) hit exactly this. So:
+- **Point labels on an axis place themselves**: try slots (above/below the axis, near/far) × anchors (middle/end/start) and take the first that stays inside the figure box and clears every label already placed (`placeLabels` in `references/examples/genz-ai-30s.html`). If nothing fits, warn — then cut a label or change the form.
+- **Values go inside their mark when the mark is big enough** (a circle's % at its center), set in the surface's on-accent color so it holds contrast on the fill. Labels below then carry only the name, and neighbours can't collide.
+- **Edge labels align to the edge**: the first label in a row anchors start at the left edge, the last anchors end at the right edge, the rest center on their mark.
+- **Source notes fit one line** inside the content box at every ratio; the composition warns when one doesn't, and the fix is shorter copy, never smaller type.
+- **Stacked end cards flow from the text down**: the figure row sits at least 56px below the last line of copy, however many lines the title wraps to.
+
 ## Draw techniques
 
 - **Lines and paths:** draw with `stroke-dasharray`/`stroke-dashoffset` from measured `getTotalLength()`; the end dot and label land after the path completes (`draw` token).
@@ -73,6 +82,8 @@ Both are 30s, 9:16, from Seltzer Water Flavor Preferences (n = 300). Together th
 - **Credit line and notes outside the safe zone.** Fix: place them inside the chosen profile.
 
 **v3 — the approved reference** (`references/examples/seltzer-30s-kinetic.html`, 9:16 and 16:9): v1's scenes and pace with the fixes above, plus one line weight and margin-to-margin figures.
+
+**Gen Z ChatGPT Usage Study — the generalization test** (`references/examples/genz-ai-30s.html`): ten scenes from the same templates and rules on different data — 270° reach bars, area-true circles per tool, a ring fill, an axis strip, dot-line bars, a slope for a small subgroup (shown as a count, 9 of 32), June → July dumbbells, a workflow end card. Every rule held unchanged; four things broke that seltzer never triggered — hand-placed axis labels ran off the frame, lane labels collided, a three-line end-card title ran into its figure, and long source notes overflowed 9:16. All four were fixed in general form (see *Labels that survive new data*), not patched per scene.
 
 **v2 — over-correction.** Rebuilt under explainer holds and “one headline + three stats” at 30s: six scenes of about 5s, the pack row used twice, two near-identical dot-on-a-line bars, the same top-left numeral layout in four scenes. Every rule check passed and the video was boring: slow, repetitive, visually thinner than v1. That is why kinetic pace, its own hold formula, and the variety rule exist. Rules that pass on a video nobody wants to watch are wrong rules.
 
