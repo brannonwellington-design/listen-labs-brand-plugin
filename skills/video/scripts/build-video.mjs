@@ -8,6 +8,9 @@
 //   --history   JSON file { "<historyKey>": [["weekly=ranking.dotBars", …] /* newest first */, …] }; created if missing
 //   --seed      defaults to `${historyKey}:${count of past videos}` — reproducible, and new for each generation
 //   --dry       print the picks without writing anything
+//   --pin-out   also write the storyboard with executions, surfaces and wipes pinned (input for voiceover.mjs)
+//
+// With narration: build --pin-out story.pinned.json --history h.json → voiceover.mjs story.pinned.json → build the voiced story
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -20,7 +23,7 @@ const PLUGIN_ROOT = path.join(HERE, '..', '..', '..');
 const args = process.argv.slice(2);
 const flag = (name, fallback) => { const i = args.indexOf(name); return i >= 0 ? args.splice(i, 2)[1] : fallback; };
 const DRY = args.includes('--dry') && args.splice(args.indexOf('--dry'), 1);
-const OUT = flag('--out', null), HISTORY = flag('--history', null), SEED = flag('--seed', null);
+const OUT = flag('--out', null), HISTORY = flag('--history', null), SEED = flag('--seed', null), PIN_OUT = flag('--pin-out', null);
 const STORY_PATH = path.resolve(args[0] || 'story.json');
 
 const story = JSON.parse(readFileSync(STORY_PATH, 'utf8'));
@@ -33,6 +36,7 @@ const seed = SEED || `${key}:${past.length}`;
 const { picks, log } = selectExecutions(story.scenes, past, seed);
 console.log(`seed ${seed}\n` + log.map(l => '  ' + l).join('\n'));
 if (DRY) process.exit(0);
+if (PIN_OUT) { writeFileSync(path.resolve(PIN_OUT), JSON.stringify(story, null, 2)); console.log(`wrote ${path.resolve(PIN_OUT)}`); }
 
 // Inline the logo lockup with its fill removed (the engine sets it per surface)
 const svg = readFileSync(path.join(PLUGIN_ROOT, 'assets', 'listen-labs-logo.svg'), 'utf8');

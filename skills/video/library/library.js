@@ -509,6 +509,7 @@ const TEMPLATES = {
       const w = seg(p, 1.0, 1.4), lw = 28 * 520 / 71, lx = E.logo.anchor === 'middle' ? E.logo.x - lw / 2 : E.logo.x;
       s += `<g transform="translate(${r2(lx)} ${E.logo.y}) scale(${r2(28 / 71 * 1000) / 1000})" opacity="${r2(w)}" fill="${T.fg}">${WORDMARK}</g>`;
       s += TX(E.study.x, E.study.y, `${d.study} · n${NBSP}=${NBSP}${d.n}`, 16, T.fg, { anchor: E.study.anchor, op: w });
+      if (d.disclosure) s += TX(E.study.x, E.study.y - 22, d.disclosure, 16, T.fg2Large, { anchor: E.study.anchor, op: w });   // AI-voice disclosure (MRS, EU AI Act Art. 50)
       return s;
     }, anchor: () => [F.cx, F.cy] },
 };
@@ -832,7 +833,7 @@ function headFor(sc, p, T) {
   const h = sc.head || {};
   if (h.title) return head(p, T, h);
   if (!h.big) return h.l1 ? head(p, T, h) : '';
-  const [a, b] = h.big.at || execOf(sc).reveal(sc.data);
+  const shift = sc.revealShift || 0, [a0, b0] = h.big.at || execOf(sc).reveal(sc.data), a = a0 + shift, b = b0 + shift;
   const k = h.big.count === false ? 1 : EASE.settle(seg(p, a, b));
   return head(p, T, { ...h, big: (h.big.prefix || '') + fmtVal(h.big.value, h.big.unit || '', k), bigAt: h.big.count === false ? 0.05 : a });
 }
@@ -840,7 +841,7 @@ function layer(sc, p, scale = 1) {
   const T = TH[sc.surface], ex = execOf(sc);
   const tf = scale !== 1 ? ` transform="translate(${W / 2} ${H / 2}) scale(${r2(scale * 1000) / 1000}) translate(${-W / 2} ${-H / 2})"` : '';
   return `<g${tf}><rect x="-40" y="-40" width="${W + 80}" height="${H + 80}" fill="${T.bg}"/>` +
-    ex.draw(p, T, sc.data) + headFor(sc, p, T) +
+    ex.draw(Math.max(0, p - (sc.revealShift || 0)), T, sc.data) + headFor(sc, p, T) +
     (sc.template === 'endRow' ? '' : `<text x="${W / 2}" y="${LAY.credit}" font-size="${CREDIT_SIZE}" text-anchor="middle"><tspan fill="${T.fg2}">Listen Labs /</tspan> <tspan fill="${T.fg}">${STUDY_TITLE}</tspan></text>`) +
     (sc.note ? TX(M, LAY.note, sc.note, NOTE_SIZE, T.fg2) : '') + `</g>`;
 }

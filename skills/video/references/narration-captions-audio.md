@@ -24,6 +24,19 @@ Sources: BBC Subtitle Guidelines, Netflix Timed Text Style Guide, WCAG 2.2 (1.2.
 - With `narrate_quotes: true`: the AI voice reads the verbatim exactly; the scene shows “Participant quote · read by AI voice”. Pick a neutral delivery — no acted emotion.
 - With `testimonials: clips` and consent: the participant's own audio plays; music mutes; a burned caption shows the exact words; lower-third shows the participant label (P#), never a real name.
 
+## The pipeline
+
+```bash
+node scripts/build-video.mjs story.json --history history.json --pin-out story.pinned.json   # choose executions, surfaces, wipes
+node scripts/voiceover.mjs story.pinned.json --voice <voice_id>                             # narration, timing, cues, mix, captions
+node scripts/build-video.mjs voice/story.pinned.voiced.json --out video.html                 # composition with the voiced timing
+node scripts/render-video.mjs video.html video.mp4 --audio voice/narration.wav
+```
+
+Storyboard fields: each scene's `narration` (numbers written as words) and optional `cue` (the word on which its data reveal starts); story-level `narrateQuotes` (default false), `voice: { id, model, seed, settings }`, `targetSeconds`. Before any audio is generated, the script checks that every headline number is spoken exactly, that no digits appear in narration, that quote text stays out of narration when `narrateQuotes` is off, and that the word count fits `targetSeconds` at ~2.4 words/s.
+
+`--provider say` is a dev stand-in (macOS voice, offline, nothing leaves the machine) for testing timing and layout without an API key; its word timings are estimated, the transcript says so, and it is never shipped.
+
 ## ElevenLabs
 
 - **API key** from the environment (`ELEVENLABS_API_KEY`); never written to files, storyboards, or HTML.
