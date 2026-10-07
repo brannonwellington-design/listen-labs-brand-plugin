@@ -72,7 +72,7 @@ Both are 30s, 9:16, from Seltzer Water Flavor Preferences (n = 300). Together th
 - **Labels at 14 design px** (28px output) and a 12px credit line. Fix: label minimum 18, source note and credit 16.
 - **Credit line and notes outside the safe zone.** Fix: place them inside the chosen profile.
 
-**v3 — the approved reference** (`references/examples/seltzer-30s-kinetic-9x16.html`): v1's scenes and pace with the fixes above, plus one line weight and margin-to-margin figures.
+**v3 — the approved reference** (`references/examples/seltzer-30s-kinetic.html`, 9:16 and 16:9): v1's scenes and pace with the fixes above, plus one line weight and margin-to-margin figures.
 
 **v2 — over-correction.** Rebuilt under explainer holds and “one headline + three stats” at 30s: six scenes of about 5s, the pack row used twice, two near-identical dot-on-a-line bars, the same top-left numeral layout in four scenes. Every rule check passed and the video was boring: slow, repetitive, visually thinner than v1. That is why kinetic pace, its own hold formula, and the variety rule exist. Rules that pass on a video nobody wants to watch are wrong rules.
 

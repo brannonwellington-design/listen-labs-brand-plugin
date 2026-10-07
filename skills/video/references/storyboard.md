@@ -77,13 +77,22 @@ Video bans (in addition to `charts.md`): no pie or donut, no dual axis, no legen
 
 ## 5. Aspect layouts
 
-Each template ships a layout per aspect — re-composed, never scaled.
+One composition, re-composed per ratio. Each ratio is a single layout entry naming a **text column** (where the headline block sits: big numeral, line 1, line 2) and a **figure box** (where the scene's chart lives), plus the credit, note, quote, and end-card positions. Scenes draw only relative to those boxes — never to hard-coded canvas coordinates — so adding a ratio is adding one entry, and every figure inherits the edges rule from its box. See `references/examples/seltzer-30s-kinetic.html` (`ASPECTS`).
 
-- **9:16** — vertical stack: headline block in the upper third, the graphic in the middle, source note at the bottom of the safe zone. Rankings read top to bottom. With the `social` safe-zone profile the content box is small; cut rows rather than shrink type.
-- **4:5 / 1:1** — compact stack: headline and graphic share the frame; ranking limits drop by one or two rows; big numerals drop one step on the type scale.
-- **16:9** — split: text in the left 5 columns, the graphic in the right 7 (12-column grid inside the safe zone); vertical bar charts become possible; captions sit under the text column when data runs full height.
+| Ratio | Design canvas | Text column | Figure box | Composition |
+|---|---|---|---|---|
+| **9:16** | 540×960 | full width, upper third (numeral baseline 240) | 32→508 × 420→860 | stacked: claim over evidence |
+| **16:9** | 960×540 | grid columns 1–6 (48→444) | columns 7–12 (468→912) × 72→470 | split: claim left, evidence right |
+| **4:5 / 1:1** | 540×676 / 540×540 | full width, compact (numeral one step down the type scale) | full width, shorter; ranking limits drop by one or two rows | compact stack (not yet built) |
 
-The **dominant element** stays dominant in every ratio; the stacking order (claim → evidence → source) never changes.
+Rules that keep every ratio designed rather than reflowed:
+- **Figures fill their box.** Linear figures span the box edge to edge; radial figures center in it and size to its shorter side (minus room for node labels). Sizes come from the box, never from constants tuned for one ratio.
+- **Copy re-wraps; type never shrinks.** Lines wrap to the text column at their scale size, balanced (`text-wrap: balance` logic) so no line strands a single word. If a line needs three rows in a column, shorten the copy.
+- **The text column is wide enough for the widest numeral** in the video at 128px (`1,140` needs ~390px); on 16:9 that is six of twelve columns, not five.
+- **Quotes re-wrap** to the ratio's quote measure (≈450px on 9:16, ≈640px on 16:9) — fewer, longer lines on landscape.
+- **The end card follows the split**: on 16:9 the title, subtitle, logo, and study line stack in the text column and the pack row spans the figure box.
+- **The dominant element stays dominant** in every ratio, and the order — claim, evidence, source — never changes.
+- **Wipes start from geometry**, not coordinates: a circle wipe's origin is a function of the scene (the ring's top node, the smaller circle's center), so it lands on the same mark in every ratio.
 
 ## 6. Storyboard JSON
 
