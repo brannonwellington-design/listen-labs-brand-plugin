@@ -97,24 +97,28 @@ Rules that keep every ratio designed rather than reflowed:
 
 ## 6. Storyboard JSON
 
+The build input for `scripts/build-video.mjs`. A scene names either a **family** (the selector chooses the execution from `library/library.js`) or a **template** (single execution). Pin an execution with `"execution"` only when the story demands one form.
+
 ```json
 {
-  "brand": "listen-labs",
-  "controls": { "length": "30s", "depth": "headline", "aspect": "9:16", "safe_zone": "clean", "testimonials": "off", "narrate_quotes": false, "voiceover": true },
-  "preset": "snappy_30s",
-  "voice": { "id": "<house voice id>", "model": "<model>", "seed": 7 },
+  "study": "Seltzer Water Flavor Preferences",
+  "historyKey": "seltzer",
   "scenes": [
-    {
-      "id": "s1", "template": "stat-hero", "surface": "brand-blue", "transition_in": "cut",
-      "facts": ["F1"],
-      "on_screen": { "big": "93%", "line1": "drink seltzer every week", "note": "n = 300 · share drinking each beverage weekly" },
-      "narration": "Ninety-three percent of the three hundred people we interviewed drink seltzer every week.",
-      "cues": [{ "at_word": "Ninety-three", "action": "count_start" }, { "at_word": "week", "action": "line1_in" }]
-    }
-  ],
-  "end_card": { "recommendation": "Lead with Black Cherry, Mango and Watermelon.", "disclosure": "Narrated by an AI voice." }
+    { "id": "weekly", "family": "ranking", "surface": "light", "dur": 2.6, "enter": { "type": "circle", "at": "prev" },
+      "data": { "unit": "%", "items": [ { "label": "Seltzer", "value": 93 }, { "label": "Plain water", "value": 91 } ] },
+      "head": { "big": { "value": 93, "unit": "%" }, "l1": "drink seltzer every week", "l2": "Right alongside plain water." },
+      "note": "n&#160;=&#160;300 · share drinking each beverage weekly" },
+    { "id": "quote", "template": "quote", "surface": "blue", "dur": 2.2, "enter": { "type": "line", "dir": "up" },
+      "data": { "text": "<the verbatim, exactly>", "who": "— P#, context" } }
+  ]
 }
 ```
+
+- **Family data shapes.** `ranking`: `{ items: [{label, value}], unit, ref?: {value, label}, gap?: {after, label}, lead? }`. `partWhole`: `{ pct, count?, base?, partLabel?, restLabel? }`. Executions declare what they need (`fits`): unit grids need a count and base ≤ 400; lollipops need a reference; radial rings need ≤ 4 shares of one base; area-true circles refuse a gap row.
+- **Headline counters** land with their execution's data reveal automatically; `big.at` overrides, `big.count: false` shows a static figure (e.g. a ratio like `3×`).
+- **Wipes**: `enter.at: "prev"` starts a circle wipe from the previous scene's anchor mark (whatever execution was chosen); `"center"` from the figure box center.
+- **History**: `{ "<historyKey>": [["weekly=ranking.columnDots", …] /* newest first */] }`. The build reads it, picks the least recently used fitting execution per scene (hardest penalty for the same scene's last execution), and prepends the new picks. Variety is bounded by the library: add executions to a family before a customer can see a repeat.
+- See `references/examples/seltzer.story.json`.
 
 ## 7. The validator (runs before audio and render)
 

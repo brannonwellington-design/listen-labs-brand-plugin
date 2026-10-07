@@ -1,0 +1,397 @@
+{
+  "study": "Seltzer Water Flavor Preferences",
+  "historyKey": "seltzer",
+  "pageTitle": "Seltzer Pack Short",
+  "aria": "30-second video: 300 seltzer drinkers ranked 20 flavors; Strawberry tops appeal, Black Cherry is picked most, and Black Cherry + Mango + Watermelon reaches 63%.",
+  "scenes": [
+    {
+      "id": "hook",
+      "template": "bloomCount",
+      "surface": "blue",
+      "dur": 2.2,
+      "data": {
+        "n": 300
+      },
+      "head": {
+        "big": {
+          "value": 300
+        },
+        "l1": "seltzer drinkers",
+        "l2": "One pack reaches 63% of them.",
+        "l2Color": "fg2Large"
+      },
+      "note": "Seltzer Water Flavor Preferences · n&#160;=&#160;300"
+    },
+    {
+      "id": "weekly",
+      "family": "ranking",
+      "surface": "light",
+      "dur": 2.6,
+      "enter": {
+        "type": "circle",
+        "at": "prev"
+      },
+      "data": {
+        "unit": "%",
+        "items": [
+          {
+            "label": "Seltzer",
+            "value": 93
+          },
+          {
+            "label": "Plain water",
+            "value": 91
+          },
+          {
+            "label": "Coffee",
+            "value": 79
+          },
+          {
+            "label": "Soda",
+            "value": 70
+          }
+        ]
+      },
+      "head": {
+        "big": {
+          "value": 93,
+          "unit": "%"
+        },
+        "l1": "drink seltzer every week",
+        "l2": "Right alongside plain water."
+      },
+      "note": "n&#160;=&#160;300 · share drinking each beverage weekly"
+    },
+    {
+      "id": "twenty",
+      "template": "nodeRing",
+      "surface": "dark",
+      "dur": 2.0,
+      "enter": {
+        "type": "line",
+        "dir": "down"
+      },
+      "data": {
+        "n": 20,
+        "picks": [
+          0,
+          7,
+          13
+        ]
+      },
+      "head": {
+        "big": {
+          "value": 20
+        },
+        "l1": "flavors on the table",
+        "l2": "3 slots in the pack."
+      },
+      "note": "MaxDiff exercise across 20 candidate flavors"
+    },
+    {
+      "id": "maxdiff",
+      "family": "ranking",
+      "surface": "blue",
+      "dur": 3.0,
+      "enter": {
+        "type": "circle",
+        "at": "prev"
+      },
+      "data": {
+        "unit": "",
+        "ref": {
+          "value": 100,
+          "label": "Average&#160;=&#160;100"
+        },
+        "gap": {
+          "after": 3,
+          "label": "+&#160;15 more flavors"
+        },
+        "items": [
+          {
+            "label": "Strawberry",
+            "value": 148
+          },
+          {
+            "label": "Black Cherry",
+            "value": 132
+          },
+          {
+            "label": "Mango",
+            "value": 126
+          },
+          {
+            "label": "Watermelon",
+            "value": 110
+          },
+          {
+            "label": "Cucumber",
+            "value": 46.7
+          }
+        ]
+      },
+      "head": {
+        "big": {
+          "value": 148
+        },
+        "l1": "Strawberry tops appeal",
+        "l2": "Berries lead the index.",
+        "l2Color": "fg2Large"
+      },
+      "note": "MaxDiff preference index · 100&#160;=&#160;average · n&#160;=&#160;300"
+    },
+    {
+      "id": "spread",
+      "template": "areaPair",
+      "surface": "light",
+      "dur": 2.0,
+      "enter": {
+        "type": "line",
+        "dir": "right"
+      },
+      "data": {
+        "a": {
+          "label": "Strawberry",
+          "value": 148
+        },
+        "b": {
+          "label": "Cucumber",
+          "value": 46.7
+        }
+      },
+      "head": {
+        "big": {
+          "value": 3,
+          "unit": "×",
+          "count": false
+        },
+        "l1": "the appeal, top to bottom",
+        "l2": "Flavor choice is the whole game."
+      },
+      "note": "Circle area ∝ MaxDiff index (148 vs 46.7)"
+    },
+    {
+      "id": "repel",
+      "template": "strikeRow",
+      "surface": "dark",
+      "dur": 2.4,
+      "enter": {
+        "type": "circle",
+        "at": "prev"
+      },
+      "data": {
+        "header": "Five flavors that repel",
+        "items": [
+          "Cucumber",
+          "Cola",
+          "Apple",
+          "Coconut",
+          "Grapefruit"
+        ]
+      },
+      "head": {
+        "big": {
+          "value": 39,
+          "unit": "%"
+        },
+        "l1": "said it’s just weird in seltzer",
+        "l2": "Not a bad flavor. A wrong format."
+      },
+      "note": "Base: respondents who named a least-favorite flavor"
+    },
+    {
+      "id": "quote",
+      "template": "quote",
+      "surface": "blue",
+      "dur": 2.2,
+      "enter": {
+        "type": "line",
+        "dir": "up"
+      },
+      "data": {
+        "text": "“Placeholder — the exact verbatim goes here, unedited.”",
+        "who": "— P#, participant label (placeholder)"
+      },
+      "note": "Verbatim from interview · n&#160;=&#160;300"
+    },
+    {
+      "id": "selfpick",
+      "family": "ranking",
+      "surface": "light",
+      "dur": 3.0,
+      "enter": {
+        "type": "circle",
+        "at": "prev"
+      },
+      "data": {
+        "unit": "%",
+        "items": [
+          {
+            "label": "Black Cherry",
+            "value": 29
+          },
+          {
+            "label": "Mango",
+            "value": 24
+          },
+          {
+            "label": "Raspberry",
+            "value": 22
+          },
+          {
+            "label": "Lime",
+            "value": 21
+          },
+          {
+            "label": "Watermelon",
+            "value": 21
+          }
+        ]
+      },
+      "head": {
+        "big": {
+          "value": 29,
+          "unit": "%"
+        },
+        "l1": "chose Black Cherry",
+        "l2": "3rd on appeal. 1st in the pack."
+      },
+      "note": "Own 3-flavor pack · % of 300 including each flavor"
+    },
+    {
+      "id": "heavy",
+      "template": "axisStrip",
+      "surface": "dark",
+      "dur": 2.6,
+      "enter": {
+        "type": "line",
+        "dir": "down"
+      },
+      "data": {
+        "items": [
+          {
+            "label": "Strawberry",
+            "value": 150
+          },
+          {
+            "label": "Raspberry",
+            "value": 139
+          },
+          {
+            "label": "Orange / Mandarin",
+            "value": 136,
+            "focus": true
+          },
+          {
+            "label": "Black Cherry",
+            "value": 134
+          }
+        ]
+      },
+      "head": {
+        "big": {
+          "value": 136
+        },
+        "l1": "Orange rises with daily fans",
+        "l2": "Nearly catching Black Cherry."
+      },
+      "note": "Daily drinkers, n&#160;=&#160;154 · index, 100&#160;=&#160;average"
+    },
+    {
+      "id": "combos",
+      "template": "comboRing",
+      "surface": "blue",
+      "dur": 2.0,
+      "enter": {
+        "type": "circle",
+        "at": "prev"
+      },
+      "data": {
+        "n": 20,
+        "runners": [
+          [
+            4,
+            0,
+            7
+          ],
+          [
+            0,
+            7,
+            16
+          ]
+        ],
+        "winner": [
+          0,
+          7,
+          13
+        ],
+        "labels": [
+          "Black Cherry",
+          "Mango",
+          "Watermelon"
+        ]
+      },
+      "head": {
+        "big": {
+          "value": 1140,
+          "at": [
+            0.1,
+            1.3
+          ]
+        },
+        "l1": "3-flavor packs tested",
+        "l2": "One reached the most people.",
+        "l2Color": "fg2Large"
+      },
+      "note": "Top 3 of 1,140 combos · runners-up within 1 point"
+    },
+    {
+      "id": "reach",
+      "family": "partWhole",
+      "surface": "light",
+      "dur": 3.4,
+      "enter": {
+        "type": "circle",
+        "at": "prev"
+      },
+      "data": {
+        "pct": 63,
+        "count": 188,
+        "base": 300,
+        "partLabel": "reached",
+        "restLabel": "not reached"
+      },
+      "head": {
+        "big": {
+          "value": 63,
+          "unit": "%"
+        },
+        "l1": "find a flavor they picked",
+        "l2": "Black Cherry + Mango + Watermelon"
+      },
+      "note": "Reach: own pick has 1+ of the 3 · n&#160;=&#160;300"
+    },
+    {
+      "id": "end",
+      "template": "endRow",
+      "surface": "blue",
+      "dur": 2.6,
+      "enter": {
+        "type": "line",
+        "dir": "up"
+      },
+      "data": {
+        "title": "The pack.",
+        "sub": "Highest reach of 1,140 combos.",
+        "items": [
+          "Black Cherry",
+          "Mango",
+          "Watermelon"
+        ],
+        "study": "Seltzer Water Flavor Preferences",
+        "n": 300
+      }
+    }
+  ],
+  "_comment": "Seltzer Water Flavor Preferences (Listen Labs demo study, n = 300). Build: node scripts/build-video.mjs references/examples/seltzer.story.json --history <history.json>. Verbatim removed for the public repo."
+}
