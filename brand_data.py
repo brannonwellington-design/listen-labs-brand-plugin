@@ -557,7 +557,7 @@ MOTION = {
             "supporting": 24,
             "label": 18,
             "source_note": 16,
-            "credit_line": 16,
+            "credit_line": 14,
         },
         "safe_zones_design_px": {
             "note": "Inset from each edge on the design canvas. 'clean' = LinkedIn, web embeds, presentations (EBU R95 graphics-safe, 5%, rounded to the 4px grid). 'social' = Reels / Shorts / TikTok, where platform UI covers the frame (union of Meta and YouTube published zones; TikTok publishes templates only). Choose the profile per destination; when unknown, use social on 9:16.",
@@ -580,6 +580,7 @@ MOTION = {
         "scene_structure": "Each scene: build (0–30% of its duration) → breathe (30–70%, settled and readable) → resolve (70–100%, hold or hand off). In explainers, narration fills the breathe phase.",
         "line_weight": "One stroke weight for all line art in a video: 2px on the design canvas (4px at output). Reference lines, axes, tracks, stems, arcs, leaders, outline circles, strike-throughs, wipe edges, quote rules — all 2px. Hierarchy between lines comes from color tier (content color for the story, muted for context, grid color for structure), never from weight. Only exception: a mark so small that a 2px stroke would fill it (outline dots under 6px radius) — enlarge the mark rather than thin the line.",
         "edges": "Every horizontal figure spans the content box, left margin to right margin (inside the safe zone): tracks, axes, strike lines, unit grids, rows of shapes. A label column that ends the figure aligns to the margin too (values right-aligned at the right margin). Room for labels is made by moving the labels — above the line, into a right-aligned value column — never by stopping the chart short. Circular and radial forms center on the frame's vertical axis. Anything that stops short of an edge stops at a named grid line on purpose; 'almost full width' is always a bug.",
+        "credit_zone": "The credit line (Listen Labs / Title) is 14px on the design canvas, centered, its baseline at the safe-zone top plus its cap height — as high as the safe zone allows. It owns a protected zone: nothing else enters from the canvas top to 32px below the credit baseline, and the same 32px clearance holds above the source note at the bottom. Every figure keeps all of its ink — marks and labels — inside its figure box, and figure boxes sit between the two zones. Radial figures size themselves so their top labels stay inside the box. Applies to every video in every aspect ratio.",
         "variety": "Never reuse a scene template or chart form within one video of 90s or less (one deliberate bookend excepted); in longer videos, not within the same chapter. Rotate the dominant element (numeral, chart, shape, quote), the layout anchor, and the surface from scene to scene. Two consecutive scenes that look alike read as a stall.",
         "pacing_presets": {
             "snappy_30s": {"pace": "kinetic", "narration_words": 70, "scenes": "10–12", "avg_scene_s": "2–3", "ideas": "hook + 8–10 stats or moments, one per scene, + end card", "default_transition": "wipe on every surface change, cut otherwise", "max_on_screen_words": "6 must-read"},

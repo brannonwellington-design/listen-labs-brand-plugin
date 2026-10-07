@@ -164,16 +164,16 @@ const TH = {
    9:16 stacks text over figure; 16:9 splits the 12-column grid 6 / 6: text block left, figure right. */
 const ASPECTS = {
   '9:16': {
-    W: 540, H: 960, M: 32, credit: 62, note: 912,
+    W: 540, H: 960, M: 32, credit: 58, note: 912,
     text: { x: 32, big: 240, l1: 292, max: 476, lh1: 40, lh2: 32 },
     fig: { x0: 32, x1: 508, y0: 420, y1: 860 },
     quote: { x: 56, y0: 384, max: 452, wrap: false },
     end: { title: [32, 320], sub: [32, 364], row: 540, rowSpan: 'content', logo: { x: 270, y: 800, anchor: 'middle' }, study: { x: 270, y: 872, anchor: 'middle' } },
   },
   '16:9': {
-    W: 960, H: 540, M: 48, credit: 42, note: 512,
+    W: 960, H: 540, M: 48, credit: 38, note: 512,
     text: { x: 48, big: 214, l1: 266, max: 396, lh1: 40, lh2: 32 },
-    fig: { x0: 468, x1: 912, y0: 72, y1: 470 },
+    fig: { x0: 468, x1: 912, y0: 72, y1: 464 },
     quote: { x: 72, y0: 196, max: 640, wrap: true },
     end: { title: [48, 214], sub: [48, 258], row: null, rowSpan: 'fig', logo: { x: 48, y: 412, anchor: 'start' }, study: { x: 48, y: 512, anchor: 'start' } },
   },
@@ -183,6 +183,13 @@ const LAY = ASPECTS[ASPECT] || ASPECTS['9:16'];
 const { W, H, M } = LAY, R = W - M;                       // content box: horizontal figures run M → R (or the figure box edges)
 const F = { ...LAY.fig, w: LAY.fig.x1 - LAY.fig.x0, h: LAY.fig.y1 - LAY.fig.y0, cx: (LAY.fig.x0 + LAY.fig.x1) / 2, cy: (LAY.fig.y0 + LAY.fig.y1) / 2 };
 window.CANVAS = { width: W, height: H };
+
+/* Credit line + clearance (brand_data.py MOTION.video.credit_zone): 14px, baseline at the safe-zone top + its cap height.
+   Nothing enters from the canvas top to CLEAR below the credit baseline, or within CLEAR above the source note's cap.
+   Figures keep all their ink — marks and labels — inside F, and F sits between those two zones. */
+const CREDIT_SIZE = 14, NOTE_SIZE = 16, CLEAR = 32;
+const ZONE_TOP = LAY.credit + CLEAR, ZONE_BOTTOM = LAY.note - NOTE_SIZE * 0.73 - CLEAR;
+if (F.y0 < ZONE_TOP || F.y1 > ZONE_BOTTOM) console.warn(`Figure box ${F.y0}–${F.y1} breaks the credit/note clearance ${ZONE_TOP}–${r2(ZONE_BOTTOM)}`);
 
 /* ===== Helpers ===== */
 const GOLDEN = Math.PI * (3 - Math.sqrt(5));
@@ -246,7 +253,7 @@ function arcPath(cx, cy, r, a0, a1) { // degrees, 0 = 12 o’clock, clockwise
 const ringPt = (cx, cy, r, deg) => [cx + r * Math.cos(deg * Math.PI / 180), cy + r * Math.sin(deg * Math.PI / 180)];
 
 /* Shared ring for the “20 flavors” and “1,140 combos” scenes (match cut), sized to the figure box */
-const RING = { cx: F.cx, cy: F.cy, r: Math.min(180, Math.min(F.w, F.h) / 2 - 24) };
+const RING = { cx: F.cx, cy: F.cy, r: Math.min(180, F.w / 2 - 24, F.h / 2 - 40) };   // top node label (r + 24 + cap) stays inside F
 const RING_PICK = [0, 7, 13];  // slots that become Black Cherry, Mango, Watermelon
 const ringNode = k => ringPt(RING.cx, RING.cy, RING.r, -90 + k * 18);
 
@@ -286,7 +293,7 @@ const SCENES = [
     note: `n${NBSP}=${NBSP}300 · share drinking each beverage weekly`,
     draw(p, T) {
       let s = '';
-      const sc = Math.min(1, (Math.min(F.w, F.h) / 2 - 4) / 196);
+      const sc = Math.min(1, (Math.min(F.w, F.h) / 2 - 10) / 196);   // ring-top labels stay inside F
       DATA.weekly.forEach((d, i) => {
         const r = [196, 164, 132, 100][i] * sc, lead = i === 0;
         const k = eio(seg(p, 0.15 + i * 0.1, 0.95 + i * 0.1));
@@ -454,8 +461,8 @@ const SCENES = [
     note: `Reach: own pick includes at least 1 of the 3 · n${NBSP}=${NBSP}${DATA.n}`,
     draw(p, T) {
       let s = '';
-      const cols = 20, dotR = 7.5, gap = (F.w - 2 * dotR) / (cols - 1), gridH = 14 * gap;
-      const gx = F.x0 + dotR, gy = F.y0 + (F.h - (gridH + 2 * dotR + 46)) / 2 + dotR;
+      const cols = 20, dotR = 7.5, gap = Math.min((F.w - 2 * dotR) / (cols - 1), (F.h - 2 * dotR - 46) / 14), gridH = 14 * gap;   // grid + legend fit inside F
+      const gx = F.x0 + dotR + ((F.w - 2 * dotR) - (cols - 1) * gap) / 2, gy = F.y0 + (F.h - (gridH + 2 * dotR + 46)) / 2 + dotR;
       const filled = Math.round(DATA.winner.reachCount * eio(seg(p, 0.7, 1.7)));
       for (let i = 0; i < DATA.n; i++) {
         const cx = gx + (i % cols) * gap, cy = gy + Math.floor(i / cols) * gap, a = eo(seg(p, 0.05 + i * 0.0018, 0.35 + i * 0.0018));
@@ -504,7 +511,7 @@ function layer(scene, p, scale = 1) {
   return `<g${tf}>` +
     `<rect x="-40" y="-40" width="${W + 80}" height="${H + 80}" fill="${T.bg}"/>` +
     scene.draw(p, T) +
-    (scene.id === 'end' ? '' : `<text x="${W / 2}" y="${LAY.credit}" font-size="16" text-anchor="middle"><tspan fill="${T.fg2}">Listen Labs /</tspan> <tspan fill="${T.fg}">${TITLE}</tspan></text>`) +
+    (scene.id === 'end' ? '' : `<text x="${W / 2}" y="${LAY.credit}" font-size="${CREDIT_SIZE}" text-anchor="middle"><tspan fill="${T.fg2}">Listen Labs /</tspan> <tspan fill="${T.fg}">${TITLE}</tspan></text>`) +
     (scene.note ? TX(M, LAY.note, scene.note, 16, T.fg2) : '') +
     `</g>`;
 }

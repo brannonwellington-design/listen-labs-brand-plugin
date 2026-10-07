@@ -81,6 +81,7 @@ Everything in `/research-artifacts` Research Ethics applies. In addition:
 - [ ] Fact sheet built from the source; every on-screen and spoken number cites a fact and matches it exactly; bases visible; nothing estimated
 - [ ] Length × depth pair valid (or snapped and disclosed); scene count and word budget within the preset
 - [ ] Pace chosen (kinetic or explainer) and its hold formula met for every must-read block, counted from entrance end; first motion 0.05–0.3s after each cut; a finding on screen within 3s
+- [ ] Credit zone: credit line 14px at the top of the safe zone; no mark or label within 32px below it or 32px above the source note; all figure ink inside its figure box
 - [ ] Edges: every horizontal figure starts and ends on the content-box margins (verified with a margin overlay on the contact sheet); value columns right-aligned to the margin; circular forms centered
 - [ ] One line weight for every stroke in the video (brand `video.line_weight`); emphasis by color, dot size, or order — never weight
 - [ ] Variety: no scene template or chart form repeats (one bookend allowed); dominant element, layout anchor, and surface rotate

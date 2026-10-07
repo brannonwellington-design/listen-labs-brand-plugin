@@ -86,6 +86,7 @@ One composition, re-composed per ratio. Each ratio is a single layout entry nami
 | **4:5 / 1:1** | 540×676 / 540×540 | full width, compact (numeral one step down the type scale) | full width, shorter; ranking limits drop by one or two rows | compact stack (not yet built) |
 
 Rules that keep every ratio designed rather than reflowed:
+- **The credit line owns its zone.** 14px, as high as the safe zone allows; nothing enters within 32px below its baseline or 32px above the source note (`get_motion` → `video.credit_zone`). Figure boxes start and end outside those zones, and every mark and label stays inside its box.
 - **Figures fill their box.** Linear figures span the box edge to edge; radial figures center in it and size to its shorter side (minus room for node labels). Sizes come from the box, never from constants tuned for one ratio.
 - **Copy re-wraps; type never shrinks.** Lines wrap to the text column at their scale size, balanced (`text-wrap: balance` logic) so no line strands a single word. If a line needs three rows in a column, shorten the copy.
 - **The text column is wide enough for the widest numeral** in the video at 128px (`1,140` needs ~390px); on 16:9 that is six of twelve columns, not five.

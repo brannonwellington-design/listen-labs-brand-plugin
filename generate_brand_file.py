@@ -203,6 +203,7 @@ def motion_md(M, heading="##"):
 - **Variety:** {v["variety"]}
 - **Line weight:** {v["line_weight"]}
 - **Edges:** {v["edges"]}
+- **Credit zone:** {v["credit_zone"]}
 - **Scene structure:** {v["scene_structure"]}
 - **Narration:** {v["narration"]["rate"]} {v["narration"]["audio_is_the_clock"]}
 
