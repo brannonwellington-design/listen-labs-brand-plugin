@@ -122,8 +122,10 @@ Artifacts are often rendered inside a pane (the Listen Labs product canvas, a da
 
 ## Motion
 
+Tokens and the full spec live in the brand data (`get_motion` on the brand MCP; the Motion section of the brand file). This section governs the **UI register** — pages, artifacts, product surfaces. **Video is the expressive register and is governed by `skills/video/SKILL.md`; the "default is stillness" and "no auto-playing" rules below do not apply to a rendered video,** which is motion by definition and follows that skill's choreography instead.
+
 - **Default is stillness.** No motion on load, no looping, no parallax, no auto-playing anything.
-- **When motion is used** (a reveal in an interactive story, a hover, a tooltip): animate only `transform` and `opacity`; 150ms for hover/tooltip, 200–400ms ease-out for reveals and state changes; stagger children ≤ 40ms apart and never more than five; one thing moves at a time.
+- **When motion is used** (a reveal in an interactive story, a hover, a tooltip): animate only `transform` and `opacity`; `--duration-ui-short` (150ms) for hover/tooltip, `--duration-ui-medium`–`--duration-ui-long` (240–400ms) with `--ease-ui-enter` for reveals and state changes; stagger children ≤ 40ms apart and never more than five; one thing moves at a time. No bounce, elastic, or overshoot.
 - **Every transition has a reduced-motion path** to the same final state: wrap in `@media (prefers-reduced-motion: no-preference)` or check `matchMedia` before animating in JS.
 - **Motion is never the only cue.** Whatever a transition reveals must also be discoverable without it.
 

@@ -120,6 +120,7 @@ These skills share the brand MCP and `skills/_shared/brand-compliance.md`. Hand 
 | Slide deck, .pptx | `/pptx` | PptxGenJS output with its own QA loop; charts on slides follow this skill's chart grammar with hex resolved at build time. |
 | Standalone Chart.js chart, or a chart embedded in a `/report` | `/data-viz` | Ships the Chart.js skeleton and mode-aware `dataViz*` palette helpers. Chart *selection* still comes from `charts.md` here. |
 | Type-heavy page, landing page, editorial layout | `/typography` | Hierarchy table, three-tier weight system, spacing rhythm, 10 lockups, fluid type scale. |
+| Video, motion graphic, animated explainer, social clip, “video companion” for a study | `/video` | Owns time: storyboard, voiceover timing, choreography, honest data animation, captions, render to MP4. Every frame still obeys this skill’s physics, chart grammar, and research ethics. |
 
 The Müller-Brockmann grid discipline is absorbed into `references/grid-engineering.md`, so no external grid skill is required. If a dedicated grid-systems skill is installed anyway, it may extend that file for editorial/longform layouts — where either conflicts with the active brand file on palette or type, the brand file wins. If a D3 skill is installed, use its techniques restyled to the active brand's tokens.
 

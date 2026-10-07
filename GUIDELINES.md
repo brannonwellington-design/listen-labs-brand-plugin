@@ -454,6 +454,142 @@ Reserved tokens:
 
 ---
 
+## Motion
+
+Motion is information, not decoration. Something moves only to show a change, a sequence, a relationship, or where to look next. If removing the motion loses nothing, remove it.
+
+- **UI (productive):** Subtle and quick. Default is stillness; nothing animates on load, loops, or plays on its own. Used for state changes, reveals, tooltips.
+- **Video (expressive):** Visible and choreographed, timed to narration. Still Rams: one orchestrated moment per scene, no ornament.
+
+### Tokens
+
+- UI durations: `instant` 70ms · `quick` 110ms · `short` 150ms · `medium` 240ms · `long` 400ms
+- UI easing:
+  - `standard`: `cubic-bezier(0.2, 0, 0.38, 0.9)`
+  - `enter`: `cubic-bezier(0, 0, 0.38, 0.9)`
+  - `exit`: `cubic-bezier(0.2, 0, 1, 0.9)`
+- Video durations: `beat` 300ms · `move` 500ms · `scene` 700ms · `build` 1000ms · `count` 1600ms · `draw` 2000ms (snap to whole frames)
+- Video easing:
+  - `enter`: `cubic-bezier(0.05, 0.7, 0.1, 1)`
+  - `exit`: `cubic-bezier(0.3, 0, 0.8, 0.15)`
+  - `move`: `cubic-bezier(0.4, 0.14, 0.3, 1)`
+  - `settle`: `cubic-bezier(0, 0, 0, 1)`
+- Linear: Only for time itself: progress bars, playheads, constant rotation (Fluent).
+- No bounce, elastic, back/overshoot, or springs with visible oscillation — in either register. Data never overshoots its true value.
+
+### Choreography
+
+- Animate only transform and opacity (scale, translate, opacity). Never animate width, height, font-size, or layout properties; bars grow by scaleX/scaleY from their baseline origin.
+- Entrances ease out (enter), exits ease in (exit), moves between positions use move. Exits run about 75% of the matching entrance.
+- A single element's entrance never exceeds 800ms. Bigger travel or size change gets more time, never less (Carbon).
+- Stagger by importance, not source order — the first thing to move reads as most important. UI: ≤40ms apart, at most five. Video: 60–100ms apart, whole stagger ≤500ms.
+- One thing leads at a time: no two simultaneous motions compete for the eye (staging).
+- Scale animations interpolate perceptually (in log space), so growth doesn't appear to decelerate.
+- No idle motion — nothing breathes, floats, pulses, glows, or drifts to fill time. Stillness is load-bearing.
+- Motion is never the only cue: the final, settled state carries all the information.
+
+### Transitions
+
+| Transition | Duration | Use |
+|---|---|---|
+| cut | 0 | Default between video scenes. A hard cut re-focuses attention; text out-points land 2 frames before the cut (Netflix). |
+| fade | ui medium in / quick out; video beat | An element enters or leaves within a scene (label, annotation, caption). Opacity only. |
+| fade-through | video scene (outgoing 0–35%, incoming 35–100%, incoming scales 0.92→1) | Unrelated scenes or a new topic (M3 fade-through). |
+| shift | video move | Next step in a sequence: X axis for sequence and time, Y axis for drill-down (M3 shared axis). The exiting direction sets the entering direction. |
+| expand | video scene | A mark or card becomes its own detail view — the same entity grows into the next scene (M3 container transform). |
+| wipe | video move | Brand signature, reserved for a change of surface (blue ↔ paper light ↔ paper dark) or a chapter break. A circle iris from a meaningful point (the mark that becomes the next scene) or a straight line sweep along one axis, with a 2px leading edge in the incoming content color. |
+
+At most three transition types per video, each used with its one meaning. Under reduced motion every transition becomes a fade.
+
+**Reduced motion.** Every animation has a no-motion path to the same final state: transitions become fades of quick/beat length, counters show their final value, draws appear complete, staggers collapse. UI: respect prefers-reduced-motion. Video: offer a still/settled-frame variant or rely on the player's pause control (WCAG 2.2.2).
+
+### Video
+
+- **Frame rate:** 30fps default; 60fps only when fast motion needs it. Every time is authored in seconds and converted to frames (round), never typed as raw frame numbers.
+- **Determinism:** Every frame is a pure function of its time: no CSS transitions/animations, no wall-clock, no unseeded randomness, no network during render, chart-library animations disabled.
+- **Canvases:** Design at half the output resolution and render at 2× device scale, so the brand type scale (max 128px) reads at video size and stays on-scale.
+
+| Ratio | Output px | Design px |
+|---|---|---|
+| 9:16 | 1080×1920 | 540×960 |
+| 4:5 | 1080×1350 | 540×676 |
+| 1:1 | 1080×1080 | 540×540 |
+| 16:9 | 1920×1080 | 960×540 |
+
+- **Type minimums (design px):** display numeral 96px · headline 40px · supporting 24px · label 18px · source note 16px · credit line 16px. Design-canvas px (×2 at output). Picked from the brand type scale. Floors, not targets — scale contrast still leads.
+- **Safe zones** (design px, top / right / bottom / left). Inset from each edge on the design canvas. 'clean' = LinkedIn, web embeds, presentations (EBU R95 graphics-safe, 5%, rounded to the 4px grid). 'social' = Reels / Shorts / TikTok, where platform UI covers the frame (union of Meta and YouTube published zones; TikTok publishes templates only). Choose the profile per destination; when unknown, use social on 9:16.
+
+| Ratio | Clean | Social |
+|---|---|---|
+| 9:16 | 48 / 32 / 48 / 32 | 136 / 96 / 336 / 32 |
+| 4:5 | 36 / 32 / 36 / 32 | 36 / 32 / 36 / 32 |
+| 1:1 | 32 / 32 / 32 / 32 | 32 / 32 / 32 / 32 |
+| 16:9 | 28 / 48 / 28 / 48 | 28 / 48 / 28 / 48 |
+
+- **Pace:** kinetic — Default for short-form (≤60s) and anything without narration: fast cuts, one stat per scene, every scene a different visual form, built to be looped and rewatched. The viewer reads the must-read text (the number and its short line); labels, notes, and supporting lines are glanceable. Explainer — Default for voiced videos of 90s and longer: narration carries the story, scenes hold long enough for every word on screen to be read.
+- **Hold time:** kinetic `hold_s = max(1.2, 0.3 + 0.2 × must-read words + 0.3 × numbers). Must-read = the dominant number or claim and its one short line; labels, source notes, and secondary lines don't count. Calibrated on the first Listen Labs short (Seltzer, Oct 2026), which reviewers judged right — not on subtitle research.` Explainer `hold_s = max(1.0, 0.5 + 0.33 × words) + 1.0s per number on screen (+0.5s for a 5+ digit figure). Counts every word on screen.` Measured from when the entrance animation ends, not when it starts. Explainer: hold 0.3–0.75s of stillness before the key reveal. Kinetic: a beat of 0.2–0.3s is enough. Every scene's first motion starts 0.05–0.3s after the cut.
+- **Variety:** Never reuse a scene template or chart form within one video of 90s or less (one deliberate bookend excepted); in longer videos, not within the same chapter. Rotate the dominant element (numeral, chart, shape, quote), the layout anchor, and the surface from scene to scene. Two consecutive scenes that look alike read as a stall.
+- **Line weight:** One stroke weight for all line art in a video: 2px on the design canvas (4px at output). Reference lines, axes, tracks, stems, arcs, leaders, outline circles, strike-throughs, wipe edges, quote rules — all 2px. Hierarchy between lines comes from color tier (content color for the story, muted for context, grid color for structure), never from weight. Only exception: a mark so small that a 2px stroke would fill it (outline dots under 6px radius) — enlarge the mark rather than thin the line.
+- **Edges:** Every horizontal figure spans the content box, left margin to right margin (inside the safe zone): tracks, axes, strike lines, unit grids, rows of shapes. A label column that ends the figure aligns to the margin too (values right-aligned at the right margin). Room for labels is made by moving the labels — above the line, into a right-aligned value column — never by stopping the chart short. Circular and radial forms center on the frame's vertical axis. Anything that stops short of an edge stops at a named grid line on purpose; 'almost full width' is always a bug.
+- **Scene structure:** Each scene: build (0–30% of its duration) → breathe (30–70%, settled and readable) → resolve (70–100%, hold or hand off). In explainers, narration fills the breathe phase.
+- **Narration:** 2.3–2.5 spoken words per second (≈140–150 wpm); ≈2.0 for dense statistics. Measure real duration from TTS timestamps, never estimate. Voiceover is generated per scene first; each scene lasts as long as its narration plus its hold. Reveals are scheduled on word timestamps (the counter lands as its number is spoken).
+
+| Preset | Pace | Words | Scenes | Avg scene | Ideas | Default transition | Max on-screen words |
+|---|---|---|---|---|---|---|---|
+| snappy 30s | kinetic | 70 | 10–12 | 2–3s | hook + 8–10 stats or moments, one per scene, + end card | wipe on every surface change, cut otherwise | 6 must-read |
+| standard 90s | kinetic or explainer | 210 | 14–24 | 3–6s | hook + 3–5 findings, each with 2–4 supporting scenes + takeaway | cut / shift; wipe on surface change | 8 must-read (kinetic) · 12 (explainer) |
+| deep dive 4min | explainer | 540 | 30–45 in 4–6 chapters | 5–8s | method, findings by chapter, segments, verbatims, caveats | cut within chapters, wipe between | 15 |
+
+- **Captions:** ≤42 characters per line; ≤2 lines (≤3 on 9:16); ≤20 characters per second; each caption 0.8–7s on screen; start on speech onset, never more than 2s late; break after punctuation or before conjunctions, never between article and noun. Bottom by default, inside the safe zone, never over chart labels, values, or faces — move to the top when the data sits low. Set in Inter 400 at supporting size, content color on a solid surface band (no shadow, no outline).
+- **Audio:** Master to -14 to -16 LUFS integrated, true peak ≤ -1 dBTP for social/web; -23 LUFS (EBU R128) variant for broadcast. Platform targets are not officially published; this is the safe common range. Optional, quiet, unobtrusive. Bed sits roughly 6–12 dB under the voice (ducked whenever narration plays). Music is muted under participant clips. No sound effects as punchlines.
+- **Accessibility:**
+  - Captions on every video (WCAG 1.2.2) and a transcript alongside (1.2.8).
+  - Every number and takeaway that appears on screen is also spoken (integrated audio description, WCAG 1.2.5).
+  - Never more than three flashes per second. Flicker of thin lines counts by total area against the 341×256px limit (WCAG 2.3.1) — rapid redraws are designed out, not argued about.
+  - Text on video meets 4.5:1 (3:1 at 24px+ design size), same as the web floors.
+
+```css
+:root {
+  --duration-ui-instant: 70ms;
+  --duration-ui-quick: 110ms;
+  --duration-ui-short: 150ms;
+  --duration-ui-medium: 240ms;
+  --duration-ui-long: 400ms;
+  --duration-video-beat: 300ms;
+  --duration-video-move: 500ms;
+  --duration-video-scene: 700ms;
+  --duration-video-build: 1000ms;
+  --duration-video-count: 1600ms;
+  --duration-video-draw: 2000ms;
+  --ease-ui-standard: cubic-bezier(0.2, 0, 0.38, 0.9);
+  --ease-ui-enter: cubic-bezier(0, 0, 0.38, 0.9);
+  --ease-ui-exit: cubic-bezier(0.2, 0, 1, 0.9);
+  --ease-video-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-video-exit: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-video-move: cubic-bezier(0.4, 0.14, 0.3, 1);
+  --ease-video-settle: cubic-bezier(0, 0, 0, 1);
+}
+
+/* Reduced motion: every transition collapses to a short opacity fade — drop transforms in the component, keep the fade. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-ui-instant: 110ms;
+    --duration-ui-quick: 110ms;
+    --duration-ui-short: 110ms;
+    --duration-ui-medium: 110ms;
+    --duration-ui-long: 110ms;
+    --duration-video-beat: 110ms;
+    --duration-video-move: 110ms;
+    --duration-video-scene: 110ms;
+    --duration-video-build: 110ms;
+    --duration-video-count: 110ms;
+    --duration-video-draw: 110ms;
+  }
+}
+```
+
+---
+
 ## Medium-Specific Notes
 
 ### HTML / Web Artifacts

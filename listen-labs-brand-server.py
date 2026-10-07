@@ -24,6 +24,8 @@ from brand_data import (
     ART_DIRECTION,
     LOGO,
     COLORS,
+    MOTION,
+    MOTION_CSS,
     CSS_VARIABLES,
     DATA_VISUALIZATION,
     DATAVIZ_CSS,
@@ -152,8 +154,23 @@ TOOLS = [
         },
     },
     {
+        "name": "get_motion",
+        "description": "Get Listen Labs motion guidelines: duration and easing tokens for two registers ('ui' = productive, interactive artifacts; 'video' = expressive, motion-graphics video), choreography rules, the transition vocabulary, reduced-motion behavior, and — for video — canvases, type minimums, safe zones per aspect ratio, text hold-time formula, pacing presets (30s / 90s / 4min), narration rate, caption, audio, and accessibility rules. Includes a ready-to-paste CSS block of --duration-* and --ease-* tokens.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "register": {
+                    "type": "string",
+                    "enum": ["ui", "video", "all"],
+                    "description": "'ui' omits the video-only section; 'video' and 'all' return everything.",
+                    "default": "all",
+                },
+            },
+        },
+    },
+    {
         "name": "get_full_guidelines",
-        "description": "Get the complete Listen Labs brand guidelines in one call — colors, typography, spacing, icons, header, data visualization, art direction, and CSS variables. Use this when you need everything at once.",
+        "description": "Get the complete Listen Labs brand guidelines in one call — colors, typography, spacing, icons, header, data visualization, art direction, motion, and CSS variables. Use this when you need everything at once.",
         "inputSchema": {"type": "object", "properties": {}},
     },
 ]
@@ -278,6 +295,16 @@ def handle_get_logo(args):
     }, indent=2)
 
 
+def handle_get_motion(args):
+    register = (args or {}).get("register", "all")
+    out = {k: v for k, v in MOTION.items() if not (register == "ui" and k == "video")}
+    if register == "ui":
+        out["duration_ms"] = {"ui": MOTION["duration_ms"]["ui"]}
+        out["easing"] = {k: v for k, v in MOTION["easing"].items() if k != "video"}
+    out["css"] = MOTION_CSS
+    return json.dumps(out, indent=2)
+
+
 def handle_get_full_guidelines(_args):
     return json.dumps({
         "colors": COLORS,
@@ -290,6 +317,8 @@ def handle_get_full_guidelines(_args):
         "dataviz_rules": DATAVIZ_RULES,
         "dataviz_css": DATAVIZ_CSS,
         "art_direction": ART_DIRECTION,
+        "motion": MOTION,
+        "motion_css": MOTION_CSS,
         "logo": LOGO,
         "css_variables": CSS_VARIABLES,
     }, indent=2)
@@ -306,6 +335,7 @@ HANDLERS = {
     "get_dataviz_palettes": handle_get_dataviz_palettes,
     "get_art_direction": handle_get_art_direction,
     "get_logo": handle_get_logo,
+    "get_motion": handle_get_motion,
     "get_full_guidelines": handle_get_full_guidelines,
 }
 
