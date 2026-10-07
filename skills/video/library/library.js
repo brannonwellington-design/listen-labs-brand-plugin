@@ -105,6 +105,15 @@ const ringPt = (cx, cy, r, deg) => [cx + r * Math.cos(deg * Math.PI / 180), cy +
 const niceMax = (v, step) => Math.ceil(v / step) * step;
 
 /* ===== CORE · text ===== */
+// Quote layout: 40px lines if the block (lines + attribution) fits above the note clearance; otherwise one step down
+// the type scale (32px) and start higher. Long verbatims stay verbatim — the type adapts, never the words.
+function quoteLayout(text) {
+  const q = LAY.quote, limit = LAY.note - NOTE_SIZE * 0.73 - CLEAR;
+  for (const [size, lh] of [[40, 56], [32, 44]]) {
+    const lines = wrap(text, size, q.max), y0 = Math.min(q.y0, limit - (lines.length - 1) * lh - 40 - 18);
+    if (y0 >= LAY.credit + CLEAR + size || size === 32) return { lines, size, lh, x: q.x, y0: Math.max(y0, LAY.credit + CLEAR + size) };
+  }
+}
 const textW = (str, size) => String(str).replace(/&#160;/g, ' ').length * size * 0.56;
 function greedy(str, size, max) {
   const out = []; let line = '';
@@ -444,10 +453,10 @@ const TEMPLATES = {
   quote: { form: 'quote', fits: () => true, reveal: () => [0, 0],   // { text, who }
     draw(p, T, d) {
       let s = '';
-      const q = LAY.quote, lh = 56, lines = wrap(d.text, 40, q.max);
-      s += Lk(q.x - 24, q.y0 - 44, q.x - 24, q.y0 - 44 + lines.length * lh + 8, EASE.move(seg(p, 0, 0.5)), T.fg);
-      lines.forEach((ln, i) => { s += TX(q.x, q.y0 + i * lh, ln, 40, T.fg, rise(p, 0.1 + i * 0.12, 0.3)); });
-      s += TX(q.x, q.y0 + lines.length * lh + 40, d.who, 18, T.fg, rise(p, 0.8));
+      const q = quoteLayout(d.text), lh = q.lh, lines = q.lines;
+      s += Lk(q.x - 24, q.y0 - q.size - 4, q.x - 24, q.y0 - q.size - 4 + lines.length * lh + 8, EASE.move(seg(p, 0, 0.5)), T.fg);
+      lines.forEach((ln, i) => { s += TX(q.x, q.y0 + i * lh, ln, q.size, T.fg, rise(p, 0.1 + i * 0.12, 0.3)); });
+      s += TX(q.x, q.y0 + (lines.length - 1) * lh + 40, d.who, 18, T.fg, rise(p, 0.8));
       return s;
     }, anchor: () => [LAY.quote.x, LAY.quote.y0] },
   axisStrip: { form: 'axis', fits: () => true, reveal: () => [0.25, 1.2],   // { items: [{label, value, focus}], step? }
@@ -708,14 +717,14 @@ const QUOTE = {
     reveal: () => [0, 0],
     draw(p, T, d) {
       let s = '';
-      const q = LAY.quote, lh = 56, lines = wrap(d.text, 40, q.max);
-      s += Lk(q.x - 24, q.y0 - 44, q.x - 24, q.y0 - 44 + lines.length * lh + 8, EASE.move(seg(p, 0, 0.4)), T.fg);
+      const q = quoteLayout(d.text), lh = q.lh, lines = q.lines;
+      s += Lk(q.x - 24, q.y0 - q.size - 4, q.x - 24, q.y0 - q.size - 4 + lines.length * lh + 8, EASE.move(seg(p, 0, 0.4)), T.fg);
       let w = 0; const total = lines.reduce((a, l) => a + l.split(' ').length, 0), per = Math.min(0.09, 1.1 / total);
       lines.forEach((ln, i) => {
         const spans = ln.split(' ').map(word => { const op = EASE.enter(seg(p, 0.2 + w * per, 0.2 + w * per + 0.2)); w++; return `<tspan opacity="${r2(op)}">${word}</tspan>`; }).join(' ');
-        s += `<text x="${q.x}" y="${q.y0 + i * lh}" font-size="40" fill="${T.fg}" xml:space="preserve">${spans}</text>`;
+        s += `<text x="${q.x}" y="${q.y0 + i * lh}" font-size="${q.size}" fill="${T.fg}" xml:space="preserve">${spans}</text>`;
       });
-      s += TX(q.x, q.y0 + lines.length * lh + 40, d.who, 18, T.fg, rise(p, 0.3 + total * per));
+      s += TX(q.x, q.y0 + (lines.length - 1) * lh + 40, d.who, 18, T.fg, rise(p, 0.3 + total * per));
       return s;
     },
     anchor: () => [LAY.quote.x, LAY.quote.y0],

@@ -131,6 +131,8 @@ The build input for `scripts/build-video.mjs`. A scene names either a **family**
 
 ## 7. The validator (runs before audio and render)
 
+`scripts/validate-storyboard.mjs` implements this. Scenes cite facts in `facts: ["F12", …]` (IDs from `extract-facts.mjs`) and declare arithmetic in `derived: [{ "value": 3, "op": "ratio", "of": [148, 46.7], "round": "floor" }]` (ops: ratio, difference, sum, count). Allowed numbers are the cited facts' values, counts, bases, series items, statement figures, the study n, and declared derivations. It was tested against planted errors (an invented 95%, a wrong ratio, a paraphrased quote, an overlong note, an unsourced spoken number, a wrong data shape) and caught all six.
+
 Reject the storyboard and fix it when any of these fail:
 
 - A number in `on_screen` or `narration` that does not exactly match a cited fact (after spoken-number normalization: “sixty-three percent” ↔ 63%).
