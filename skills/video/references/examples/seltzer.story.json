@@ -6,7 +6,6 @@
   "scenes": [
     {
       "id": "hook",
-      "template": "bloomCount",
       "surface": "blue",
       "dur": 2.2,
       "data": {
@@ -20,17 +19,13 @@
         "l2": "One pack reaches 63% of them.",
         "l2Color": "fg2Large"
       },
-      "note": "Seltzer Water Flavor Preferences · n&#160;=&#160;300"
+      "note": "Seltzer Water Flavor Preferences · n&#160;=&#160;300",
+      "family": "count"
     },
     {
       "id": "weekly",
       "family": "ranking",
-      "surface": "light",
       "dur": 2.6,
-      "enter": {
-        "type": "circle",
-        "at": "prev"
-      },
       "data": {
         "unit": "%",
         "items": [
@@ -65,12 +60,7 @@
     {
       "id": "twenty",
       "template": "nodeRing",
-      "surface": "dark",
       "dur": 2.0,
-      "enter": {
-        "type": "line",
-        "dir": "down"
-      },
       "data": {
         "n": 20,
         "picks": [
@@ -91,12 +81,7 @@
     {
       "id": "maxdiff",
       "family": "ranking",
-      "surface": "blue",
       "dur": 3.0,
-      "enter": {
-        "type": "circle",
-        "at": "prev"
-      },
       "data": {
         "unit": "",
         "ref": {
@@ -142,13 +127,7 @@
     },
     {
       "id": "spread",
-      "template": "areaPair",
-      "surface": "light",
       "dur": 2.0,
-      "enter": {
-        "type": "line",
-        "dir": "right"
-      },
       "data": {
         "a": {
           "label": "Strawberry",
@@ -168,17 +147,13 @@
         "l1": "the appeal, top to bottom",
         "l2": "Flavor choice is the whole game."
       },
-      "note": "Circle area ∝ MaxDiff index (148 vs 46.7)"
+      "note": "MaxDiff index · Strawberry 148 vs Cucumber 46.7",
+      "family": "comparison"
     },
     {
       "id": "repel",
       "template": "strikeRow",
-      "surface": "dark",
       "dur": 2.4,
-      "enter": {
-        "type": "circle",
-        "at": "prev"
-      },
       "data": {
         "header": "Five flavors that repel",
         "items": [
@@ -201,28 +176,18 @@
     },
     {
       "id": "quote",
-      "template": "quote",
-      "surface": "blue",
       "dur": 2.2,
-      "enter": {
-        "type": "line",
-        "dir": "up"
-      },
       "data": {
         "text": "“Placeholder — the exact verbatim goes here, unedited.”",
         "who": "— P#, participant label (placeholder)"
       },
-      "note": "Verbatim from interview · n&#160;=&#160;300"
+      "note": "Verbatim from interview · n&#160;=&#160;300",
+      "family": "quote"
     },
     {
       "id": "selfpick",
       "family": "ranking",
-      "surface": "light",
       "dur": 3.0,
-      "enter": {
-        "type": "circle",
-        "at": "prev"
-      },
       "data": {
         "unit": "%",
         "items": [
@@ -260,13 +225,7 @@
     },
     {
       "id": "heavy",
-      "template": "axisStrip",
-      "surface": "dark",
       "dur": 2.6,
-      "enter": {
-        "type": "line",
-        "dir": "down"
-      },
       "data": {
         "items": [
           {
@@ -295,17 +254,13 @@
         "l1": "Orange rises with daily fans",
         "l2": "Nearly catching Black Cherry."
       },
-      "note": "Daily drinkers, n&#160;=&#160;154 · index, 100&#160;=&#160;average"
+      "note": "Daily drinkers, n&#160;=&#160;154 · index, 100&#160;=&#160;average",
+      "family": "scale"
     },
     {
       "id": "combos",
       "template": "comboRing",
-      "surface": "blue",
       "dur": 2.0,
-      "enter": {
-        "type": "circle",
-        "at": "prev"
-      },
       "data": {
         "n": 20,
         "runners": [
@@ -348,12 +303,7 @@
     {
       "id": "reach",
       "family": "partWhole",
-      "surface": "light",
       "dur": 3.4,
-      "enter": {
-        "type": "circle",
-        "at": "prev"
-      },
       "data": {
         "pct": 63,
         "count": 188,
@@ -393,5 +343,5 @@
       }
     }
   ],
-  "_comment": "Seltzer Water Flavor Preferences (Listen Labs demo study, n = 300). Build: node scripts/build-video.mjs references/examples/seltzer.story.json --history <history.json>. Verbatim removed for the public repo."
+  "_comment": "Seltzer Water Flavor Preferences (Listen Labs demo study, n = 300). Build: node scripts/build-video.mjs references/examples/seltzer.story.json --history <history.json>. Family scenes leave the execution to the selector; surfaces and wipes left open are assigned by seed. Verbatim removed for the public repo."
 }

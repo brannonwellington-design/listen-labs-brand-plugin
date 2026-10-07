@@ -114,7 +114,16 @@ The build input for `scripts/build-video.mjs`. A scene names either a **family**
 }
 ```
 
-- **Family data shapes.** `ranking`: `{ items: [{label, value}], unit, ref?: {value, label}, gap?: {after, label}, lead? }`. `partWhole`: `{ pct, count?, base?, partLabel?, restLabel? }`. Executions declare what they need (`fits`): unit grids need a count and base ≤ 400; lollipops need a reference; radial rings need ≤ 4 shares of one base; area-true circles refuse a gap row.
+- **Family data shapes.**
+  - `ranking`: `{ items: [{label, value}], unit, ref?: {value, label}, gap?: {after, label}, lead? }`
+  - `partWhole`: `{ pct, count?, base?, partLabel?, restLabel? }`
+  - `comparison`: `{ a: {label, value}, b: {label, value}, unit? }`
+  - `scale`: `{ items: [{label, value, focus?}], unit?, step? }` — several values on one scale
+  - `quote`: `{ text, who }` · `count`: `{ n }`
+  Executions declare what they need (`fits`): unit grids need a count and base ≤ 400; lollipops need a reference; radial rings and half gauges need ≤ 4 shares of one base; area-true circles and spokes refuse a gap row; waffles need a whole-number percent; vertical stems need every label word to fit its column at the narrowest ratio.
+- **Notes describe the data, never the encoding.** The storyboard can't know which execution will be chosen, so a note like "circle area ∝ value" belongs to the execution that draws circles (it labels itself). Notes carry source, base, and caveats only.
+- **Surfaces and wipes** may be left out of a scene: the build assigns them from a seeded rotation (no surface twice in a row; wipes vary; same surface back to back cuts). Set them only when the story needs a specific beat.
+- **A family can run out.** If a video asks for more scenes of one family than it has fitting executions, the build reuses the least-used one and says so — the fix is a new execution or a different form for that finding.
 - **Headline counters** land with their execution's data reveal automatically; `big.at` overrides, `big.count: false` shows a static figure (e.g. a ratio like `3×`).
 - **Wipes**: `enter.at: "prev"` starts a circle wipe from the previous scene's anchor mark (whatever execution was chosen); `"center"` from the figure box center.
 - **History**: `{ "<historyKey>": [["weekly=ranking.columnDots", …] /* newest first */] }`. The build reads it, picks the least recently used fitting execution per scene (hardest penalty for the same scene's last execution), and prepends the new picks. Variety is bounded by the library: add executions to a family before a customer can see a repeat.

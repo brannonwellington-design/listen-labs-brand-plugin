@@ -3,10 +3,13 @@
 
    CORE      tokens, surfaces, aspect layouts, drawing helpers, labels, headline block
    FAMILIES  each data shape has several executions; the selector picks one per scene
-             ranking    · dotBars · lollipopRef · radialBars · sizedCircles · columnDots
-             partWhole  · unitGrid · ringFill · bloomFill · splitLine
-             single-execution templates: bloomCount · nodeRing · areaPair · strikeRow ·
-             quote · axisStrip · comboRing · endRow
+             ranking    · dotBars · lollipopRef · radialBars · sizedCircles · columnDots · spokes · halfGauges
+             partWhole  · unitGrid · ringFill · bloomFill · splitLine · waffle · clusterSplit
+             comparison · areaPair · mirrorBars · twinStems
+             scale      · axisStrip · columnStrip
+             quote      · lineRise · wordBuild
+             count      · bloomCount · gridCount · ringsCount
+             story-specific templates: nodeRing · strikeRow · comboRing · endRow
    SELECTOR  fit filter → no repeats in the video → penalty for recent use → seeded tie-break
    ENGINE    timeline, wipes, layer, player
 
@@ -35,9 +38,9 @@ const EASE = { enter: bezier(0.05, 0.7, 0.1, 1), move: bezier(0.4, 0.14, 0.3, 1)
 
 /* ===== CORE · surfaces (blue = brand surface, Paper light, Paper dark) ===== */
 const TH = {
-  blue:  { bg: '#0021CC', fg: '#F9F4EB', fg2: '#F9F4EB', fg2Large: '#9CA3C9', grid: '#7A85B8', accent: '#F9F4EB', mute: '#9CA3C9', onAccent: '#0021CC' },
-  light: { bg: '#F9F4EB', fg: '#120F08', fg2: '#6B6861', fg2Large: '#6B6861', grid: '#B6B4AF', accent: '#0021CC', mute: '#8D8D8D', onAccent: '#F9F4EB' },
-  dark:  { bg: '#130F06', fg: '#F9F4EB', fg2: '#9E9B94', fg2Large: '#9E9B94', grid: '#504E49', accent: '#3354FF', mute: '#8D8D8D', onAccent: '#F9F4EB' },
+  blue:  { bg: '#0021CC', fg: '#F9F4EB', fg2: '#F9F4EB', fg2Large: '#9CA3C9', grid: '#7A85B8', accent: '#F9F4EB', mute: '#9CA3C9', onAccent: '#0021CC', onMute: '#0021CC' },
+  light: { bg: '#F9F4EB', fg: '#120F08', fg2: '#6B6861', fg2Large: '#6B6861', grid: '#B6B4AF', accent: '#0021CC', mute: '#8D8D8D', onAccent: '#F9F4EB', onMute: '#120F08' },
+  dark:  { bg: '#130F06', fg: '#F9F4EB', fg2: '#9E9B94', fg2Large: '#9E9B94', grid: '#504E49', accent: '#3354FF', mute: '#8D8D8D', onAccent: '#F9F4EB', onMute: '#130F06' },
 };
 
 /* ===== CORE · aspect layouts (text column + figure box per ratio; clean safe zones; credit zone) ===== */
@@ -58,6 +61,8 @@ const ASPECTS = {
   },
 };
 const CREDIT_SIZE = 14, NOTE_SIZE = 16, CLEAR = 32;
+// Fit checks run at build time, before a ratio is chosen: width-dependent executions must fit the narrowest figure box
+const FIG_MIN_W = Math.min(...Object.values(ASPECTS).map(a => a.fig.x1 - a.fig.x0));
 let ASPECT, LAY, W, H, M, R, F;
 function initLayout(aspect) {
   ASPECT = ASPECTS[aspect] ? aspect : '9:16';
@@ -254,10 +259,11 @@ const RANKING = {
     draw(p, T, d) {
       let s = '';
       const g = this.geom(d), lead = d.lead ?? 0, lab = rowLabels(g.xs, d.items.map(i => i.label));
+      s += TX(F.x0, F.y0 + 14, `Circle area${NBSP}∝${NBSP}value`, 16, T.fg2, { op: seg(p, 0.6, 0.9) });   // encoding legend comes from the execution
       d.items.forEach((it, i) => {
         const k = EASE.enter(seg(p, 0.2 + i * 0.09, 0.75 + i * 0.09)), r = g.rs[i];
         s += C(g.xs[i], g.base - r, r * pscale(k), { fill: i === lead ? T.accent : T.mute, op: k });
-        if (r >= 22) s += TX(g.xs[i], g.base - r + 6, rankFmt(d, it.value), 18, i === lead ? T.onAccent : T.bg, { anchor: 'middle', op: seg(p, 0.6 + i * 0.09, 0.9 + i * 0.09) });
+        if (r >= 22) s += TX(g.xs[i], g.base - r + 6, rankFmt(d, it.value), 18, i === lead ? T.onAccent : T.onMute, { anchor: 'middle', op: seg(p, 0.6 + i * 0.09, 0.9 + i * 0.09) });
         else s += TX(g.xs[i], g.base - 2 * r - 12, rankFmt(d, it.value), 18, T.fg, { anchor: 'middle', op: seg(p, 0.6 + i * 0.09, 0.9 + i * 0.09) });
         s += TX(lab[i].x, g.base + 36 + lab[i].tier * 26, it.label, 18, T.fg, { anchor: lab[i].anchor, ...rise(p, 0.5 + i * 0.08) });
       });
@@ -267,7 +273,7 @@ const RANKING = {
   },
   columnDots: {   // vertical stems from a shared baseline, dot and value on top, names below
     form: 'columns',
-    fits: d => d.items.length <= 6,
+    fits: d => { const cw = FIG_MIN_W / (d.items.length + (d.gap ? 1 : 0)); return d.items.length <= 6 && d.items.every(i => i.label.split(' ').every(w => w.length * 18 * 0.56 <= cw - 8)) && (!d.gap || d.gap.label.replace(/&#160;/g, ' ').split(' ').every(w => w.length * 18 * 0.56 <= cw - 8)); },
     reveal: () => [0.3, 1.3],
     draw(p, T, d) {
       let s = '';
@@ -413,6 +419,7 @@ const TEMPLATES = {
     draw(p, T, d) {
       let s = '';
       const g = this.geom(d), kb = EASE.enter(seg(p, 0.1, 0.7)), ks = EASE.enter(seg(p, 0.35, 0.95));
+      s += TX(F.x1, F.y0 + 14, `Circle area${NBSP}∝${NBSP}value`, 16, T.fg2, { anchor: 'end', op: seg(p, 0.6, 0.9) });   // encoding legend comes from the execution
       s += C(g.bx, g.by, g.big * pscale(kb), { fill: T.accent, op: kb });
       s += C(g.sx, g.sy, g.small * pscale(ks), { fill: T.mute, op: ks });
       s += TX(g.bx, g.base + 36, d.a.label, 18, T.fg, { anchor: 'middle', ...rise(p, 0.4) });
@@ -506,7 +513,251 @@ const TEMPLATES = {
     }, anchor: () => [F.cx, F.cy] },
 };
 
-const FAMILIES = { ranking: RANKING, partWhole: PART_WHOLE };
+
+/* ---------- ranking, more executions ---------- */
+Object.assign(RANKING, {
+  spokes: {   // values as spokes from a hub, longest = largest; labels outside the ring
+    form: 'spokes',
+    fits: d => d.items.length >= 3 && d.items.length <= 8 && !d.gap,
+    reveal: () => [0.3, 1.3],
+    geom(d) {
+      const n = d.items.length, labW = Math.max(...d.items.map(i => Math.max(textW(i.label, 18), textW(rankFmt(d, i.value), 18))));
+      const rmax = Math.max(60, Math.min(F.h / 2 - 52, F.w / 2 - labW - 22)), hub = 10, max = rankDomain(d);
+      return { n, rmax, hub, max, ang: i => -90 + i * 360 / n, rad: v => hub + v / max * (rmax - hub) };
+    },
+    draw(p, T, d) {
+      let s = '';
+      const g = this.geom(d), lead = d.lead ?? 0;
+      s += C(F.cx, F.cy, g.rmax, { stroke: T.grid, op: seg(p, 0.05, 0.4) });                    // the scale’s full extent
+      if (d.ref) { s += C(F.cx, F.cy, g.rad(d.ref.value), { stroke: T.grid, op: seg(p, 0.15, 0.5) }); }
+      d.items.forEach((it, i) => {
+        const a = g.ang(i), k = EASE.settle(seg(p, 0.3 + i * 0.07, 1.1 + i * 0.07)), isLead = i === lead;
+        const [x1, y1] = ringPt(F.cx, F.cy, g.hub, a), [x2, y2] = ringPt(F.cx, F.cy, g.rad(it.value), a);
+        s += Lk(x1, y1, x2, y2, k, isLead ? T.accent : T.mute);
+        if (k > 0) s += C(lerp(x1, x2, k), lerp(y1, y2, k), isLead ? 9 : 7, { fill: isLead ? T.accent : T.mute });
+        const [lx, ly] = ringPt(F.cx, F.cy, g.rmax + 16, a), c = Math.cos(a * Math.PI / 180);
+        const sn = Math.sin(a * Math.PI / 180), anchor = Math.abs(c) < 0.2 ? 'middle' : c > 0 ? 'start' : 'end', dy = sn < -0.8 ? -24 : sn > 0.8 ? 16 : -4;
+        s += TX(lx, ly + dy, it.label, 18, isLead ? T.fg : T.fg2, { anchor, ...rise(p, 0.4 + i * 0.07) });
+        s += TX(lx, ly + dy + 20, rankFmt(d, it.value, k), 18, isLead ? T.fg : T.fg2, { anchor, op: seg(p, 0.6 + i * 0.07, 0.9 + i * 0.07) });
+      });
+      s += C(F.cx, F.cy, g.hub, { fill: T.fg, op: seg(p, 0.1, 0.3) });
+      return s;
+    },
+    anchor(d) { const g = this.geom(d), i = d.lead ?? 0; return ringPt(F.cx, F.cy, g.rad(d.items[i].value), g.ang(i)); },
+  },
+  halfGauges: {   // small multiples of 180° gauges, two per row; value inside, name below
+    form: 'gauges',
+    fits: d => d.unit === '%' && d.items.length >= 2 && d.items.length <= 4 && !d.gap && !d.ref && d.items.every(i => i.value <= 100),
+    reveal: () => [0.3, 1.3],
+    geom(d) {
+      const cols = 2, rows = Math.ceil(d.items.length / cols), cw = F.w / cols, ch = F.h / rows;
+      const r = Math.min(cw / 2 - 14, ch - 70);
+      return { cols, rows, cw, ch, r, at: i => [F.x0 + (i % cols + 0.5) * cw, F.y0 + Math.floor(i / cols) * ch + (ch + r) / 2 - 14] };
+    },
+    draw(p, T, d) {
+      let s = '';
+      const g = this.geom(d), lead = d.lead ?? 0;
+      d.items.forEach((it, i) => {
+        const [cx, cy] = g.at(i), k = EASE.settle(seg(p, 0.3 + i * 0.1, 1.2 + i * 0.1)), isLead = i === lead;
+        if (seg(p, 0.05, 0.35) > 0) s += `<path d="${arcPath(cx, cy, g.r, -90, 90)}" fill="none" stroke="${T.grid}" stroke-width="${LINE}" opacity="${r2(seg(p, 0.05, 0.35))}"/>`;
+        const sweep = 180 * it.value / 100 * k;
+        if (sweep > 0.5) s += `<path d="${arcPath(cx, cy, g.r, -90, -90 + sweep)}" fill="none" stroke="${isLead ? T.accent : T.mute}" stroke-width="${LINE}"/>`;
+        if (k > 0) { const [ex, ey] = arcEnd(cx, cy, g.r, -90 + sweep); s += C(ex, ey, isLead ? 8 : 6, { fill: isLead ? T.accent : T.mute }); }
+        s += TX(cx, cy - 8, rankFmt(d, it.value, k), 24, isLead ? T.fg : T.fg2, { anchor: 'middle', op: seg(p, 0.3 + i * 0.1, 0.6 + i * 0.1) });
+        s += TX(cx, cy + 30, it.label, 18, isLead ? T.fg : T.fg2, { anchor: 'middle', ...rise(p, 0.2 + i * 0.08) });
+      });
+      return s;
+    },
+    anchor(d) { return this.geom(d).at(d.lead ?? 0); },
+  },
+});
+
+/* ---------- part of a whole, more executions ---------- */
+Object.assign(PART_WHOLE, {
+  waffle: {   // 20 × 5 squares edge to edge, each square = 1%
+    form: 'squares',
+    fits: d => Number.isInteger(d.pct) && d.pct >= 0 && d.pct <= 100,
+    reveal: () => [0.6, 1.6],
+    geom() { const cell = F.w / 20, side = cell - 6; return { cell, side, y0: F.cy - 2.5 * cell }; },
+    draw(p, T, d) {
+      let s = '';
+      const g = this.geom(), filled = Math.round(d.pct * EASE.settle(seg(p, 0.6, 1.6)));
+      for (let i = 0; i < 100; i++) {
+        const col = i % 20, row = Math.floor(i / 20), x = F.x0 + col * g.cell + 3, y = g.y0 + row * g.cell + 3, a = EASE.enter(seg(p, 0.05 + i * 0.004, 0.35 + i * 0.004));
+        if (a <= 0) continue;
+        s += i < filled
+          ? `<rect x="${r2(x)}" y="${r2(y)}" width="${r2(g.side)}" height="${r2(g.side)}" rx="2" fill="${T.accent}" opacity="${r2(a)}"/>`
+          : `<rect x="${r2(x + 1)}" y="${r2(y + 1)}" width="${r2(g.side - 2)}" height="${r2(g.side - 2)}" rx="2" fill="none" stroke="${T.mute}" stroke-width="${LINE}" opacity="${r2(a)}"/>`;
+      }
+      s += TX(F.x0, g.y0 + 5 * g.cell + 34, `Each square${NBSP}=${NBSP}1%${d.count != null ? ` · ${d.count} of ${d.base}` : ''}`, 18, T.fg2, { op: seg(p, 1.2, 1.5) });
+      return s;
+    },
+    anchor(d) { const g = this.geom(), i = Math.max(0, d.pct - 1); return [F.x0 + (i % 20 + 0.5) * g.cell, g.y0 + (Math.floor(i / 20) + 0.5) * g.cell]; },
+  },
+  clusterSplit: {   // everyone gathers in one cluster, then the part and the rest separate into two
+    form: 'clusters',
+    fits: d => d.count != null && d.base != null && d.base <= 400 && d.count > 0 && d.count < d.base,
+    reveal: () => [0.9, 1.9],
+    geom(d) {
+      const rest = d.base - d.count, sMax = Math.min((F.w / 4 - 10) / Math.sqrt(Math.max(d.count, rest)), (F.h / 2 - 50) / Math.sqrt(d.base));
+      const s = Math.min(11, sMax);
+      return { s, lx: F.x0 + F.w * 0.25, rx: F.x0 + F.w * 0.75, cy: F.cy - 16, pos: (i, cx) => { const a = i * GOLDEN, rr = s * Math.sqrt(i + 0.5); return [cx + Math.cos(a) * rr, F.cy - 16 + Math.sin(a) * rr]; } };
+    },
+    draw(p, T, d) {
+      let s = '';
+      const g = this.geom(d), k = EASE.move(seg(p, 0.9, 1.9)), dotR = Math.min(4, g.s * 0.36);
+      for (let i = 0; i < d.base; i++) {
+        const a = EASE.enter(seg(p, 0.1 + (i / d.base) * 0.5, 0.4 + (i / d.base) * 0.5));
+        if (a <= 0) continue;
+        const part = i < d.count, [x0, y0] = g.pos(i, F.cx), [x1, y1] = part ? g.pos(i, g.lx) : g.pos(i - d.count, g.rx);
+        s += C(lerp(x0, x1, k), lerp(y0, y1, k), dotR, { fill: part && k > 0 ? T.accent : T.mute, op: a });
+      }
+      const lab = seg(p, 1.6, 1.9), yl = g.cy + g.s * Math.sqrt(Math.max(d.count, d.base - d.count)) + 34;
+      s += TX(g.lx, yl, `${d.count} ${d.partLabel || ''}`.trim(), 18, T.fg, { anchor: 'middle', op: lab });
+      s += TX(g.rx, yl, `${d.base - d.count} ${d.restLabel || ''}`.trim(), 18, T.fg2, { anchor: 'middle', op: lab });
+      return s;
+    },
+    anchor(d) { return [this.geom(d).lx, F.cy - 16]; },
+  },
+});
+
+/* ---------- comparison: { a: {label, value}, b: {label, value}, unit? } ---------- */
+const COMPARISON = {
+  areaPair: TEMPLATES.areaPair,
+  mirrorBars: {   // two bars from a shared center axis, length ∝ value; the larger reaches its edge
+    form: 'mirror',
+    fits: d => d.a.value >= 0 && d.b.value >= 0,
+    reveal: () => [0.3, 1.2],
+    draw(p, T, d) {
+      let s = '';
+      const max = Math.max(d.a.value, d.b.value), half = F.w / 2, y = F.cy, k = EASE.settle(seg(p, 0.3, 1.2));
+      const la = d.a.value / max * half, lb = d.b.value / max * half;
+      s += Lk(F.cx, y - 40, F.cx, y + 40, EASE.move(seg(p, 0.05, 0.35)), T.grid);
+      s += Lk(F.cx, y, F.cx - la, y, k, T.accent); s += Lk(F.cx, y, F.cx + lb, y, k, T.mute);
+      if (k > 0) { s += C(F.cx - la * k, y, 10, { fill: T.accent }); s += C(F.cx + lb * k, y, 8, { fill: T.mute }); }
+      s += TX(F.cx - la, y - 28, d.a.label, 18, T.fg, { anchor: la > half - 40 ? 'start' : 'middle', ...rise(p, 0.5) });
+      s += TX(F.cx - la, y + 44, fmtVal(d.a.value, d.unit || ''), 24, T.fg, { anchor: la > half - 40 ? 'start' : 'middle', op: seg(p, 1.0, 1.3) });
+      s += TX(F.cx + lb, y - 28, d.b.label, 18, T.fg, { anchor: lb > half - 40 ? 'end' : 'middle', ...rise(p, 0.6) });
+      s += TX(F.cx + lb, y + 44, fmtVal(d.b.value, d.unit || ''), 24, T.fg2, { anchor: lb > half - 40 ? 'end' : 'middle', op: seg(p, 1.0, 1.3) });
+      return s;
+    },
+    anchor(d) { const max = Math.max(d.a.value, d.b.value); return [F.cx + d.b.value / max * F.w / 2, F.cy]; },
+  },
+  twinStems: {   // two vertical stems on a true baseline; values above, names below
+    form: 'columns',
+    fits: d => d.a.value >= 0 && d.b.value >= 0,
+    reveal: () => [0.3, 1.2],
+    draw(p, T, d) {
+      let s = '';
+      const base = F.y1 - 56, top = F.y0 + 40, max = Math.max(d.a.value, d.b.value), Y = v => base - v / max * (base - top);
+      const xs = [F.x0 + F.w * 0.3, F.x0 + F.w * 0.7], k = EASE.settle(seg(p, 0.3, 1.2));
+      s += Lk(F.x0, base, F.x1, base, EASE.move(seg(p, 0.05, 0.45)), T.grid);
+      [d.a, d.b].forEach((it, i) => {
+        const col = i === 0 ? T.accent : T.mute, y = lerp(base, Y(it.value), k);
+        s += Lk(xs[i], base, xs[i], Y(it.value), k, col);
+        if (k > 0) s += C(xs[i], y, i === 0 ? 10 : 8, { fill: col });
+        s += TX(xs[i], Y(it.value) - 20, fmtVal(it.value, d.unit || ''), 24, i === 0 ? T.fg : T.fg2, { anchor: 'middle', op: seg(p, 0.9, 1.2) });
+        s += TX(xs[i], base + 32, it.label, 18, T.fg, { anchor: 'middle', ...rise(p, 0.2 + i * 0.1) });
+      });
+      return s;
+    },
+    anchor(d) { return [F.x0 + F.w * 0.7, F.y1 - 56]; },
+  },
+};
+
+/* ---------- scale: { items: [{label, value, focus}], unit?, step? } — several values on one scale ---------- */
+const SCALE = {
+  axisStrip: TEMPLATES.axisStrip,
+  columnStrip: {   // a vertical scale on the left edge; dots on it, labels spread to the right without colliding
+    form: 'vaxis',
+    fits: d => d.items.length >= 2 && d.items.length <= 6,
+    reveal: () => [0.25, 1.2],
+    geom(d) {
+      const step = d.step || 10, vals = d.items.map(i => i.value), lo = Math.floor(Math.min(...vals) / step) * step, hi = niceMax(Math.max(...vals), step);
+      const top = F.y0 + 16, bot = F.y1 - 16, Y = v => bot - (v - lo) / (hi - lo) * (bot - top), ax = F.x0 + 8;
+      const order = d.items.map((it, i) => ({ i, y: Y(it.value) })).sort((a, b) => a.y - b.y), ly = [];
+      order.forEach((o, j) => { ly[o.i] = j === 0 ? Math.max(top + 6, o.y) : Math.max(o.y, ly[order[j - 1].i] + 30); });
+      const over = Math.max(0, ...d.items.map((_, i) => ly[i] - (bot - 6)));
+      if (over > 0) d.items.forEach((_, i) => { ly[i] -= over; });
+      return { lo, hi, top, bot, Y, ax, ly, lx: F.x0 + 64 };
+    },
+    draw(p, T, d) {
+      let s = '';
+      const g = this.geom(d);
+      s += Lk(g.ax, g.bot, g.ax, g.top, EASE.move(seg(p, 0.05, 0.45)), T.grid);
+      d.items.forEach((it, i) => {
+        const k = EASE.enter(seg(p, 0.25 + i * 0.1, 0.85 + i * 0.1)), y = lerp(g.bot, g.Y(it.value), k), lab = seg(p, 0.7 + i * 0.1, 1.0 + i * 0.1);
+        s += Lk(g.ax + 12, g.Y(it.value), g.lx - 10, g.ly[i] - 6, lab, T.grid);
+        if (k > 0) s += it.focus ? C(g.ax, y, 10, { fill: T.accent }) : C(g.ax, y, 7, { fill: T.bg, stroke: T.fg });
+        s += TX(g.lx, g.ly[i], `${it.label}`, 18, T.fg, { op: lab });
+        s += TX(F.x1, g.ly[i], fmtVal(it.value, d.unit || ''), 18, it.focus ? T.fg : T.fg2, { anchor: 'end', op: lab });
+      });
+      return s;
+    },
+    anchor(d) { const g = this.geom(d), f = d.items.find(i => i.focus) || d.items[0]; return [g.ax, g.Y(f.value)]; },
+  },
+};
+
+/* ---------- quote: { text, who } ---------- */
+const QUOTE = {
+  lineRise: TEMPLATES.quote,
+  wordBuild: {   // words land one at a time in reading order; the rule draws first; attribution last
+    form: 'quote',
+    fits: d => d.text.split(' ').length <= 30,
+    reveal: () => [0, 0],
+    draw(p, T, d) {
+      let s = '';
+      const q = LAY.quote, lh = 56, lines = wrap(d.text, 40, q.max);
+      s += Lk(q.x - 24, q.y0 - 44, q.x - 24, q.y0 - 44 + lines.length * lh + 8, EASE.move(seg(p, 0, 0.4)), T.fg);
+      let w = 0; const total = lines.reduce((a, l) => a + l.split(' ').length, 0), per = Math.min(0.09, 1.1 / total);
+      lines.forEach((ln, i) => {
+        const spans = ln.split(' ').map(word => { const op = EASE.enter(seg(p, 0.2 + w * per, 0.2 + w * per + 0.2)); w++; return `<tspan opacity="${r2(op)}">${word}</tspan>`; }).join(' ');
+        s += `<text x="${q.x}" y="${q.y0 + i * lh}" font-size="40" fill="${T.fg}" xml:space="preserve">${spans}</text>`;
+      });
+      s += TX(q.x, q.y0 + lines.length * lh + 40, d.who, 18, T.fg, rise(p, 0.3 + total * per));
+      return s;
+    },
+    anchor: () => [LAY.quote.x, LAY.quote.y0],
+  },
+};
+
+/* ---------- count: { n } — “this many people”, as a field of n dots ---------- */
+const COUNT = {
+  bloomCount: TEMPLATES.bloomCount,
+  gridCount: {   // n dots fill the figure box row by row, edge to edge
+    form: 'grid',
+    fits: d => d.n <= 400,
+    reveal: () => [0.1, 1.1],
+    draw(p, T, d) {
+      let s = '';
+      const cols = 20, rows = Math.ceil(d.n / cols), dotR = 5, gap = Math.min((F.w - 2 * dotR) / (cols - 1), (F.h - 2 * dotR) / (rows - 1));
+      const gy = F.cy - (rows - 1) * gap / 2, shown = d.n * EASE.settle(seg(p, 0.1, 1.1));
+      for (let i = 0; i < Math.ceil(shown); i++) s += C(F.x0 + dotR + (i % cols) * gap, gy + Math.floor(i / cols) * gap, dotR, { fill: T.fg, op: clamp01(shown - i) });
+      return s;
+    },
+    anchor: () => [F.cx, F.cy],
+  },
+  ringsCount: {   // n dots on concentric rings around the figure center, filling outward
+    form: 'orbits',
+    fits: d => d.n <= 400,
+    reveal: () => [0.1, 1.1],
+    geom(d) {
+      const rmax = Math.min(F.w, F.h) / 2 - 8, pts = []; let r = 0, ring = 0;
+      while (pts.length < d.n) { const cnt = ring === 0 ? 1 : Math.floor(2 * Math.PI * r / 15); for (let j = 0; j < cnt && pts.length < d.n; j++) pts.push([r, j * 360 / cnt + ring * 7]); ring++; r = ring * 15; }
+      const sc = Math.min(1, rmax / Math.max(1, r - 15));
+      return pts.map(([rr, a]) => ringPt(F.cx, F.cy, rr * sc, a - 90));
+    },
+    draw(p, T, d) {
+      let s = '';
+      const pts = this.geom(d), shown = d.n * EASE.settle(seg(p, 0.1, 1.1));
+      for (let i = 0; i < Math.ceil(shown); i++) s += C(pts[i][0], pts[i][1], 4, { fill: T.fg, op: clamp01(shown - i) });
+      return s;
+    },
+    anchor: () => [F.cx, F.cy],
+  },
+};
+
+const FAMILIES = { ranking: RANKING, partWhole: PART_WHOLE, comparison: COMPARISON, scale: SCALE, quote: QUOTE, count: COUNT };
 const execOf = sc => (sc.family ? FAMILIES[sc.family][sc.execution] : TEMPLATES[sc.template]);
 
 /* ==========================================================================
@@ -534,8 +785,10 @@ function selectExecutions(scenes, history = [], seed = 'default') {
     if (!sc.family) return;
     if (sc.execution) { usedExec.add(`${sc.family}.${sc.execution}`); return; }   // pinned by the storyboard
     const fam = FAMILIES[sc.family];
-    const scored = Object.entries(fam)
-      .filter(([id, ex]) => ex.fits(sc.data) && !usedExec.has(`${sc.family}.${id}`))
+    const fitting = Object.entries(fam).filter(([, ex]) => ex.fits(sc.data));
+    let pool = fitting.filter(([id]) => !usedExec.has(`${sc.family}.${id}`));
+    if (!pool.length && fitting.length) { pool = fitting; log.push(`${sc.id}: family “${sc.family}” exhausted in this video — reusing; add executions or vary the story`); }
+    const scored = pool
       .map(([id, ex]) => ({ id, score: 2 + rnd() - recency(sc.id, `${sc.family}.${id}`) - (usedForms.has(ex.form) ? 1.5 : 0) }))
       .sort((a, b) => b.score - a.score);
     if (!scored.length) throw new Error(`No ${sc.family} execution fits scene “${sc.id}”`);
@@ -543,7 +796,32 @@ function selectExecutions(scenes, history = [], seed = 'default') {
     usedExec.add(`${sc.family}.${sc.execution}`); usedForms.add(fam[sc.execution].form);
     log.push(`${sc.id}: ${sc.family}.${sc.execution} (from ${scored.map(s => s.id).join(', ')})`);
   });
+  log.push(...assignStyle(scenes, rnd));
   return { picks: scenes.filter(sc => sc.family).map(sc => `${sc.id}=${sc.family}.${sc.execution}`), log };
+}
+
+/* Surfaces and wipes the storyboard leaves open: a seeded rotation of blue / light / dark with no surface twice in a
+   row, and wipes drawn from the brand's one signature (circle iris from the previous scene's anchor, or a line sweep)
+   with no variant twice in a row. Same surface back to back → a cut. Explicit values in the storyboard always win. */
+function assignStyle(scenes, rnd) {
+  const surfaces = ['blue', 'light', 'dark'], wipes = [{ type: 'circle', at: 'prev' }, { type: 'line', dir: 'down' }, { type: 'line', dir: 'up' }, { type: 'line', dir: 'right' }];
+  const log = []; let lastWipe = -1;
+  scenes.forEach((sc, i) => {
+    if (!sc.surface) {
+      const prev = i > 0 ? scenes[i - 1].surface : null, next = scenes[i + 1] && scenes[i + 1].surface;
+      const options = surfaces.filter(x => x !== prev && x !== next);
+      const pool = options.length ? options : surfaces.filter(x => x !== prev);
+      sc.surface = pool[Math.floor(rnd() * pool.length)];
+      log.push(`${sc.id}: surface ${sc.surface}`);
+    }
+  });
+  scenes.forEach((sc, i) => {
+    if (i === 0 || sc.enter !== undefined) return;
+    if (sc.surface === scenes[i - 1].surface) { sc.enter = null; return; }   // same surface: cut
+    let w; do { w = Math.floor(rnd() * wipes.length); } while (w === lastWipe);
+    lastWipe = w; sc.enter = { ...wipes[w] };
+  });
+  return log;
 }
 
 /* ==========================================================================
