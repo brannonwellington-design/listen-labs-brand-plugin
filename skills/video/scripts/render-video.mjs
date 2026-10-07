@@ -4,7 +4,7 @@
 // and optionally window.CANVAS = { width, height } (design px; default 540×960).
 // Frames are captured at 2× device scale and piped as PNG into ffmpeg. No npm dependencies.
 //
-// Usage: node render-video.mjs <composition.html> [out.mp4] [--audio track.wav] [--scale 2]
+// Usage: node render-video.mjs <composition.html> [out.mp4] [--audio track.wav] [--scale 2] [--query aspect=16x9]
 
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync } from 'node:fs';
@@ -16,6 +16,7 @@ const args = process.argv.slice(2);
 const flag = (name, fallback) => { const i = args.indexOf(name); return i >= 0 ? args.splice(i, 2)[1] : fallback; };
 const AUDIO = flag('--audio', null);
 const SCALE = Number(flag('--scale', '2'));
+const QUERY = flag('--query', '');   // extra URL params for the composition, e.g. aspect=16x9
 const INPUT = path.resolve(args[0] || 'composition.html');
 const OUTPUT = path.resolve(args[1] || INPUT.replace(/\.html?$/, '.mp4'));
 const PORT = 9300 + Math.floor(Math.random() * 600);
@@ -62,7 +63,7 @@ const evaluate = async expr => {
 };
 
 try {
-  await send('Page.navigate', { url: pathToFileURL(INPUT).href + '?export=1' });
+  await send('Page.navigate', { url: pathToFileURL(INPUT).href + '?export=1' + (QUERY ? '&' + QUERY : '') });
   for (let i = 0; i < 100; i++) {
     if (await evaluate(`document.readyState === 'complete' && typeof renderFrame === 'function'`)) break;
     await sleep(100);
