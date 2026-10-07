@@ -587,8 +587,19 @@ MOTION = {
             "standard_90s": {"pace": "kinetic or explainer", "narration_words": 210, "scenes": "14–24", "avg_scene_s": "3–6", "ideas": "hook + 3–5 findings, each with 2–4 supporting scenes + takeaway", "default_transition": "cut / shift; wipe on surface change", "max_on_screen_words": "8 must-read (kinetic) · 12 (explainer)"},
             "deep_dive_4min": {"pace": "explainer", "narration_words": 540, "scenes": "30–45 in 4–6 chapters", "avg_scene_s": "5–8", "ideas": "method, findings by chapter, segments, verbatims, caveats", "default_transition": "cut within chapters, wipe between", "max_on_screen_words": "15"},
         },
+        "voice": {
+            "provider": "ElevenLabs",
+            "model": "eleven_v4",
+            "house": {"name": "Matilda", "id": "XrExE9yKIg1WjnnlVkGX", "character": "knowledgeable, professional; female, American"},
+            "alternates": [
+                {"name": "River", "id": "SAz9YHcvj6GT2YYXdXww", "character": "relaxed, neutral; gender-neutral, American"},
+                {"name": "Daniel", "id": "onwK4e9ZLuTAKqWW03F9", "character": "steady broadcaster; male, British"},
+            ],
+            "settings": {"stability": 0.5, "similarity_boost": 0.75, "style": 0, "use_speaker_boost": True, "speed": 1},
+            "rules": "House voice by default; an alternate only by request. Never a cloned or customer-supplied voice. Premade voice IDs are public; the API key lives only in the environment (ELEVENLABS_API_KEY), never in files.",
+        },
         "narration": {
-            "rate": "2.3–2.5 spoken words per second (≈140–150 wpm); ≈2.0 for dense statistics. Measure real duration from TTS timestamps, never estimate.",
+            "rate": "Budget ≈1.9 spoken words per second — measured for the house voice (Matilda, eleven_v4: 72 words → 38.8s of speech, Oct 2026); research norms of 2.3–2.5 wps for human narrators run fast for this voice. eleven_v4 ignores the speed setting, so length is controlled by word count, not by speeding the voice. Always measure real duration from TTS timestamps, never estimate.",
             "audio_is_the_clock": "Voiceover is generated per scene first; each scene lasts as long as its narration plus its hold. Reveals are scheduled on word timestamps (the counter lands as its number is spoken).",
         },
         "captions": {

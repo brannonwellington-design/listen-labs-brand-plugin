@@ -4,7 +4,8 @@ Sources: BBC Subtitle Guidelines, Netflix Timed Text Style Guide, WCAG 2.2 (1.2.
 
 ## Writing for the ear
 
-- **Rate:** 2.3–2.5 words per second (≈140–150 wpm); ≈2.0 for dense statistics. Budget words from the preset; verify real duration from the TTS timestamps.
+- **Rate:** budget ≈1.9 words per second for the house voice (measured: Matilda on eleven_v4). A 30s kinetic cut with 12 narrated scenes holds about 45 words — so a voiced 30s narrates the beats, not every scene, or runs longer. `eleven_v4` ignores the speed setting; control length with word count. Verify real duration from the TTS timestamps.
+- **High-privacy accounts:** ElevenLabs refuses request-ID stitching when the account is in high-privacy mode; `voiceover.mjs` detects this and falls back to text context (`previous_text` / `next_text`). Keep high-privacy on — it means requests aren't retained.
 - **One claim per spoken line**, 6–20 words. Silent scenes are allowed — let a big number breathe.
 - **Narration deepens, on-screen text states.** Don't read the screen word for word; do speak every number and takeaway that appears (WCAG 1.2.5 integrated description).
 - **Plain words, active voice, present tense.** “Black Cherry jumps to first” beats “It was found that Black Cherry was selected most frequently.”

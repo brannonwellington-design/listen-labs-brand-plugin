@@ -4,6 +4,8 @@
 //
 // Usage: node voiceover.mjs <story.json> [--out-dir dir] [--provider elevenlabs|say] [--voice <id|name>] [--model eleven_v4]
 //   elevenlabs  production. Needs ELEVENLABS_API_KEY in the environment (never in files). Word timings from the API.
+//               Voice defaults to the brand house voice (library/voice.json, generated from brand_data.py);
+//               --voice River / Daniel picks an approved alternate by name, or pass a voice ID.
 //   say         dev stand-in: macOS built-in voice, offline, nothing leaves the machine. No word timestamps from the
 //               engine — they are ESTIMATED from character counts. Never ship a `say` render.
 //
@@ -21,11 +23,15 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const flag = (name, fallback) => { const i = args.indexOf(name); return i >= 0 ? args.splice(i, 2)[1] : fallback; };
 const PROVIDER = flag('--provider', process.env.ELEVENLABS_API_KEY ? 'elevenlabs' : 'say');
-const VOICE = flag('--voice', null), MODEL = flag('--model', 'eleven_v4');
+const BRAND_VOICE = JSON.parse(readFileSync(path.join(HERE, '..', 'library', 'voice.json'), 'utf8'));   // generated from brand_data.py
+const ALT = flag('--voice', null), MODEL = flag('--model', BRAND_VOICE.model);
+const VOICE = ALT ? ([BRAND_VOICE.house, ...BRAND_VOICE.alternates].find(v => v.name.toLowerCase() === ALT.toLowerCase())?.id || ALT) : null;
 const STORY_PATH = path.resolve(args[0] || 'story.json');
 const OUT_DIR = path.resolve(flag('--out-dir', path.join(path.dirname(STORY_PATH), 'voice')));
-const LEAD_IN = 0.15, TAIL = 0.6;            // narration starts just after the cut; scene holds a beat after it ends
+const PACE_FLAG = flag('--pace', null);
 const story = JSON.parse(readFileSync(STORY_PATH, 'utf8'));
+const PACE = PACE_FLAG || story.pace || 'kinetic';
+const [LEAD_IN, TAIL] = PACE === 'explainer' ? [0.15, 0.6] : [0.1, 0.35];   // narration starts just after the cut; scene holds a beat after it ends
 const { FAMILIES, TEMPLATES } = createRequire(import.meta.url)(path.join(HERE, '..', 'library', 'library.js'));
 mkdirSync(OUT_DIR, { recursive: true });
 
@@ -61,8 +67,10 @@ story.scenes.forEach(sc => {
     if (shared.length >= Math.min(4, words.length)) problems.push(`${sc.id}: narration repeats the quote, but narrateQuotes is off — introduce it instead`);
   }
 });
-if (story.targetSeconds) {   // word budget at ~2.4 spoken words per second (brand narration rate)
-  const words = story.scenes.reduce((a, sc) => a + (sc.narration ? sc.narration.split(/\s+/).length : 0), 0), budget = Math.round(story.targetSeconds * 2.4);
+if (story.targetSeconds) {   // word budget at the measured house-voice rate
+  // ≈1.9 words/s measured for the house voice, minus the per-scene lead-in and hold
+  const words = story.scenes.reduce((a, sc) => a + (sc.narration ? sc.narration.split(/\s+/).length : 0), 0);
+  const narrated = story.scenes.filter(sc => sc.narration).length, budget = Math.round(Math.max(0, story.targetSeconds - narrated * (LEAD_IN + TAIL)) * 1.9);
   if (words > budget * 1.1) problems.push(`narration is ${words} words; a ${story.targetSeconds}s video holds about ${budget} — cut lines or choose a longer length`);
 }
 if (problems.length) { console.error('Narration check failed:\n  ' + problems.join('\n  ')); process.exit(1); }
@@ -78,22 +86,36 @@ function wordsFromAlignment(al) {
   if (cur) words.push(cur);
   return words;
 }
-const recentIds = [];
+const recentIds = []; let idStitching = true;   // falls back to text context when the account can't use request IDs (high-privacy / zero-retention)
 async function elevenlabs(sc, i, file) {
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) throw new Error('ELEVENLABS_API_KEY is not set');
-  const voice = VOICE || story.voice?.id;
+  const voice = VOICE || story.voice?.id || BRAND_VOICE.house.id;
   if (!voice) throw new Error('No voice: pass --voice <voice_id> or set story.voice.id');
   const body = {
     text: sc.narration, model_id: story.voice?.model || MODEL, seed: story.voice?.seed ?? 7, apply_text_normalization: 'on',
-    voice_settings: story.voice?.settings || { stability: 0.5, similarity_boost: 0.75, style: 0, use_speaker_boost: true, speed: 1 },
+    voice_settings: story.voice?.settings || BRAND_VOICE.settings,
   };
-  if (recentIds.length) body.previous_request_ids = recentIds.slice(-3);        // stitching: prosody carries across scenes
-  else if (i > 0) body.previous_text = story.scenes.slice(0, i).map(s => s.narration).filter(Boolean).slice(-2).join(' ');
-  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}/with-timestamps?output_format=mp3_44100_128`, {
-    method: 'POST', headers: { 'xi-api-key': key, 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const prevText = story.scenes.slice(0, i).map(s => s.narration).filter(Boolean).slice(-2).join(' ');
+  const nextText = story.scenes.slice(i + 1).map(s => s.narration).filter(Boolean).slice(0, 1).join(' ');
+  const send = () => {
+    const b = { ...body };
+    if (idStitching && recentIds.length) b.previous_request_ids = recentIds.slice(-3);   // stitching: prosody carries across scenes
+    else { if (prevText) b.previous_text = prevText; if (nextText) b.next_text = nextText; }
+    return fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}/with-timestamps?output_format=mp3_44100_128`, {
+      method: 'POST', headers: { 'xi-api-key': key, 'Content-Type': 'application/json' }, body: JSON.stringify(b),
+    });
+  };
+  let res = await send();
+  if (!res.ok) {
+    const err = await res.text();
+    if (res.status === 400 && /stitching|high_privacy|zero.retention/i.test(err) && idStitching) {
+      idStitching = false;
+      console.log('  account is in high-privacy mode: request-ID stitching unavailable — using text context (previous_text / next_text)');
+      res = await send();
+      if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    } else throw new Error(`ElevenLabs ${res.status}: ${err.slice(0, 300)}`);
+  }
   const id = res.headers.get('request-id'); if (id) recentIds.push(id);
   const json = await res.json();
   writeFileSync(file, Buffer.from(json.audio_base64, 'base64'));
@@ -101,7 +123,7 @@ async function elevenlabs(sc, i, file) {
 }
 function say(sc, i, file) {
   const aiff = file.replace(/\.\w+$/, '.aiff');
-  execFileSync('say', ['-v', VOICE || 'Samantha', '-r', '175', '-o', aiff, sc.narration]);
+  execFileSync('say', ['-v', 'Samantha', '-r', '175', '-o', aiff, sc.narration]);
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', aiff, '-ar', '44100', file]);
   const dur = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString();
   const toks = sc.narration.split(/\s+/), weights = toks.map(t => t.length + 1), total = weights.reduce((a, b) => a + b, 0);
@@ -120,7 +142,11 @@ for (const [i, sc] of story.scenes.entries()) {
   if (sc.narration) {
     const file = path.join(OUT_DIR, `${String(i + 1).padStart(2, '0')}-${sc.id}.${PROVIDER === 'say' ? 'wav' : 'mp3'}`);
     const r = PROVIDER === 'elevenlabs' ? await elevenlabs(sc, i, file) : say(sc, i, file);
-    const audioDur = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString();
+    // trim silence the engine leaves at both ends, so pacing is set by the words, not by padding
+    const lead = Math.max(0, (r.words[0]?.start ?? 0) - 0.03), endT = (r.words[r.words.length - 1]?.end ?? 0) + 0.08, trimmed = file.replace(/\.(\w+)$/, '.trim.wav');
+    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', file, '-af', `atrim=${lead.toFixed(3)}:${endT.toFixed(3)},asetpts=PTS-STARTPTS`, '-ar', '44100', trimmed]);
+    r.words.forEach(w => { w.start -= lead; w.end -= lead; });
+    const audioDur = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trimmed]).toString();
     // scene lasts as long as its narration plus a held beat — never shorter than the storyboard asked for
     sc.dur = Math.max(sc.dur, +(LEAD_IN + audioDur + TAIL).toFixed(2));
     if (sc.cue) {   // the data reveal starts on the cue word
@@ -129,7 +155,7 @@ for (const [i, sc] of story.scenes.entries()) {
       const [revealStart] = execOf(sc).reveal(sc.data);
       sc.revealShift = Math.max(0, +(LEAD_IN + w.start - revealStart).toFixed(2));
     }
-    clips.push({ file, at: sc.start + LEAD_IN });
+    clips.push({ file: trimmed, at: sc.start + LEAD_IN });
     r.words.forEach(w => words.push({ text: w.text, start: sc.start + LEAD_IN + w.start, end: sc.start + LEAD_IN + w.end, scene: sc.id }));
     transcript.push(`[${sc.start.toFixed(1)}s] ${sc.narration}`);
     console.log(`${sc.id}: ${audioDur.toFixed(2)}s narration → scene ${sc.dur}s${sc.revealShift ? `, reveal +${sc.revealShift}s on “${sc.cue}”` : ''}${r.estimated ? ' (timings estimated)' : ''}`);
@@ -141,11 +167,11 @@ for (const [i, sc] of story.scenes.entries()) {
 }
 const TOTAL = acc;
 
-/* ---------- mix: clips at their scene offsets, loudness-normalized (−16 LUFS, −1 dBTP) ---------- */
+/* ---------- mix: clips at their scene offsets, loudness-normalized (−16 LUFS; true peak −1.5 so the AAC encode stays under −1 dBTP) ---------- */
 const track = path.join(OUT_DIR, 'narration.wav');
 const inputs = clips.flatMap(c => ['-i', c.file]);
 const filter = clips.map((c, i) => `[${i}:a]adelay=${Math.round(c.at * 1000)}|${Math.round(c.at * 1000)},aformat=channel_layouts=stereo[a${i}]`).join(';') +
-  `;${clips.map((_, i) => `[a${i}]`).join('')}amix=inputs=${clips.length}:normalize=0,apad,atrim=0:${TOTAL.toFixed(3)},loudnorm=I=-16:TP=-1:LRA=11[out]`;
+  `;${clips.map((_, i) => `[a${i}]`).join('')}amix=inputs=${clips.length}:normalize=0,apad,atrim=0:${TOTAL.toFixed(3)},loudnorm=I=-16:TP=-1.5:LRA=11[out]`;
 execFileSync('ffmpeg', ['-y', '-loglevel', 'error', ...inputs, '-filter_complex', filter, '-map', '[out]', '-ar', '48000', track]);
 
 /* ---------- captions: ≤42 chars/line, ≤2 lines, ≤20 chars/s, 0.8–7 s, break at punctuation and pauses ---------- */

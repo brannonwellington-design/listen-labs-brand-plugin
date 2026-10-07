@@ -206,6 +206,7 @@ def motion_md(M, heading="##"):
 - **Credit zone:** {v["credit_zone"]}
 - **Scene structure:** {v["scene_structure"]}
 - **Narration:** {v["narration"]["rate"]} {v["narration"]["audio_is_the_clock"]}
+- **Voice:** {v["voice"]["provider"]} `{v["voice"]["model"]}` · house voice **{v["voice"]["house"]["name"]}** ({v["voice"]["house"]["character"]}, `{v["voice"]["house"]["id"]}`) · alternates {", ".join(f'**{a["name"]}** (`{a["id"]}`)' for a in v["voice"]["alternates"])}. {v["voice"]["rules"]}
 
 | Preset | Pace | Words | Scenes | Avg scene | Ideas | Default transition | Max on-screen words |
 |---|---|---|---|---|---|---|---|
@@ -382,7 +383,18 @@ The brand-independent typographic precision rules (curly quotes, `…`, non-brea
     return md
 
 
+def write_voice_json():
+    """Machine-readable voice config for skills/video/scripts/voiceover.mjs (generated — edit brand_data.py)."""
+    import json
+    p = os.path.join(SCRIPT_DIR, "skills", "video", "library", "voice.json")
+    with open(p, "w") as f:
+        json.dump({"_generated_from": "brand_data.py MOTION.video.voice", **data.MOTION["video"]["voice"]}, f, indent=2)
+        f.write("\n")
+    print(f"Generated {os.path.relpath(p, SCRIPT_DIR)}")
+
+
 def main():
+    write_voice_json()
     md = generate()
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:
