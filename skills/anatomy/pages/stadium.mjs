@@ -3,32 +3,14 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
-const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
-const { kitScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
-const { LL_TOKENS, esc, curly, t, headerHtml, HEADER_CSS, cameraCardCss, viewToolsHtml, viewToolsScript, titleBlockHtml, BLUEPRINT_CSS, TENSION_CSS, PLAY_CSS, captionHtml, playScript } = await import("./shared.mjs");
+const { LL_TOKENS, esc, curly, t, headerHtml, HEADER_CSS } = await import("./shared.mjs");
 const [specPath, outPath] = process.argv.slice(2);
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
-const obj = await import("../objects/stadium.mjs");
-// the tension prints numbers computed from the coding at build time; refuse to build if any is missing a digit
-if (spec.tension) {
-  if (!spec.tension.numbers.every((s) => /\d/.test(s))) throw new Error("tension numbers must state a number");
-  spec.__tension = { label: curly(spec.tension.label), act: spec.tension.act, numbers: spec.tension.numbers.map((text) => ({ text })) };
-}
-const { svg, live } = obj.build(spec);
-// scripts arrive resolved from the spec builder (numbers computed from the coding); refuse literal titles with digits
-const SCRIPTS = Object.fromEntries(Object.entries(spec.scripts || {}).map(([key, sc]) => [key, { key, title: sc.title, label: sc.label, beats: sc.beats.map((b, i) => {
-  if (/\d/.test(b.title || "")) throw new Error(`script ${key} beat ${i}: a title may not carry numbers`);
-  return { ...b, kicker: b.act ? spec.acts.find((a) => a.key === b.act).when : "", title: curly(b.title || ""), caption: b.caption ? { text: curly(b.caption) } : null, quote: b.quote ? { ...b.quote, quote: curly(b.quote.quote) } : null, sub: null };
-}) }]));
-const skin = readFileSync(new URL("../skin/ll-skin.css", import.meta.url), "utf8");
+// the figure (drawing, act switch, follow, play, blueprint) comes from the shared scene builder, like every host
+const { buildScene } = await import("./scene.mjs");
+const scene = await buildScene("stadium", spec, { mode: "page" });
 const N = spec.study.n;
-
-const actButtons = spec.acts.map((a, i) => `<button class="act-btn" type="button" role="radio" aria-checked="${i === spec.acts.length - 1}" data-act="${i}"><span class="act-btn__when">${t(a.when)}</span> ${t(a.name)}</button>`).join("");
-const follow = `<select class="fig-play fig-follow" aria-label="Follow one fan"><option value="">Follow…</option>${spec.fans.map((f, i) => `<option value="${i}">Follow ${f.label}</option>`).join("")}</select>`;
-const figure = k.plateHtml({
-  fig: spec.figure.fig + " · " + spec.figure.title, title: "", hint: spec.figure.hint, readout: "", caption: curly(spec.figure.caption),
-  body: `${viewToolsHtml(SCRIPTS, follow)}${captionHtml()}${titleBlockHtml(spec.figure.titleBlock, esc)}<div class="iso-stage" data-stadium tabindex="0" aria-label="${esc(spec.figure.title)}: click a fan, block or stage prop; arrow keys move between blocks; 1 and 2 switch acts">${svg}</div>`,
-});
+const figure = scene.markup;
 
 const DATA = {
   n: N,
@@ -46,11 +28,8 @@ const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const FEEL = { positive: "on their feet", neutral: "seated, neutral", negative: "seated, negative" };
 const quoteHtml = (q, who) => q ? '<blockquote class="quote"><p>\\u201C' + esc(q.quote) + '\\u201D</p><footer>' + esc(who || q.who) + ' · <a href="' + q.source + '" target="_blank" rel="noopener">Source</a></footer></blockquote>' : "";
-const actBtns = [...document.querySelectorAll(".act-btn")];
-const followSel = $(".fig-follow");
 function render(d) {
   const a = DATA.acts[d.act];
-  actBtns.forEach((b, i) => b.setAttribute("aria-checked", String(i === d.act)));
   $("[data-r=act-name]").textContent = a.when + " · " + a.name;
   $("[data-r=act-num]").textContent = a.up;
   $("[data-r=act-base]").textContent = "of " + a.asked + (a.asked < DATA.n ? " asked (" + (DATA.n - a.asked) + " never reached the question)" : "") + " on their feet";
@@ -59,7 +38,6 @@ function render(d) {
   const hopesOn = a.dressing === "hopes";
   $("[data-r=hopes-wrap]").hidden = !hopesOn;
   if (hopesOn) $("[data-r=hopes]").innerHTML = DATA.hopes.map((h, i) => '<button class="row-btn" type="button" data-hope="' + i + '" aria-pressed="' + (d.hope === i) + '"><span class="row-btn__name">' + h.name + ' <span class="row-btn__scale">' + h.prop + '</span></span><span class="row-btn__count">' + h.count + '<span class="row-btn__base">/' + h.base + '</span></span></button>').join("");
-  followSel.value = d.follow == null ? "" : String(d.follow);
   // detail: the followed fan, else the selected hope, else the selected block
   const det = $("[data-r=detail]");
   if (d.follow != null) {
@@ -76,26 +54,19 @@ function render(d) {
   } else det.innerHTML = '<p class="detail__k">Click a block, a stage prop or a fan in the drawing, or pick a row above.</p>';
 }
 document.addEventListener("stadium", (e) => render(e.detail));
-actBtns.forEach((b) => b.addEventListener("click", () => STAD.setAct(+b.dataset.act)));
 document.addEventListener("click", (e) => {
   const bl = e.target.closest("[data-block]"), ho = e.target.closest("[data-hope]");
   if (bl) STAD.selectBlock(+bl.dataset.block === STAD.block ? null : +bl.dataset.block);
   if (ho) STAD.selectHope(+ho.dataset.hope);
   if (e.target.closest("[data-unfollow]")) STAD.follow(null);
 });
-followSel.addEventListener("change", () => STAD.follow(followSel.value === "" ? null : +followSel.value));
 render({ act: STAD.act, block: null, hope: null, follow: null });
 `;
 
 const css = `
 ${LL_TOKENS}
-${k.ISO_CSS}
-${skin}
+${scene.css}
 ${HEADER_CSS}
-${cameraCardCss(".ws-figure")}
-${BLUEPRINT_CSS}
-${TENSION_CSS}
-${PLAY_CSS}
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--surface-primary); color: var(--content-primary); font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif; font-weight: 400; -webkit-font-smoothing: antialiased; }
 body.iso { --anatomy-page: var(--surface-primary); }
@@ -112,14 +83,6 @@ p { margin: 0; text-wrap: pretty; }
 .ws-figure .iso-figure { margin: 0; }
 .ws-figure .iso-legend { font-size: 12px; line-height: 16px; }
 .ws-rail { grid-column: 9 / -1; min-width: 0; display: grid; gap: 28px; }
-/* scoreboard cells: one per interview; lit = on their feet */
-.sb-cell { fill: var(--anatomy-lo); stroke: none; }
-.sb-cell[data-on] { fill: var(--anatomy-accent, var(--content-brand)); }
-/* act switch */
-.acts { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: var(--surface-secondary); }
-.act-btn { appearance: none; font: inherit; font-size: 14px; line-height: 20px; min-height: 52px; border: 0; border-radius: 8px; background: transparent; color: var(--content-secondary); cursor: pointer; text-align: left; padding: 6px 12px; }
-.act-btn__when { display: block; font-size: 12px; line-height: 16px; }
-.act-btn[aria-checked="true"] { background: var(--surface-highlight); color: var(--content-primary); border: 1px solid var(--surface-tertiary); }
 .act-num { font-size: 56px; line-height: 56px; font-variant-numeric: tabular-nums; color: var(--content-brand); }
 .act-base { font-size: 14px; line-height: 20px; color: var(--content-secondary); margin-top: 4px; }
 .act-name { font-size: 14px; line-height: 20px; color: var(--content-secondary); margin-bottom: 8px; }
@@ -174,9 +137,6 @@ const html = `<!doctype html>
     <div class="ws-figure">${figure}</div>
     <aside class="ws-rail" aria-label="Stadium controls">
       <div>
-        <div class="acts" role="radiogroup" aria-label="Which act is on stage">${actButtons}</div>
-      </div>
-      <div>
         <p class="act-name" data-r="act-name"></p>
         <p class="act-num" data-r="act-num"></p>
         <p class="act-base" data-r="act-base"></p>
@@ -200,7 +160,7 @@ const html = `<!doctype html>
   </section>
 </main>
 <script type="module">
-${(kitScript() + live + viewToolsScript("STAD") + playScript("STAD", SCRIPTS) + panelScript).replace(/<\/(script)/gi, "<\\/$1")}
+${(scene.js + panelScript).replace(/<\/(script)/gi, "<\\/$1")}
 </script>
 </body>
 </html>`;

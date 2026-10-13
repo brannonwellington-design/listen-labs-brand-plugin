@@ -112,20 +112,20 @@ document.querySelectorAll(".iso-plate").forEach((plate) => {
 // ---------- Phase 1: blueprint + take-apart (any object with a parts registry) ----------
 // Toolbar that sits in the figure's top-right corner. Buttons drive window[api].setView.
 export const viewToolsHtml = (scripts, extra = "") => `<div class="fig-tools" role="group" aria-label="Drawing view">${extra}${scripts && Object.keys(scripts).length ? `
-  <select class="fig-play" aria-label="Play a guided walkthrough"><option value="">Play…</option>${Object.values(scripts).map((sc) => `<option value="${sc.key}">Play: ${sc.label}</option>`).join("")}</select>` : ""}
+  <select class="fig-play" data-play aria-label="Play a guided walkthrough"><option value="">Play…</option>${Object.values(scripts).map((sc) => `<option value="${sc.key}">Play: ${sc.label}</option>`).join("")}</select>` : ""}
   <button class="fig-tool" type="button" aria-pressed="false" data-view="blueprint" title="Blueprint (B)">Blueprint</button>
   <button class="fig-tool" type="button" aria-pressed="false" data-view="apart" title="Take apart (A)">Take apart</button>
 </div>`;
 // Engineering title block: rows come from spec.figure.titleBlock ([label, value] pairs), never invented here.
 export const titleBlockHtml = (rows, esc) => rows && rows.length ? `<dl class="bp-title" aria-label="Drawing title block">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>` : "";
-export const viewToolsScript = (api) => `
+export const viewToolsScript = (api, { hash = true } = {}) => `
 (() => {
   const tools = [...document.querySelectorAll(".fig-tool")];
   const sync = (v) => tools.forEach((b) => b.setAttribute("aria-pressed", String(!!v[b.dataset.view])));
-  const setHash = (v) => { const q = new URLSearchParams(location.hash.slice(1)); const on = ["blueprint", "apart", "waves"].filter((k) => v[k]); if (on.length) q.set("view", on.join(",")); else q.delete("view"); history.replaceState(null, "", q.toString() ? "#" + q.toString().replace(/%2C/g, ",") : location.pathname + location.search); };
+  const setHash = (v) => { if (!${hash}) return; const q = new URLSearchParams(location.hash.slice(1)); const on = ["blueprint", "apart", "waves"].filter((k) => v[k]); if (on.length) q.set("view", on.join(",")); else q.delete("view"); history.replaceState(null, "", q.toString() ? "#" + q.toString().replace(/%2C/g, ",") : location.pathname + location.search); };
   tools.forEach((b) => b.addEventListener("click", () => { const k = b.dataset.view; ${api}.setView({ [k]: !${api}.view[k] }); }));
   document.addEventListener("view", (e) => { sync(e.detail); setHash(e.detail); });
-  const want = (new URLSearchParams(location.hash.slice(1)).get("view") || "").split(",");
+  const want = (new URLSearchParams(${hash} ? location.hash.slice(1) : "").get("view") || "").split(",");
   if (want.includes("blueprint") || want.includes("apart") || want.includes("waves")) ${api}.setView({ blueprint: want.includes("blueprint"), apart: want.includes("apart"), ...(want.includes("waves") ? { waves: true } : {}) });
 })();
 `;
@@ -266,7 +266,7 @@ export const BLUEPRINT_CSS = `
   .bp-count span { display: none; }   /* the base (n) is in the readout and the rail; tags carry the count only */
   .bp-title { display: none; }
   /* phones: the controls get their own row above the drawing instead of covering a fifth of it */
-  .fig-tools { position: relative; top: auto; right: auto; left: auto; margin: 8px 8px 0; overflow-x: auto; scrollbar-width: none; border: 0; padding: 0; gap: 2px; }
+  .fig-tools { position: relative; top: auto; right: auto; left: auto; margin: 8px 8px 0; flex-wrap: wrap; border: 0; padding: 0; gap: 2px; }   /* wraps, never a hidden sideways scroller: every control stays visible */
   .fig-tool, .fig-play { white-space: nowrap; flex: none; }
 }
 `;
@@ -429,7 +429,7 @@ ${DIRECTOR_SRC}
   const cap = document.querySelector("[data-cap]");
   if (!cap) return;
   const c = (k) => cap.querySelector('[data-c="' + k + '"]');
-  const menu = document.querySelector(".fig-play");
+  const menu = document.querySelector("[data-play]");
   const short = (u) => { try { const x = new URL(u); return x.host + x.pathname.replace(/^(\\/[^/]+\\/[0-9a-f]{8}).*$/, "$1…"); } catch { return u; } };
   function show(b, i, sc) {
     cap.hidden = false;

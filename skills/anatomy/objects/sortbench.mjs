@@ -19,6 +19,14 @@ const BLUEPRINT_SRC = readFileSync(new URL("./blueprint.js", import.meta.url), "
 const CUTAWAY_SRC = readFileSync(new URL("./cutaway.js", import.meta.url), "utf8");
 const TENSION_SRC = readFileSync(new URL("./tension.js", import.meta.url), "utf8");
 export const TENSION_EVENTS = ["count"];
+// ---------- scene contract (pages/scene.mjs): how any host mounts, drives and controls this object ----------
+export const API = "BENCH", HOOK = "data-bench";
+export const facts = (spec) => spec.steps.filter((s) => s.stat && /^\d+$/.test(String(s.stat.value))).map((s) => ({ key: "step." + s.key, value: +s.stat.value, base: spec.study.n, label: s.stat.base || s.title, group: s.kicker, scene: { step: spec.steps.indexOf(s) } }));
+// the scrolly page drives chapters by scroll; anywhere else, a chapter menu does
+export const controls = (spec) => [
+  { kind: "select", label: "Chapter", call: "go", embedOnly: true, options: spec.steps.map((s, i) => ({ value: i, label: s.kicker })) },
+  ...((spec.customers || []).length ? [{ kind: "select", label: "Follow…", call: "follow", get: "following", none: -1, options: spec.customers.map((c, i) => ({ value: i, label: "Follow " + c.label })) }] : []),
+];
 const sortbenchGeometry = new Function("k", "N", "P", "shape", GEOM_SRC + "\nreturn sortbenchGeometry(k, N, P, shape);");
 // framing points (world) used to fit the base camera
 const FIT = [[-232, -56, -15], [50, -56, -15], [50, 60, -15], [-232, 60, -15], [-232, -56, 0], [50, 60, 0], [-216, -11, 72], [-81, -8, 72], [-41, -47, 91], [26, 50, 0]];

@@ -118,6 +118,16 @@ The title and closing slides carry the lockup as an image, not text: `slide.addI
 
 ---
 
+### Scene Slides (from /anatomy)
+
+When a deck carries a study scene, `/anatomy` builds it and returns a bundle; the deck never redraws it. Read
+`skills/anatomy/references/embedding.md`, "In a deck":
+- **One slide per tour beat.** Place `stills/figure-NN.svg` (PNG fallback) as the dominant image.
+- **Native text from the manifest.** Set the beat's kicker, title, caption and quote from `manifest.json` as native
+  text, and never retype or recompute a number. The quote's source goes in the speaker notes, and `n = …` stays on
+  every scene slide.
+- **Internal studies stay local.** A bundle marked `sharing: "internal"` produces a deck that stays on the machine.
+
 ## PPTX-Specific Prohibitions
 
 Universal brand prohibitions (no bold/light/italic, no serif, no letter-spacing, no all-caps, no shadows, no gradients, no decoration without purpose, even-number spacing only, etc.) come from `skills/_shared/brand-compliance.md`. PPTX adds:

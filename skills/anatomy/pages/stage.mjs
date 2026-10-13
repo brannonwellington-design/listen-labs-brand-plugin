@@ -1,7 +1,7 @@
 // Stage: a 1280×720 frame for one object and its scripts — what the recorder films for video, slides and posters.
 // The figure takes the left, the caption column the right; the credit, n and study id are always on screen.
 // Open it in a browser with #play=<script> to preview; tools/record.mjs drives it on a virtual clock.
-// usage: node pages/stage.mjs <object> <spec.json> <out.html> [--api CONV] [--stage data-conveyor]
+// usage: node pages/stage.mjs <object> <spec.json> <out.html>
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
@@ -14,11 +14,13 @@ const [objArg, specPath, outPath] = args;
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
 const objName = applyWorld(objArg, spec);
 const opt = (name, d) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : d; };
-const API = opt("--api", { conveyor: "CONV", workbench: "WB", sortbench: "BENCH" }[objName]);
-const HOOK = opt("--stage", { conveyor: "data-conveyor", workbench: "data-workbench", sortbench: "data-bench" }[objName]);
-const SCRIPTS = resolveScripts(spec);
 const obj = await import(`../objects/${objName}.mjs`);
-spec.__tension = resolveTension(spec, obj.TENSION_EVENTS || []);   // fails the build unless its numbers resolve
+// the object's scene contract says how to mount and drive it (pages/scene.mjs)
+const API = opt("--api", obj.API);
+const HOOK = opt("--stage", obj.HOOK);
+const { curly } = await import("./shared.mjs");
+if (obj.prepare) obj.prepare(spec, curly); else spec.__tension = resolveTension(spec, obj.TENSION_EVENTS || []);   // fails the build unless its numbers resolve
+const SCRIPTS = obj.scripts ? obj.scripts(spec, curly) : resolveScripts(spec);
 const { svg, live } = obj.build(spec);
 const skin = readFileSync(new URL("../skin/ll-skin.css", import.meta.url), "utf8");
 const page = spec.page;
@@ -70,7 +72,7 @@ const html = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=1280">
 <meta name="color-scheme" content="light dark">
-<title>${esc(page.htmlTitle)} · stage</title>
+<title>${esc(page.htmlTitle || spec.study.title)} · stage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
 <style>
@@ -83,11 +85,12 @@ ${BLUEPRINT_CSS}
 ${TENSION_CSS}
 ${PLAY_CSS}
 ${obj.STAGE_CSS || ""}
+${obj.CSS || ""}
 </style>
 </head>
 <body class="iso">
 <div class="st">
-  <p class="st__credit"><span>Listen Labs /</span> ${esc(page.credit)}</p>
+  <p class="st__credit"><span>Listen Labs /</span> ${esc(page.credit || spec.study.title)}</p>
   <div class="st__fig">${figure}</div>
   <aside class="st__side">${captionHtml()}</aside>
   <p class="st__foot"><span>n&nbsp;=&nbsp;${N} · ${esc(spec.study.title)}</span><span>Listen Labs study ${esc(spec.study.id)}</span></p>

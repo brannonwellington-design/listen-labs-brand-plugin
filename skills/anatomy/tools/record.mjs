@@ -4,6 +4,9 @@
 //
 // usage: node tools/record.mjs <stage.html> --script tour [--out out/video/x.mp4] [--fps 30] [--scale 1.5]
 //        [--stills out/video/x-slides] [--poster out/video/x-poster.png] [--theme light|dark] [--stills-only]
+//        [--figures]   with --stills, also write each beat's drawing alone: figure-NN.png (no caption column) and
+//                      figure-NN.svg (vector, every style resolved to plain attributes so PowerPoint, Keynote and print
+//                      read it without CSS)
 import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -14,6 +17,26 @@ const { chromePort } = await import(new URL("../scripts/chrome-port.mjs", import
 // Virtual clock: requestAnimationFrame callbacks and performance.now only move when the recorder says so.
 const CLOCK = `(()=>{let t=0,q=[];window.requestAnimationFrame=(cb)=>{q.push(cb);return q.length};window.cancelAnimationFrame=()=>{};
 performance.now=()=>t;window.__step=(ms)=>{t+=ms;const run=q;q=[];for(const cb of run){try{cb(t)}catch(e){console.error(e)}}return t};})();`;
+
+// The drawing as a standalone vector: a copy of the live SVG with every computed paint style written onto each element
+// as a plain attribute (CSS variables, classes and stylesheets resolved away), hidden layers dropped.
+const SVG_FLAT = `(() => {
+  const src = document.querySelector(".iso-stage svg"), out = src.cloneNode(true);
+  const A = ["fill", "fill-opacity", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "opacity"];
+  const a = [src, ...src.querySelectorAll("*")], b = [out, ...out.querySelectorAll("*")];
+  a.forEach((el, i) => {
+    const cs = getComputedStyle(el), o = b[i];
+    if (cs.display === "none" || cs.visibility === "hidden") { o.setAttribute("data-drop", ""); return; }
+    for (const p of A) { const v = cs.getPropertyValue(p); if (v) o.setAttribute(p, v); }
+    o.removeAttribute("class"); o.removeAttribute("style");
+  });
+  out.querySelectorAll("[data-drop]").forEach((el) => el.remove());
+  out.querySelectorAll("style").forEach((el) => el.remove());
+  const r = src.getBoundingClientRect();
+  out.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  out.setAttribute("width", Math.round(r.width)); out.setAttribute("height", Math.round(r.height));
+  return new XMLSerializer().serializeToString(out);
+})()`;
 
 if (typeof WebSocket === "undefined" && !process.execArgv.includes("--experimental-websocket")) {
   const child = spawn(process.execPath, ["--experimental-websocket", ...process.argv.slice(1)], { stdio: "inherit" });
@@ -39,6 +62,7 @@ async function main() {
   const poster = opt("--poster", null);
   const theme = opt("--theme", "light");
   const stillsOnly = argv.includes("--stills-only");
+  const figures = argv.includes("--figures");
   const url = pathToFileURL(resolve(target)).href + "#play=" + script;
 
   const profile = mkdtempSync(join(tmpdir(), "ll-record-"));
@@ -87,7 +111,13 @@ async function main() {
       const k = lastFrameOf.indexOf(f);
       if (k >= 0 && (stills || (poster && beats[k].poster))) {
         const png = Buffer.from(await shoot("png"), "base64");
-        if (stills) writeFileSync(join(resolve(stills), `beat-${String(k + 1).padStart(2, "0")}.png`), png);
+        const nn = String(k + 1).padStart(2, "0");
+        if (stills) writeFileSync(join(resolve(stills), `beat-${nn}.png`), png);
+        if (stills && figures) {
+          const box = JSON.parse(await evaluate(`JSON.stringify(document.querySelector(".iso-stage").getBoundingClientRect())`));
+          writeFileSync(join(resolve(stills), `figure-${nn}.png`), Buffer.from((await send("Page.captureScreenshot", { format: "png", clip: { x: box.x, y: box.y, width: box.width, height: box.height, scale: 1 } })).result.data, "base64"));
+          writeFileSync(join(resolve(stills), `figure-${nn}.svg`), await evaluate(SVG_FLAT));
+        }
         if (poster && beats[k].poster) writeFileSync(resolve(poster), png);
       }
       if (ff) { const jpg = await shoot("jpeg"); if (!ff.stdin.write(Buffer.from(jpg, "base64"))) await new Promise((r) => ff.stdin.once("drain", r)); }

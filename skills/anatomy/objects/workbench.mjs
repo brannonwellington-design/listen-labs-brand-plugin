@@ -32,6 +32,10 @@ const BLUEPRINT_SRC = readFileSync(new URL("./blueprint.js", import.meta.url), "
 const CUTAWAY_SRC = readFileSync(new URL("./cutaway.js", import.meta.url), "utf8");
 const TENSION_SRC = readFileSync(new URL("./tension.js", import.meta.url), "utf8");
 export const TENSION_EVENTS = ["pour"];
+// ---------- scene contract (pages/scene.mjs): how any host mounts, drives and controls this object ----------
+export const API = "WB", HOOK = "data-workbench";
+export const facts = (spec) => spec.benches.map((b, i) => ({ key: "bench." + b.key, value: b.users, base: spec.study.toolBase ?? spec.study.n, label: "use " + b.name, group: b.name, scene: { bench: i } }));
+export const controls = () => [];
 const workbenchGeometry = new Function("k", "spec", "P", GEOM_SRC + "\nreturn workbenchGeometry(k, spec, P);");
 export const CENTER = [0, 4, 30];
 

@@ -52,6 +52,11 @@ const CUTAWAY_SRC = readFileSync(new URL("./cutaway.js", import.meta.url), "utf8
 const TENSION_SRC = readFileSync(new URL("./tension.js", import.meta.url), "utf8");
 const PIN_SRC = readFileSync(new URL("./pin.js", import.meta.url), "utf8");
 export const TENSION_EVENTS = ["stall"];
+// ---------- scene contract (pages/scene.mjs): how any host mounts, drives and controls this object ----------
+export const API = "CONV", HOOK = "data-conveyor";
+export const facts = (spec) => spec.stations.map((s, i) => ({ key: "station." + s.key, value: s.count, base: spec.study.n, label: s.readout, group: s.name, scene: { station: i } }));
+export const controls = (spec) => (spec.shoppers || []).length ? [{ kind: "select", label: "Follow…", call: "follow", get: "following", none: -1,
+  options: spec.shoppers.map((p, i) => ({ value: i, label: "Follow " + p.label })) }] : [];
 export const CENTER = [4, 20, 20];
 
 function tipsFor(spec) {

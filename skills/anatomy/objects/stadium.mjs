@@ -13,6 +13,37 @@ const SRC = ["engine/compose.js", "engine/primitives.js", "props/stage.js", "wor
 const RT = ["camera", "parts", "blueprint", "tension", "pin"].map((f) => readFileSync(new URL(`./${f}.js`, import.meta.url), "utf8")).join("\n");
 const api = new Function("k", SRC + "\nreturn { layout: stadiumLayout, geometry: stadiumGeometry };")(k);
 export const TENSION_EVENTS = ["wave"];
+// ---------- scene contract (pages/scene.mjs): how any host mounts, drives and controls this object ----------
+export const API = "STAD", HOOK = "data-stadium";
+// structured facts a host can set as stat modules: every value computed by the pattern builder, each with the scene
+// state that shows it, so a host's "show me" can light the right part of the drawing
+export const facts = (spec) => [
+  ...spec.acts.map((a) => ({ key: "act." + a.key, value: a.up, base: spec.fans.filter((f) => f.feel[a.key]).length, label: `on their feet for ${a.name}`, group: a.when, scene: { act: a.key } })),
+  ...spec.acts.flatMap((a) => spec.blocks.map((b, i) => ({ key: `block.${b.key}.${a.key}`, value: spec.blockStats[i][a.key].positive, base: b.fans.length - spec.blockStats[i][a.key].none, label: `${b.name.toLowerCase()} on their feet for ${a.name}`, group: b.name, scene: { act: a.key, block: i } }))),
+  ...(spec.hopes || []).map((h, i) => ({ key: "hope." + h.key, value: h.count, base: h.base, label: `hoped for ${h.name.toLowerCase()}`, group: "Hopes", scene: { act: (spec.acts.find((a) => a.dressing === "hopes") || {}).key, hope: i } })),
+];
+export const CSS = `
+/* scoreboard cells: one per respondent; lit = on their feet */
+.sb-cell { fill: var(--anatomy-lo); stroke: none; }
+.sb-cell[data-on] { fill: var(--anatomy-accent, var(--content-brand)); }
+`;
+export const controls = (spec) => [
+  ...(spec.acts.length > 1 ? [{ kind: "segmented", label: "On stage", call: "setAct", get: "act", options: spec.acts.map((a, i) => ({ value: i, label: a.name })) }] : []),
+  { kind: "select", label: "Follow…", call: "follow", get: "following", none: null, options: spec.fans.map((f, i) => ({ value: i, label: "Follow " + f.label })) },
+];
+// the tension prints numbers computed from the coding at build time; refuse to build if any is missing a digit
+export function prepare(spec, curly = (s) => s) {
+  if (!spec.tension) return;
+  if (!spec.tension.numbers.every((s) => /\d/.test(s))) throw new Error("tension numbers must state a number");
+  spec.__tension = { label: curly(spec.tension.label), act: spec.tension.act, numbers: spec.tension.numbers.map((text) => ({ text })) };
+}
+// tour beats arrive resolved from the pattern builder (numbers computed from the coding); titles may not carry numbers
+export function scripts(spec, curly = (s) => s) {
+  return Object.fromEntries(Object.entries(spec.scripts || {}).map(([key, sc]) => [key, { key, title: sc.title, label: sc.label, beats: sc.beats.map((b, i) => {
+    if (/\d/.test(b.title || "")) throw new Error(`script ${key} beat ${i}: a title may not carry numbers`);
+    return { ...b, kicker: b.act ? spec.acts.find((a) => a.key === b.act).when : "", title: curly(b.title || ""), caption: b.caption ? { text: curly(b.caption) } : null, quote: b.quote ? { ...b.quote, quote: curly(b.quote.quote) } : null, sub: null };
+  }) }]));
+}
 
 export function build(spec) {
   const LAY = api.layout(spec);

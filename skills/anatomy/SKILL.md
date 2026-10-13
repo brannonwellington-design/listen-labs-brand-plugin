@@ -43,7 +43,11 @@ like: a stadium, a store, a machine). Read `references/patterns.md` before propo
 6. **QA.** Run `node tools/qa.mjs studies/out/<slug>.html` (pass `--api CONV`, `WB` or `BENCH` for the other patterns).
    It must pass. Then open every screenshot it wrote and review it against `references/vqa.md`. Fix and re-run until
    both are clean.
-7. **Deliver.** Hand over the local file and a short summary: what the scene shows, the reconciliation, and what it can't
+7. **Bundle.** Run `node tools/bundle.mjs <object> <spec> studies/<slug>/bundle --share internal|shareable` (add
+   `--video` for a film). Every host uses the bundle: a page pastes `embed.html`, a deck uses the per-beat stills, and
+   all their words and numbers come from `manifest.json`. See `references/embedding.md`. When the person asked for the
+   scene inside a one-pager or a deck, hand the bundle to `/research-artifacts` or `/pptx` and follow that section.
+8. **Deliver.** Hand over the file(s) and a short summary: what the scene shows, the reconciliation, and what it can't
    show. Publish as a private Artifact only if the person said it may be shared, and never for an internal study.
 
 ## When the world doesn't exist yet

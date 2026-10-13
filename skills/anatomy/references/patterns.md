@@ -58,6 +58,8 @@ running shoes) over a generic machine, and only when the mapping stays honest.
   a non-data number written `{lit:1–5}` and the report's own numbers in `headlineStats` and `report`.
 - Titles carry no numbers.
 - A claim ("all", "most", "more than") needs an `assert` that the build checks.
+- Copy never points at a page part ("in the header", "on the right"): the same caption and notes travel into
+  one-pagers, decks and reports through the bundle.
 
 Stage props available for hopes: `led-wall`, `dance-floor`, `guest-lift`, `flags`, `mic-stand`, `line-array`.
 A new prop goes in `props/stage.js` (contract at the top of `props/machine.js`), and its stage position goes in
