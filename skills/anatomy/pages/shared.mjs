@@ -1,21 +1,14 @@
 // Shared page pieces for every page shell: tokens, typography helpers, the editorial header.
 
-export const LL_TOKENS = `
-/* ===== Listen Labs tokens — Paper theme (brand_data.py, snapshot 2026-09-17) ===== */
-:root {
-  --content-primary:#120F08; --content-secondary:#6B6861; --content-disabled:#B6B4AF; --content-brand:#0021CC;
-  --surface-highlight:#FBF9F4; --surface-primary:#F9F4EB; --surface-secondary:#EEE8DD; --surface-tertiary:#E2DCCF;
-  --dataviz-categorical-1: hsl(229, 100%, 40%); --dataviz-categorical-2: hsl(229, 100%, 60%); --dataviz-categorical-4: hsl(229, 100%, 78%);
-  --dataviz-highlight-neutral-3: #C6C6C6;
-  --maxw: 1280px; --gutter: 24px; --margin: 24px;
-}
+// Brand tokens come from the plugin's generated token file (docs/tokens.css, built from brand_data.py), never from a
+// copy: brand rule 1. Only layout measures and the dark-mode data-viz steps the figures need are added here.
+import { readFileSync as __readTokens } from "node:fs";
+export const LL_TOKENS = __readTokens(new URL("../../../docs/tokens.css", import.meta.url), "utf8") + `
+:root { --maxw: 1280px; --gutter: 24px; --margin: 24px; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --content-primary:#F9F4EB; --content-secondary:#9E9B94; --content-disabled:#504E49; --content-brand:#3354FF;
-    --surface-highlight:#080603; --surface-primary:#130F06; --surface-secondary:#201C13; --surface-tertiary:#30291D;
-    --dataviz-categorical-1: hsl(229, 100%, 60%); --dataviz-highlight-neutral-3: #504E49;
-  }
+  :root:not([data-theme="light"]) { --dataviz-categorical-1: hsl(229, 100%, 60%); --dataviz-highlight-neutral-3: #504E49; }
 }
+:root[data-theme="dark"] { --dataviz-categorical-1: hsl(229, 100%, 60%); --dataviz-highlight-neutral-3: #504E49; }
 `;
 
 export const curly = (s) => String(s)

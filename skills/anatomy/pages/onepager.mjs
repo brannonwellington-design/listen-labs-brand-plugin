@@ -5,7 +5,7 @@ import { join } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
-const { applyWorld, headerHtml, HEADER_CSS, cameraCardCss, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS } = await import("./shared.mjs");
+const { LL_TOKENS: SHARED_TOKENS, applyWorld, headerHtml, HEADER_CSS, cameraCardCss, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS } = await import("./shared.mjs");
 
 const [objArg, specPath, outPath] = process.argv.slice(2);
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
@@ -202,28 +202,7 @@ ${viewToolsScript("CONV")}
 ${playScript("window.CONV", SCRIPTS)}
 `;
 
-const LL_TOKENS = `
-/* ===== Listen Labs tokens — Paper theme (brand_data.py, snapshot 2026-09-17) ===== */
-:root {
-  --content-primary:#120F08; --content-secondary:#6B6861; --content-disabled:#B6B4AF;
-  --content-brand:#0021CC; --content-brand-secondary:#7A85B8;
-  --surface-highlight:#FBF9F4; --surface-primary:#F9F4EB; --surface-secondary:#EEE8DD; --surface-tertiary:#E2DCCF;
-  --surface-brand-secondary:#D9DDF2;
-  --maxw: 1200px; --gutter: 24px; --margin: 24px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --content-primary:#F9F4EB; --content-secondary:#9E9B94; --content-disabled:#504E49; --content-brand:#3354FF;
-    --surface-highlight:#080603; --surface-primary:#130F06; --surface-secondary:#201C13; --surface-tertiary:#30291D;
-    --surface-brand-secondary:#131939;
-  }
-}
-:root[data-theme="dark"] {
-  --content-primary:#F9F4EB; --content-secondary:#9E9B94; --content-disabled:#504E49; --content-brand:#3354FF;
-  --surface-highlight:#080603; --surface-primary:#130F06; --surface-secondary:#201C13; --surface-tertiary:#30291D;
-  --surface-brand-secondary:#131939;
-}
-`;
+const LL_TOKENS = SHARED_TOKENS + ":root { --maxw: 1200px; }";   // brand tokens from docs/tokens.css; this page runs narrower
 
 const CSS = `
 *,*::before,*::after { box-sizing: border-box; }

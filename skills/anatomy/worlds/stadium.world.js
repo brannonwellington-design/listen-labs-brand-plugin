@@ -4,7 +4,7 @@
 //
 // Data (spec): study.n · blocks [{ key, name, fans: [fan index…] }] in seating order (bend → far straight) ·
 // fans [{ label, block, feel: { <act key>: "positive" | "neutral" | "negative" | null } }] ·
-// acts [{ key, dressing: "backline" | "hopes" }] · hopes [{ key, prop }].
+// acts [{ key, dressing: "backline" | "hopes" }] · hopes [{ key, prop: led-wall | dance-floor | guest-lift | flags | mic-stand | line-array }].
 // State (rebuild): { act, poses (0 seated … 1 standing, per fan; omitted = from act), sel: { block | hope }, follow }.
 // Plain source, concatenated after engine/compose.js, engine/primitives.js and props/stage.js.
 
@@ -111,16 +111,16 @@ function stadiumGeometry(k, spec, P, state = {}) {
   const dressing = [];
   if (act.dressing === "backline") dressing.push({ key: "backline", built: PROPS.backline.build(c, { deck: DECK, z: Z }) });
   else {
-    const litHope = (key) => sel.hope != null && spec.hopes[sel.hope].key === key;
+    // each hope names the stage prop that stands for it (spec.hopes[].prop); the world knows where each prop goes
     const make = {
-      spectacle: () => PROPS["led-wall"].build(c, { deck: DECK, z: Z, h: 30, lit: litHope("spectacle"), part: "hope-spectacle" }),
-      choreography: () => PROPS["dance-floor"].build(c, { x: DECK.x + 8, y: DECK.y + 10, z: Z, w: 22, d: 13, lit: litHope("choreography"), part: "hope-choreography" }),
-      guests: () => PROPS["guest-lift"].build(c, { x: DECK.x + DECK.w - 12, y: DECK.y + 17, z: Z, lit: litHope("guests"), part: "hope-guests" }),
-      latin_culture: () => PROPS.flags.build(c, { at: [[DECK.x + 1.5, DECK.y + DECK.d - 1.5], [DECK.x + DECK.w - 13, DECK.y + DECK.d - 1.5]], z: Z, h: 30, lit: litHope("latin_culture"), part: "hope-latin_culture" }),
-      live_vocals: () => PROPS["mic-stand"].build(c, { x: 0, y: RUN.y + RUN.d - 6, z: Z, lit: litHope("live_vocals"), part: "hope-live_vocals" }),
-      hits: () => PROPS["line-array"].build(c, { at: [[DECK.x + 6, DECK.y + DECK.d - 2], [DECK.x + DECK.w - 6, DECK.y + DECK.d - 2]], top: 52, lit: litHope("hits"), part: "hope-hits" }),
+      "led-wall": (lit, part) => PROPS["led-wall"].build(c, { deck: DECK, z: Z, h: 30, lit, part }),
+      "dance-floor": (lit, part) => PROPS["dance-floor"].build(c, { x: DECK.x + 8, y: DECK.y + 10, z: Z, w: 22, d: 13, lit, part }),
+      "guest-lift": (lit, part) => PROPS["guest-lift"].build(c, { x: DECK.x + DECK.w - 12, y: DECK.y + 17, z: Z, lit, part }),
+      flags: (lit, part) => PROPS.flags.build(c, { at: [[DECK.x + 1.5, DECK.y + DECK.d - 1.5], [DECK.x + DECK.w - 13, DECK.y + DECK.d - 1.5]], z: Z, h: 30, lit, part }),
+      "mic-stand": (lit, part) => PROPS["mic-stand"].build(c, { x: 0, y: RUN.y + RUN.d - 6, z: Z, lit, part }),
+      "line-array": (lit, part) => PROPS["line-array"].build(c, { at: [[DECK.x + 6, DECK.y + DECK.d - 2], [DECK.x + DECK.w - 6, DECK.y + DECK.d - 2]], top: 52, lit, part }),
     };
-    for (const h of spec.hopes) if (make[h.key]) dressing.push({ key: "hope-" + h.key, built: make[h.key]() });
+    spec.hopes.forEach((h, hi) => { if (!make[h.prop]) throw new Error("stadium: no stage placement for prop " + h.prop); dressing.push({ key: "hope-" + h.key, built: make[h.prop](sel.hope === hi, "hope-" + h.key) }); });
   }
   for (const d of dressing) items.push(...d.built.items);
 

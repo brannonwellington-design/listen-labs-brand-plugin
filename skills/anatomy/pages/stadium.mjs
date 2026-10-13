@@ -34,8 +34,9 @@ const DATA = {
   n: N,
   acts: spec.acts.map(({ key, name, when, up, report, code, dressing }) => ({ key, name, when, up, report, code, dressing, asked: spec.fans.filter((f) => f.feel[key]).length })),
   blocks: spec.blocks.map((b, i) => ({ key: b.key, name: b.name, scale: b.scale, size: b.fans.length, stats: spec.blockStats[i] })),
-  hopes: spec.hopes.map(({ key, name, prop, count, base, quote }) => ({ key, name, prop, count, base, quote })),
-  fans: spec.fans.map(({ label, block, familiarity, feel, cultural, hopes, evidence, complete }) => ({ label, block, familiarity, feel, cultural, hopes, complete, evidence: Object.fromEntries(Object.entries(evidence).map(([k2, e]) => [k2, { quote: curly(e.quote), source: e.source }])) })),
+  hopes: spec.hopes.map(({ key, name, propName, count, base, quote }) => ({ key, name, prop: propName, count, base, quote })),
+  segNote: spec.page.segmentNote || "",
+  fans: spec.fans.map(({ label, block, segValue, feel, hopes, evidence, complete }) => ({ label, block, segValue, feel, hopes, complete, evidence: Object.fromEntries(Object.entries(evidence).map(([k2, e]) => [k2, { quote: curly(e.quote), source: e.source }])) })),
 };
 const notes = spec.page.notes.map((n) => `<li>${t(n)}</li>`).join("");
 
@@ -65,7 +66,7 @@ function render(d) {
     const f = DATA.fans[d.follow], b = DATA.blocks.find((x) => x.key === f.block);
     const parts = DATA.acts.map((x) => { const v = f.feel[x.key], e = f.evidence[x.code]; return '<div class="fan-act' + (x.key === a.key ? " is-now" : "") + '"><p class="detail__k">' + x.when + ' · ' + x.name + ': ' + (v ? FEEL[v] : "never asked") + '</p>' + quoteHtml(e, f.label) + '</div>'; }).join("");
     const hopes = f.hopes.length ? '<p class="detail__k">Hoped for: ' + f.hopes.map((k) => DATA.hopes.find((h) => h.key === k).name.toLowerCase()).join(", ") + '</p>' : "";
-    det.innerHTML = '<p class="detail__title">' + f.label + ' · ' + b.name + ' (rated ' + f.familiarity + ' of 5)' + (f.complete ? "" : " · partial interview") + '</p>' + parts + hopes + '<button class="link-btn" type="button" data-unfollow>Back to everyone</button>';
+    det.innerHTML = '<p class="detail__title">' + f.label + ' · ' + b.name + (DATA.segNote ? ' (' + DATA.segNote.replace("{value}", f.segValue) + ')' : '') + (f.complete ? "" : " · partial interview") + '</p>' + parts + hopes + '<button class="link-btn" type="button" data-unfollow>Back to everyone</button>';
   } else if (d.hope != null && hopesOn) {
     const h = DATA.hopes[d.hope];
     det.innerHTML = '<p class="detail__num">' + h.count + '</p><p class="detail__base">of ' + h.base + ' hoped for ' + h.name.toLowerCase() + '</p><p class="detail__k">On stage: the ' + h.prop.toLowerCase() + '. Hopes are multi-mention, so they add up to more than ' + h.base + '.</p>' + quoteHtml(h.quote);

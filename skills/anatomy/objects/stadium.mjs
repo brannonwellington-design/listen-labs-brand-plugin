@@ -21,7 +21,7 @@ export function build(spec) {
   const G = api.geometry(k, spec, P, { act: spec.acts[actIdx].key });
   const svg = k.figureSvg({ width: WIDTH, height: HEIGHT, label: spec.figure.label, body: [G.body] });
   const SPEC = { study: { n: spec.fans.length }, blocks: spec.blocks.map(({ key, name, fans }) => ({ key, name, fans })),
-    fans: spec.fans.map(({ label, block, feel }) => ({ label, block, feel })), acts: spec.acts.map(({ key, name, dressing }) => ({ key, name, dressing })), hopes: (spec.hopes || []).map(({ key, name }) => ({ key, name })) };
+    fans: spec.fans.map(({ label, block, feel }) => ({ label, block, feel })), acts: spec.acts.map(({ key, name, dressing }) => ({ key, name, dressing })), hopes: (spec.hopes || []).map(({ key, name, prop }) => ({ key, name, prop })) };
   const R = { rise: 5, depth: 9, d0: 6 };
   const blockCam = LAY.blocks.map((B) => { const mid = (B.s0 + B.s1) / 2, [x, y] = LAY.T.point(mid, R.d0 + 2 * R.depth); return { az: AZ, zoom: 1.9, focus: [x, y + 6, 12] }; });
   const live = `
@@ -116,7 +116,7 @@ function setAct(a, quiet) {
   aim(); say(); emit("act"); run();
 }
 function selectBlock(i) { endWave(); selBlock = i; selHope = null; if (follow != null) setFollowRaw(null); bp.lit(i == null ? -1 : i); rebuild(); drawFans(true); aim(); say(); emit("block"); run(); }
-function selectHope(i) { if (SPEC.acts[act].dressing !== "hopes") return; endWave(); selHope = i; selBlock = null; rebuild(); drawFans(true); aim(); say(); emit("hope"); run(); }
+function selectHope(i) { if (SPEC.acts[act].dressing !== "hopes") return; endWave(); selHope = i; selBlock = null; if (follow != null) setFollowRaw(null); rebuild(); drawFans(true); aim(); say(); emit("hope"); run(); }
 function setFollowRaw(i) { follow = i; if (i == null) pin.hide(); else { const f = SPEC.fans[i]; pin.set(f.label, SPEC.blocks.find((b) => b.key === f.block).name); } }
 function setFollow(i) { endWave(); setFollowRaw(i == null || i < 0 ? null : i); if (follow != null) selBlock = null; rebuild(); drawFans(true); aim(); say(); emit("follow"); run(); }
 function setView(v, quiet) {
