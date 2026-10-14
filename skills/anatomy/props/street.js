@@ -119,7 +119,7 @@ PROPS.planters = { slots: {}, build(c, { x, ys, part = "planters" }) {
 
 // sedan: a low body with a long bonnet, a glass cabin set back, tyres showing at the sides. state "damaged": skewed where
 // it stopped, the nose crumpled, a cracked windscreen, the bumper on the road and a flat tyre
-PROPS.sedan = { slots: {}, footprint: [34, 20], build(c, { x, y, state = "repaired", part = "sedan" }) {
+PROPS.sedan = { slots: {}, footprint: [42, 30], variants: [{ state: "damaged" }, { state: "repaired" }], build(c, { x, y, state = "repaired", part = "sedan" }) {
   const { k, P, S, L, at } = c;
   const W = 30, Dp = 13, hurt = state === "damaged", ang = hurt ? -0.32 : 0;
   const cs = Math.cos(ang), sn = Math.sin(ang);
@@ -152,7 +152,7 @@ PROPS.sedan = { slots: {}, footprint: [34, 20], build(c, { x, y, state = "repair
 } };
 
 // house: walls, a stepped hip roof, windows and a door. state "damaged": a tarp tied over the roof, boarded windows, water
-PROPS.house = { slots: {}, footprint: [26, 24], build(c, { x, y, state = "repaired", part = "house" }) {
+PROPS.house = { slots: {}, footprint: [38, 32], variants: [{ state: "damaged" }, { state: "repaired" }], build(c, { x, y, state = "repaired", part = "house" }) {
   const { k, P, S, L, D, slab, faceX, faceY, rect, at } = c;
   const W = 24, Dp = 22, Hh = 17, hurt = state === "damaged";
   const B = { x: x - W / 2, y: y - Dp / 2, w: W, d: Dp, r: 0.6 };
@@ -172,14 +172,15 @@ PROPS.house = { slots: {}, footprint: [26, 24], build(c, { x, y, state = "repair
     const tarp = { x: B.x - 1, y: y - 1, w: W + 2, d: Dp / 2 + 2.4, r: 0.6 };
     out.push(S(slab(tarp, Hh + 1.6, 0.8, 3, 0.2), { tone: "lo", crease: "none" }));
     const ties = [[tarp.x + 2, tarp.y + tarp.d], [tarp.x + tarp.w - 2, tarp.y + tarp.d]];
-    out.push(L(ties.map(([tx, ty]) => k.segment([tx, ty, Hh + 1.6], [tx + (tx > x ? 4 : -4), ty + 4, 0], P)).join(""), { tone: "lo", free: true }));
-    out.push(D(ties.map(([tx, ty]) => at([tx + (tx > x ? 4 : -4), ty + 4, 0])), { size: 0.5, tone: "mid" }));
-    out.push(L(k.ring(fx + 6, y + 6, 4, 0.2, P, 20) + k.ring(fx + 5, y + 6, 2, 0.2, P, 14), { tone: "faint", free: true }));
+    out.push(L(ties.map(([tx, ty]) => k.segment([tx, ty, Hh + 1.6], [tx + (tx > x ? 3 : -3), ty + 3, 0], P)).join(""), { tone: "lo", free: true }));
+    out.push(D(ties.map(([tx, ty]) => at([tx + (tx > x ? 3 : -3), ty + 3, 0])), { size: 0.5, tone: "mid" }));
+    out.push(L(k.ring(fx + 4, y + 6, 3, 0.2, P, 20) + k.ring(fx + 3.4, y + 6, 1.4, 0.2, P, 14), { tone: "faint", free: true }));
   } else {
     out.push(D([at([fx, y + 5.8, 6.4])], { size: 0.45, tone: "hi" }));                                                     // door handle
     out.push(S(slab({ x: fx + 1.5, y: B.y + 2, w: 3, d: 8, r: 0.5 }, 0, 2.6, 3, 0.2), { tone: "mid" }) + S(k.cylinder(fx + 3, B.y + 4, 1.3, 2.6, 2.2, P, 12, 0.4), { tone: "hi", crease: "lo" }) + S(k.cylinder(fx + 3, B.y + 8, 1.3, 2.6, 2.2, P, 12, 0.4), { tone: "hi", crease: "lo" }));   // planter
   }
-  return { items: [{ phase: "near", part, tip: part, svg: out.join(""), bounds: [B.x - 1, B.y - 1, 0, fx + (hurt ? 10 : 5), fy + 1, z] }],
+  // bounds cover everything drawn: the tarp's tie-downs and the puddle reach past the walls
+  return { items: [{ phase: "near", part, tip: part, svg: out.join(""), bounds: hurt ? [B.x - 4, B.y - 1, 0, fx + 7.2, y + Dp / 2 + 4.8, z] : [B.x - 1.6, B.y - 1, 0, fx + 4.6, fy + 1, z] }],
     part: { name: hurt ? "Damaged house" : "Repaired house", move: [0, 0, 18], anchor: [x, y, z] } };
 } };
 
