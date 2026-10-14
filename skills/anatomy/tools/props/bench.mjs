@@ -1,7 +1,8 @@
 // Prop bench: build every prop a file defines, in every variant it declares, check it, and draw a contact sheet for
 // the visual review. This is the loop a generated prop goes through before any world uses it (references/props.md).
 //
-// usage: node tools/props/bench.mjs <props.js> [--prop <name>] [--out <dir>] [--no-shots]
+// usage: node tools/props/bench.mjs <props.js> [--prop <name>] [--out <dir>] [--zoom 2] [--no-shots]
+//   --zoom draws every cell larger, for reviewing small details
 //   <props.js> is a study's own props file (scenes/<slug>/props/*.js) or a library file (props/*.js).
 //
 // Checks, per prop and variant (exit 1 if any fails):
@@ -42,7 +43,8 @@ return { PROPS, PHASES, makeCtx, composeWorld, person, ground, mine };`)(k);
 const names = env.mine.filter((n) => !only || n === only);
 if (!names.length) { console.error(only ? `no prop "${only}" in ${file}` : `${file} defines no props`); process.exit(2); }
 
-const AZ = [30, 45, 62, 80], CELL = [420, 300];   // the camera's whole range (objects/camera.js keeps azimuth within 30–80°)
+const ZOOM = Math.max(1, Number(opt("--zoom", 1)));
+const AZ = [30, 45, 62, 80], CELL = [420 * ZOOM, 300 * ZOOM];   // the camera's whole range (objects/camera.js keeps azimuth within 30–80°)
 const fails = [], warns = [];
 const fail = (n, msg) => fails.push(`${n}: ${msg}`), warn = (n, msg) => warns.push(`${n}: ${msg}`);
 const fin = (a) => Array.isArray(a) && a.every((v) => typeof v === "number" && isFinite(v));
@@ -106,7 +108,7 @@ for (const name of names) {
 const W = CELL[0] * AZ.length, H = CELL[1] * rows.length + 30 * rows.length;
 const body = rows.map((r, ri) => `<g transform="translate(0 ${ri * (CELL[1] + 30)})"><text class="bench-tag" x="8" y="18">${r.tag.replace(/[<&]/g, "")}</text>${r.cells.map((cell, ci) => `<g transform="translate(${ci * CELL[0]} 24)">${cell.svg}<text class="bench-tag" x="8" y="${CELL[1] - 8}">az ${cell.az}</text></g>`).join("")}</g>`).join("");
 const skin = read("skin/ll-skin.css");
-const page = (theme) => `<!doctype html><html data-theme="${theme}"><meta charset=utf-8><title>Prop bench</title><style>${k.ISO_CSS}${skin} html,body{margin:0;background:var(--anatomy-paper, var(--paper, #fff))} .bench-tag{font:12px/1 Inter, system-ui, sans-serif; fill: var(--anatomy-muted, #888)}</style><body data-theme="${theme}"><div class="iso-plate" style="padding:0;border:0;border-radius:0;width:${W}px"><svg class="iso" data-theme="${theme}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${body}</svg></div>`;
+const page = (theme) => `<!doctype html><html data-theme="${theme}"><meta charset=utf-8><title>Prop bench</title><style>${k.ISO_CSS}${skin} html,body{margin:0;background:${theme === "dark" ? "#16130f" : "#faf8f4"}} .bench-tag{font:12px/1 Inter, system-ui, sans-serif; fill: var(--anatomy-muted, #888)}</style><body data-theme="${theme}"><div class="iso-plate" style="padding:0;border:0;border-radius:0;width:${W}px"><svg class="iso" data-theme="${theme}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${body}</svg></div>`;
 const stem = basename(file, ".js") + (only ? "-" + only : "");
 for (const theme of ["light", "dark"]) writeFileSync(join(out, `${stem}-${theme}.html`), page(theme));
 

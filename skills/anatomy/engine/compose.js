@@ -42,8 +42,18 @@ function makeCtx(k, P) {
     return pts;
   };
   const rect = (a0, a1, z0, z1) => [[a0, z0], [a1, z0], [a1, z1], [a0, z1]];
+  // diagonal hatching across a plan rectangle lying at height z: the way to make an area read darker (paint, tape,
+  // a chequer cell), since every fill is paper and tone colours only edges and lines. Returns a path d for L(…).
+  const hatch = ({ x, y, w, d }, z, gap = 1.4) => {
+    const out = [];
+    for (let s = x + y + gap; s < x + w + y + d; s += gap) {
+      const lo = Math.max(x, s - (y + d)), hi = Math.min(x + w, s - y);
+      if (hi - lo > 0.2) out.push(k.lineOnTop([lo, s - lo], [hi, s - hi], z, P));
+    }
+    return out.join("");
+  };
   const box = (plan, z0, z1) => [plan.x, plan.y, z0, plan.x + plan.w, plan.y + plan.d, z1];
-  return { k, P, at, S, L, D, slab, byDepth, openBox, faceY, faceX, stadium, rect, box };
+  return { k, P, at, S, L, D, slab, byDepth, openBox, faceY, faceX, stadium, rect, box, hatch };
 }
 
 // Order items for the painter. Within a phase, an edge a → b (a drawn first) is added only when the two items'

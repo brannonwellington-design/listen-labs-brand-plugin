@@ -6,10 +6,13 @@ for this study. They live with the study, never in the repository, and go throug
 
 ## Where they go
 
-- Write them to `scenes/<slug>/props/<name>.js` (study data: git-ignored, private).
+- Write them to `scenes/<slug>/props/<name>.js` (study data: git-ignored, private). When developing inside the plugin
+  repository itself, the study folder is `skills/anatomy/studies/<slug>/` instead; the same rules apply.
 - List the file in the study's `scene.json`: `"props": ["props/<name>.js"]`. The builder carries the source into the
   spec, so the page, the embed, the stills and the film all have it.
-- Name them in the world's slots: for the lineup street, `scenery.low` / `scenery.high` (`references/patterns.md`).
+- Name them in the world's slots: for the lineup street, `scenery.low` / `scenery.high`, and set `scenery.surface`
+  (`tiles` pavement, `lanes` for a track or road, `plain`) so the ground belongs to the subject too
+  (`references/patterns.md`).
 
 ## The contract
 
@@ -37,12 +40,19 @@ PROPS["finish-arch"] = {
 - Several solids inside one item draw in the order you push them: far ones first. `c.byDepth(points)` sorts positions
   far to near (wheels, posts, legs).
 
+- **Ground paint** (a start line, a chequer, a puddle) is its own item with `phase: "ground"` and **no `part`**, so it
+  stays on the ground when the scene is taken apart. Anything with a `part` lifts by its `move`.
+
 ## Scale and the viewer
 
 - A person is 7 tall. A door is about 12, a car about 30 long, a house about 24 wide, a storey about 9.
 - The camera looks from the +x, +y side, above, at an azimuth between 30° and 80°. The visible faces are the top, +x
   and +y: put doors, windows, signs and damage on those. A face toward -x or -y is never seen.
 - Keep props low where people stand behind them. A tall prop belongs past the end of a lane, not beside one.
+- At the lineup street's azimuth (62°), y is the depth axis: things meant to read side by side (a podium's three steps,
+  a row of signs) run along x. A row along y stacks up behind itself and loses its shape. Check the 62° column of the
+  bench sheet first.
+- Across-both-lanes props (a gantry, a start line) are long in y: footprint about [12–16, 104] for the street's two lanes.
 
 ## Drawing cookbook (c = the drawing context, k = the kit)
 
@@ -58,9 +68,16 @@ PROPS["finish-arch"] = {
 | A ring on the ground (puddle, mark) | `L(k.ring(cx, cy, r, z, P, steps), { tone: "faint", free: true })` |
 | A dot (handle, lamp, rivet) | `D([at([x, y, z])], { size: 0.5, tone })` |
 | A seam around a slab | `S(..., { inner: L(k.sideSeam(plan, z, P, steps), { tone: "faint" }) })` |
+| An area that should read darker (paint, tape, a chequer cell, a tarp) | `L(c.hatch({ x, y, w, d }, z, gap), { tone })`: diagonal hatching |
 
-Tones: `hi` (lightest face, glass, paint), `mid` (bodies, walls), `lo` (tyres, bases, tarps, shadowed parts), `faint`
-(seams, marks). `free: true` marks a line end that is meant to stop in the air (a rope's stake, a crack's tip).
+**Fills are always paper.** A solid's tone colours its edges and the face shading, not a darker fill: `lo` gives a
+heavier outline, not a black object. To make an area read darker, hatch it. For the scene's own light and dark themes,
+`mid` and `lo` survive both; `faint` details can vanish in dark, so keep anything that must read at `mid`.
+
+**Line ends.** The line check (`scripts/lines.mjs`) needs every texture line to end on something: another stroke, a dot,
+an outline, or under a solid painted after it. A line that merely lies on a face's interior is not rooted. Fixes, in
+order: end it on an edge, put a dot (`D`) at the end (a knot, a rivet), draw the solid that should cover the end after
+the line, or mark an end that truly stops in the air with `free: true` (both ends), `free: "start"` or `free: "end"`.
 
 ## Style rules
 
@@ -75,7 +92,8 @@ Tones: `hi` (lightest face, glass, paint), `mid` (bodies, walls), `lo` (tyres, b
 ## The loop
 
 1. Write the props file.
-2. Bench it: `node "$A/tools/props/bench.mjs" scenes/<slug>/props/<name>.js`. It checks the contract, the footprint,
+2. Bench it: `node "$A/tools/props/bench.mjs" scenes/<slug>/props/<name>.js` (add `--zoom 2` to see small details;
+   floating line ends are ringed in `bench/<name>-lines.png`). It checks the contract, the footprint,
    the bounds at four azimuths, the scale, the brand and the line ends, and writes a light and a dark contact sheet next to
    the file (`bench/`). Fix until it passes. Never loosen a check; fix the prop.
 3. Open both sheets and review them against the checklist below. Fix and re-bench until every item holds.
