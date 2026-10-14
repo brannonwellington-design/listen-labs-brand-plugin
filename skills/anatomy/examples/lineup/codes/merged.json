@@ -1,0 +1,281 @@
+[
+ {
+  "readable_id": 1,
+  "response_uuid": "00000000-0000-0000-0000-000000000000",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekday",
+   "r_morning": "Poor",
+   "r_afternoon": "Not applicable"
+  },
+  "codes": {
+   "wait": "very_poor",
+   "lowest": "afternoon"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000000?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000000?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 2,
+  "response_uuid": "00000000-0000-0000-0000-000000000001",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekday",
+   "r_morning": "Very poor",
+   "r_afternoon": "Excellent"
+  },
+  "codes": {
+   "wait": "very_poor",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000001?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000001?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 3,
+  "response_uuid": "00000000-0000-0000-0000-000000000002",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekday",
+   "r_morning": "Fair",
+   "r_afternoon": "Good"
+  },
+  "codes": {
+   "wait": "fair",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000002?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000002?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 4,
+  "response_uuid": "00000000-0000-0000-0000-000000000003",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekday",
+   "r_morning": "Very poor",
+   "r_afternoon": "Not applicable"
+  },
+  "codes": {
+   "wait": "very_poor",
+   "lowest": "afternoon"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000003?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000003?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 5,
+  "response_uuid": "00000000-0000-0000-0000-000000000004",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekday",
+   "r_morning": "Fair",
+   "r_afternoon": "Good"
+  },
+  "codes": {
+   "wait": "very_poor",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000004?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000004?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 6,
+  "response_uuid": "00000000-0000-0000-0000-000000000005",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekday",
+   "r_morning": "Poor",
+   "r_afternoon": "Good"
+  },
+  "codes": {
+   "wait": "very_poor",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000005?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000005?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 7,
+  "response_uuid": "00000000-0000-0000-0000-000000000006",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekday",
+   "r_morning": "Fair",
+   "r_afternoon": "Not applicable"
+  },
+  "codes": {
+   "wait": "fair",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000006?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000006?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 8,
+  "response_uuid": "00000000-0000-0000-0000-000000000007",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekend",
+   "r_morning": "Fair",
+   "r_afternoon": "Good"
+  },
+  "codes": {
+   "wait": "fair",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000007?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000007?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 9,
+  "response_uuid": "00000000-0000-0000-0000-000000000008",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekend",
+   "r_morning": "Fair",
+   "r_afternoon": "Excellent"
+  },
+  "codes": {
+   "wait": "excellent",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000008?message=3#a-3"
+   },
+   "wait": {
+    "quote": "(Synthetic example answer about the wait.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000008?message=3#a-3"
+   }
+  }
+ },
+ {
+  "readable_id": 10,
+  "response_uuid": "00000000-0000-0000-0000-000000000009",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekend",
+   "r_morning": "Good",
+   "r_afternoon": "Not applicable"
+  },
+  "codes": {
+   "wait": "none",
+   "lowest": "afternoon"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000009?message=3#a-3"
+   },
+   "wait": null
+  }
+ },
+ {
+  "readable_id": 11,
+  "response_uuid": "00000000-0000-0000-0000-000000000010",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekend",
+   "r_morning": "Fair",
+   "r_afternoon": "Good"
+  },
+  "codes": {
+   "wait": "none",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000010?message=3#a-3"
+   },
+   "wait": null
+  }
+ },
+ {
+  "readable_id": 12,
+  "response_uuid": "00000000-0000-0000-0000-000000000011",
+  "is_complete": true,
+  "closed": {
+   "visits": "weekend",
+   "r_morning": "Fair",
+   "r_afternoon": "Excellent"
+  },
+  "codes": {
+   "wait": "none",
+   "lowest": "morning"
+  },
+  "evidence": {
+   "lowest": {
+    "quote": "(Synthetic example answer: the queue at the counter is the worst part of my visit.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0000-000000000011?message=3#a-3"
+   },
+   "wait": null
+  }
+ }
+]

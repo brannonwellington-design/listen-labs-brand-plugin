@@ -34,7 +34,9 @@ PROPS["sidewalk-ruler"] = { slots: { scale: "axis" }, build(c, { x0, step, min =
   }
   // the scale's end numbers, painted on the pavement just beyond each end of the strip, where nobody stands
   // (a worded scale paints every word on the strip at its tick instead)
-  const nums = labels ? labels.map((w, i) => k.faceTextSvg(k.topMatrix([x0 + i * step, y - 2.6], 0.4, P), w, { size: 5, tone: "mid", anchor: "middle" })).join("")
+  // (a word longer than its step shrinks to fit, down to size 3; past that, shorten the words: about 12 characters)
+  const fit = (w) => Math.max(3, Math.min(5, (step * 0.92) / (0.56 * w.length)));
+  const nums = labels ? labels.map((w, i) => k.faceTextSvg(k.topMatrix([x0 + i * step, y - 2.6], 0.4, P), w, { size: fit(w), tone: "mid", anchor: "middle" })).join("")
     : [[min, x0 - 10], [max, x0 + (max - min) * step + 9]].map(([r, x]) => k.faceTextSvg(k.topMatrix([x, y + 1.6], 0, P), String(r), { size: 5, tone: "mid", anchor: "middle" })).join("");
   const svg = S(slab(strip, 0, 0.4, 3), { tone: "hi", crease: "none" }) + L(minor.join(""), { tone: "lo", free: true }) + L(major.join(""), { tone: "mid", free: true }) + nums;
   return { items: [{ phase: "ground", part, tip: part, svg, bounds: c.box(strip, 0, 0.4) }], part: { name: "Comfort scale", move: [0, 0, 0], anchor: [x0 + ((max - min) * step) / 2, y, 0.4] } };

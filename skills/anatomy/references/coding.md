@@ -12,13 +12,15 @@ Page through `get_study_responses` with `question_numbers` set to one early clos
 the `readable_id` of every response with `is_complete: true`. Also collect partial responses that reached the
 questions the scene depends on, and mark them partial.
 
-The tool numbers questions one higher than the study guide (a consent item comes first). Always match questions by
-their text.
+The tool's question numbers can differ from the study guide, and the offset varies within one study (screener items,
+consent, branches). Always match questions by their text. Interviewers also reword questions, so match on the gist and
+check a few transcripts by eye before trusting a text match.
 
 ## 2. Write two files
 
 **`codebook.md`**, for the coders. Copy each dimension's definition from the report's own wording. For each one, give:
-- the question text it comes from
+- the question text it comes from, and which other questions (if any) it may draw on: coders must not take an answer
+  from a later question unless the codebook says so
 - its allowed values, plus `none` for "never asked"
 - which values may rest on absence (no quote)
 

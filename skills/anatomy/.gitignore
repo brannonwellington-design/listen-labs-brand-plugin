@@ -1,2 +1,5 @@
 # Study data (specs, codes, verbatims, renders) never enters git: some studies are internal or customer-confidential.
 studies/
+
+# built from the synthetic examples
+examples/*/specs/

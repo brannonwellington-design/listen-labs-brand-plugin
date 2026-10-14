@@ -19,14 +19,14 @@ export const TENSION_EVENTS = ["walk"];
 // ---------- scene contract (pages/scene.mjs) ----------
 export const API = "LINE", HOOK = "data-lineup";
 export const controls = (spec) => [
-  { kind: spec.conds.length > 4 ? "select" : "segmented", label: spec.page?.condLabel || "Situation", call: "setCond", get: "cond", placeholder: false, options: spec.conds.map((c, i) => ({ value: i, label: c.short })) },
+  ...(spec.conds.length < 2 ? [] : [{ kind: spec.conds.length > 4 ? "select" : "segmented", label: spec.page?.condLabel || "Situation", call: "setCond", get: "cond", placeholder: false, options: spec.conds.map((c, i) => ({ value: i, label: c.short })) }]),
   { kind: "select", label: "Follow…", call: "follow", get: "following", none: null, options: spec.people.map((p, i) => ({ value: i, label: "Follow " + p.label })) },
 ];
 // A numeric scale lists each lane's median; a worded scale's medians are too coarse to tell lanes apart (most read Good
 // or Excellent), so it lists how many in each lane rated it at the low threshold or worse, out of that lane's n.
 export const facts = (spec) => spec.conds.flatMap((c, ci) => spec.groups.map((g, gi) => {
   const s = spec.groupStats[gi][c.key], L = spec.scale.labels;
-  return L ? { key: `low.${c.key}.${g.key}`, value: s.low, base: s.n, label: `${L[spec.scale.low - spec.scale.min]} or worse, ${g.name.toLowerCase()}`, group: c.name, scene: { cond: ci, group: gi } }
+  return L ? { key: `low.${c.key}.${g.key}`, value: s.low, base: s.n, label: `${L[spec.scale.low - spec.scale.min]} ${spec.scale.lowPhrase || "or worse"}, ${g.name.toLowerCase()}`, group: c.name, scene: { cond: ci, group: gi } }
     : { key: `median.${c.key}.${g.key}`, value: s.median, base: spec.scale.max, label: `median, ${g.name.toLowerCase()} (n = ${s.n})`,   // the condition is the group heading
       group: c.name, scene: { cond: ci, group: gi } };
 }));
@@ -82,7 +82,7 @@ let PARTS = curbGeometry(KIT, SPEC, P, state()).parts;
 const order = () => PARTS.map((p) => p.key);
 let parts = makeParts({ svg, KIT, parts: PARTS, order: order() });
 const view = { blueprint: false, apart: false };
-const callouts = () => SPEC.groups.map((g, gi) => { const p = PARTS.find((q) => q.key === "median-" + g.key); const s = SPEC.groupStats[gi][SPEC.conds[cond].key]; return p ? { part: p.key, anchor: p.anchor, num: String(gi + 1).padStart(2, "0"), name: g.name + " · median", count: s.median, n: SPEC.scale.max, ...(s.word ? { text: s.word, count: s.median == null ? null : s.median - SPEC.scale.min + 1 } : {}) } : null; }).filter(Boolean);
+const callouts = () => SPEC.groups.map((g, gi) => { const p = PARTS.find((q) => q.key === "median-" + g.key); const s = SPEC.groupStats[gi][SPEC.conds[cond].key]; return p ? { part: p.key, anchor: p.anchor, num: String(gi + 1).padStart(2, "0"), name: g.name, count: s.median, n: SPEC.scale.max, ...(s.word ? { text: s.word, count: s.median == null ? null : s.median - SPEC.scale.min + 1 } : {}) } : null; }).filter(Boolean);
 const bp = makeBlueprint({ plate, svg, KIT, items: callouts(), offset: (key) => parts.offset(key), onPick: (i) => selectGroup(i) });
 const pin = makePin({ plate, svg, KIT });
 const chip = TENSION ? makeTensionChip(plate, TENSION, "bottom") : null;
@@ -136,6 +136,7 @@ function playTension(force) {
   if (view.apart || view.blueprint) setView({ blueprint: false, apart: false }, true);
   setCond(from, true);
   target.forEach((t, i) => Object.assign(pos[i], t)); drawPeople();
+  if (from === to) { if (chip) chip.show(6.5); camera.set(wideCam()); say(); run(); return; }   // one condition: the contrast, no walk
   walkT = 0; walkTo = to;
   if (chip) chip.show(6.5);
   camera.set(wideCam()); say(); run();
@@ -191,7 +192,7 @@ function scene(sc) {
   if (sc.tension) { tensionPlayed = false; playTension(true); return; }
   if (sc.follow != null && sc.follow >= 0) { setFollowRaw(sc.follow); selGroup = null; }
   else { if (follow != null) setFollowRaw(null); selGroup = sc.group != null && sc.group >= 0 ? sc.group : null; bp.lit(selGroup == null ? -1 : selGroup); }
-  rebuild(); if (sc.camera) camera.set(sc.camera); else aim(); say(); emit("scene"); run();
+  rebuild(); if (sc.camera === "wide") camera.set(wideCam()); else if (sc.camera) camera.set(sc.camera); else aim(); say(); emit("scene"); run();
 }
 function unscript() { endWalk(); }
 new IntersectionObserver((en) => {

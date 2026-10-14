@@ -14,6 +14,9 @@ sure `scenes/` is in its `.gitignore` (add it if not), so study data can't be co
 A scene is a **pattern** (how the data behaves: crowd, journey, comparison, sort) wearing a **world** (what it looks
 like: a stadium, a store, a machine). Read `$A/references/patterns.md` before proposing anything.
 
+Files the workflow writes (report, concepts, codebook, configs) can be written with any tool; if one tool refuses a file
+type, write it with the shell.
+
 ## Non-negotiables
 
 1. **Study data never enters git.** Everything a study produces goes under `scenes/<slug>/` in the working folder, kept
@@ -35,7 +38,9 @@ like: a stadium, a store, a machine). Read `$A/references/patterns.md` before pr
    `scenes/<slug>/report.md`. Note every number the report states: they become reconciliation rows. Note every chart
    that lacks values: the coding has to supply those.
 2. **Concepts.** Propose two or three concepts, each with a mapping table (`$A/references/patterns.md`, "The concept
-   step"). Ask the person to pick, and ask whether the result may be shared beyond them (non-negotiable 2).
+   step"), written to `scenes/<slug>/concepts.md`. Ask the person to pick, unless they've said to pick for them: then
+   pick, and record why in that file so they can overrule it. Ask whether the result may be shared beyond them
+   (non-negotiable 2). Example configs for each pattern are in `$A/examples/`.
 3. **Code.** Follow `$A/references/coding.md`: write the codebook (md for coders, json for the validator), run parallel
    coders, then run `node "$A/tools/coding/check.mjs" scenes/<slug>`, then verify any quote not checked by script.
 4. **Spec.** Write `scenes/<slug>/scene.json` (the schema for each pattern is in `$A/references/patterns.md`) and build it:
