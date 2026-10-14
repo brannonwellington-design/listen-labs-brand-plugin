@@ -15,7 +15,7 @@ const groups = [...new Set(facts.map((f) => f.group))];
 const quotes = Object.values(scene.scripts || {}).flatMap((sc) => sc.beats).filter((b) => b.quote).filter((b, i, a) => a.findIndex((x) => x.quote.source === b.quote.source) === i);
 
 const rail = groups.map((g) => `<section class="rg"><p class="rail-h">${t(g)}</p><div class="rows">${facts.filter((f) => f.group === g).map((f) => `
-  <button class="row-btn" type="button" data-scene='${esc(JSON.stringify(f.scene))}' aria-pressed="false"><span class="row-btn__name">${t(f.label)}</span><span class="row-btn__count">${f.value ?? "–"}<span class="row-btn__base">/${f.base}</span></span></button>`).join("")}</div></section>`).join("");
+  <button class="row-btn" type="button" data-scene='${esc(JSON.stringify(f.scene))}' aria-pressed="false"><span class="row-btn__name">${t(f.label)}</span><span class="row-btn__count">${f.value ?? "–"}${f.base == null ? "" : `<span class="row-btn__base">/${f.base}</span>`}</span></button>`).join("")}</div></section>`).join("");
 const quoteHtml = quotes.map((b) => `<blockquote class="quote"><p>${t("“" + b.quote.quote + "”")}</p><footer>${esc(b.quote.who)} · ${t(b.title)} · <a href="${esc(b.quote.source)}" target="_blank" rel="noopener">Source</a></footer></blockquote>`).join("");
 
 const css = `${S.LL_TOKENS}

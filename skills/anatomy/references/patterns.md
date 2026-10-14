@@ -67,14 +67,25 @@ running shoes) over a generic machine, and only when the mapping stays honest.
 
 Like the crowd config (study, segments, figure, tension, page, tour, assert, countFacts), plus:
 - `scale`: `{ min, max, high, low, lowLabel, highLabel }`. `high` and `low` define the "at or above" and "at or below"
-  counts in the facts.
+  counts in the facts. A worded scale gives `labels` (low to high, e.g. `["Very poor", "Poor", "Fair", "Good",
+  "Excellent"]`) instead of `min`/`max`; the words stand at 1…n, so `high: 4` means Good or better. Answers listed in
+  `missing` (e.g. `["Not applicable"]`) count as no answer for that condition: drawn faded, left out of the median and n.
+  The coding copies the answer words exactly; the builder maps them.
+- `scenery` (optional): the street's own end-of-lane props instead of the default curb, building and pod, so the street
+  belongs to the subject. `{ low: [item…], high: [item…] }`, item `{ prop, lane: 0 | 1 | "both", opts?, name? }`, lined
+  up outward from the scale, nearest first. Props come from `props/street.js` (e.g. `sedan` and `house` with
+  `opts.state` `damaged` or `repaired`, `body-shop`); a new prop declares a `footprint`. Pick props whose low and high
+  ends read as the scale's two ends.
+- `page.condLabel` (optional): what the condition control is called ("Moment", "Product"; default "Situation"). More
+  than four conditions show as a dropdown.
 - `conditions`: `[{ key, name, short, closed: "<closed key holding the rating>", dressing, reportMedian: { <group>: n } }]`.
 - `why`: `{ dim, map }`, a coded dimension naming the condition each person explained as lowest. Its quote attaches to
   that condition.
 
 Facts include:
-- `group.<g>.<cond>.median`, `.n`, `.high`, `.low` and `.counts`
-- `report.<cond>.<g>`, `drop.<g>`, and `swing.label` / `swing.from` / `swing.to`: the largest fall from the first
+- `group.<g>.<cond>.median`, `.medianWord` (the scale word, or "between Fair and Good"), `.n`, `.na` (answered
+  "missing"), `.high`, `.low` and `.counts`; `scale.highWord` and `scale.lowWord`
+- `report.<cond>.<g>`, `drop.<g>`, and `swing.label` / `swing.from` / `swing.to` (`.fromWord` / `.toWord` on a worded scale): the largest fall from the first
   condition to the tension condition, with a reason
 
 Tour beats take `cond`, `group`, `follow: "swing"`, `tension`, and `quote: "why:<cond>:<group>"`.

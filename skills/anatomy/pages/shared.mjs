@@ -76,7 +76,7 @@ ${scope} .iso-plate-corner { background: var(--anatomy-card); padding: 2px 6px; 
 @container (max-width: 600px) {
   ${scope} .iso-plate-corners { inset: 12px 14px; }
   ${scope} .iso-plate-corner[data-corner="hint"], ${scope} .iso-plate-corner[data-corner="title"] { display: none; }
-  ${scope} .iso-plate-corner[data-corner="readout"] { bottom: 0; }
+  ${scope} .iso-plate-corner[data-corner="readout"] { bottom: 0; left: 0; white-space: normal; text-align: right; line-height: 1.35; }   /* a long readout wraps instead of running off the card */
 }
 `;
 
