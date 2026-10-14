@@ -29,6 +29,8 @@ like: a stadium, a store, a machine). Read `$A/references/patterns.md` before pr
 
 ## Workflow
 
+0. **Preflight.** Run `node "$A/tools/doctor.mjs"` from the working folder. It checks Node, Chrome and the folder, and
+   says how to fix anything missing. Tell the person what to install before going further; don't work around it.
 1. **Pull.** Get the report with `get_study_analysis` and the guide with `get_study_state`. Save the report to
    `scenes/<slug>/report.md`. Note every number the report states: they become reconciliation rows. Note every chart
    that lacks values: the coding has to supply those.
@@ -55,7 +57,9 @@ like: a stadium, a store, a machine). Read `$A/references/patterns.md` before pr
 
 ## When the world doesn't exist yet
 
-New props follow the contract at the top of `$A/props/machine.js`: `build(ctx, options) → { items, part }`, where every
-item has world `bounds` and a `phase`. Use the kit and `$A/engine/primitives.js` (racetrack bands for tiers, lanes and
-rows; `ground`; `person`). Check a new prop with `$A/tools/dev/world-test.mjs` at several azimuths before wiring it in. The
-engine depth-sorts by bounds, so a prop drawn in front of something that should hide it has wrong bounds.
+Prefer scenery that belongs to the subject over a generic machine. When the library has nothing that reads as the
+subject, generate the props for this study, following `$A/references/props.md`: write them to
+`scenes/<slug>/props/<name>.js`, bench them with `node "$A/tools/props/bench.mjs" scenes/<slug>/props/<name>.js` until
+the checks pass, review the contact sheets against its checklist, then list them in `scene.json` (`props`, and the
+world's slots such as `scenery`). They stay with the study. A generated prop that is generic (no study names or copy)
+can later be promoted into `$A/props/` by a pull request.

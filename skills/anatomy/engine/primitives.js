@@ -87,7 +87,8 @@ function tiers(c, T, { s0 = 0, s1 = T.L, sections = 16, d0 = 0, depth = 8, rise 
 }
 
 // The ground: a slab with a halo, an inset border and an optional surface pattern whose lines run border to border.
-function ground(c, { plan, h = 6, pattern = "none", tile = 20, part = "base", tip = "", tone = "mid", stripes = 12, axis = "x" }) {
+// pattern "lanes": painted lines along x at each y in `lanes` (a running track, a road), drawn a tone stronger than tiles.
+function ground(c, { plan, h = 6, pattern = "none", tile = 20, part = "base", tip = "", tone = "mid", stripes = 12, axis = "x", lanes = [] }) {
   const { k, P, L, S } = c;
   const out = [`<path class="iso-halo" d="${k.haloOf(plan, -h, h, P)}"/>`];
   out.push(S(k.slabOf(plan, -h, h, P, 8, 1.2), { tone }));
@@ -105,6 +106,7 @@ function ground(c, { plan, h = 6, pattern = "none", tile = 20, part = "base", ti
     }
   }
   if (lines.length) out.push(L(lines.join(""), { tone: "faint" }));
+  if (pattern === "lanes" && lanes.length) out.push(L(lanes.map((y) => k.lineOnTop([inset.x, y], [inset.x + inset.w, y], 0, P)).join(""), { tone: "lo" }));
   return { phase: "ground", part, tip, svg: out.join(""), bounds: c.box(plan, -h, 0) };
 }
 

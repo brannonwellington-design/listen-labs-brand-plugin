@@ -8,9 +8,12 @@ const k = await import(new URL("../kit/iso-kit.mjs", import.meta.url).href);
 export const WIDTH = 760;
 export const HEIGHT = 480;
 const AZ = 62;
-const SRC = ["engine/compose.js", "engine/primitives.js", "props/street.js", "worlds/curb.world.js"].map((f) => readFileSync(new URL("../" + f, import.meta.url), "utf8")).join("\n");
+const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
+// a study's own generated props (spec.propSource, carried in by the builder from scenes/<slug>/props/) load after the
+// library and before the world, so the spec's scenery can name them
+const srcFor = (spec) => [read("engine/compose.js"), read("engine/primitives.js"), read("props/street.js"), spec.propSource || "", read("worlds/curb.world.js")].join("\n");
 const RT = ["camera", "parts", "blueprint", "tension", "pin"].map((f) => readFileSync(new URL(`./${f}.js`, import.meta.url), "utf8")).join("\n");
-const api = new Function("k", SRC + "\nreturn { layout: curbLayout, geometry: curbGeometry };")(k);
+const apiFor = (spec) => new Function("k", srcFor(spec) + "\nreturn { layout: curbLayout, geometry: curbGeometry };")(k);
 export const TENSION_EVENTS = ["walk"];
 
 // ---------- scene contract (pages/scene.mjs) ----------
@@ -40,6 +43,7 @@ export function scripts(spec, curly = (s) => s) {
 }
 
 export function build(spec) {
+  const api = apiFor(spec), SRC = srcFor(spec);
   const LAY = api.layout(spec);
   const P = k.fitProjection(LAY.fit, WIDTH, HEIGHT, { pad: 12, azimuth: AZ });
   const G = api.geometry(k, spec, P, { cond: spec.conds[0].key });

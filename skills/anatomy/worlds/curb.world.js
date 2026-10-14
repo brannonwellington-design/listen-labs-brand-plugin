@@ -6,8 +6,8 @@
 //
 // A spec with `scenery` swaps the curb, the building and the pod for its own end-of-lane props, so the same street can
 // stand for any subject (damage → repair, a start line → a finish line):
-//   scenery: { low: [item…], high: [item…] }, item = { prop, lane: 0 | 1 | "both", opts?, name? }. Items at one end
-//   line up outward from the scale, nearest first; each prop declares its footprint (props/street.js).
+//   scenery: { low: [item…], high: [item…], surface?: "tiles" | "lanes" | "plain" }, item = { prop, lane: 0 | 1 | "both",
+//   opts?, name? }. Items at one end line up outward from the scale, nearest first; each prop declares its footprint.
 //
 // Data (spec): scale { min, max, labels? } · groups [{ key, name, people: [index…] }] (two lanes) ·
 // people [{ label, group, values: { <cond key>: number | null } }] · conds [{ key, name, dressing: day | night | airport }] ·
@@ -51,14 +51,18 @@ function curbLayout(spec) {
 function sceneryPlaces(scenery) {
   const out = [];
   for (const end of ["low", "high"]) {
-    const cursor = {};
+    // one cursor per lane, moving outward; an item across both lanes starts past whatever either lane holds, and pushes both
+    const start = end === "low" ? CURB.x0 - 18 : CURB.curbAt + 20, cursor = { 0: start, 1: start };   // clear of the scale's end, where people stand
+    const further = end === "low" ? Math.min : Math.max;
     (scenery[end] || []).forEach((it, i) => {
       const prop = PROPS[it.prop];
       if (!prop) throw new Error("scenery: unknown prop " + it.prop);
-      const foot = prop.footprint || [20, 20], lane = it.lane ?? "both", key = String(lane);
-      const edge = cursor[key] ?? (end === "low" ? CURB.x0 - 18 : CURB.curbAt + 20);   // clear of the scale's end, where people stand
+      const foot = prop.footprint || [20, 20], lane = it.lane ?? "both";
+      if (lane !== "both" && lane !== 0 && lane !== 1) throw new Error(`scenery: lane must be 0, 1 or "both" (${it.prop})`);
+      const edge = lane === "both" ? further(cursor[0], cursor[1]) : cursor[lane];
       const x = end === "low" ? edge - foot[0] / 2 : edge + foot[0] / 2;
-      cursor[key] = end === "low" ? edge - foot[0] - 4 : edge + foot[0] + 4;
+      const next = end === "low" ? edge - foot[0] - 4 : edge + foot[0] + 4;
+      if (lane === "both") cursor[0] = cursor[1] = next; else cursor[lane] = next;
       const y = lane === "both" ? 0 : (lane === 0 ? -1 : 1) * (CURB.half / 2);
       out.push({ ...it, end, i, x, y, foot, part: `${end}-${i}` });
     });
@@ -87,7 +91,9 @@ function curbGeometry(k, spec, P, state = {}) {
   const ci = spec.conds.indexOf(cond);
   const H = CURB.half, items = [], SC = spec.scenery;
   // ground: the sidewalk, tiled, from the wall to the curb (or under all of a scenery street)
-  if (SC) items.push(ground(c, { plan: { x: LAY.ground[0], y: -H, w: LAY.ground[1] - LAY.ground[0], d: 2 * H, r: 2 }, h: 9, pattern: "tiles", tile: 14 }));
+  // a scenery street's surface: tiles (pavement), lanes (a track or road: lines along the scale at each lane's edges) or plain
+  if (SC) items.push(ground(c, { plan: { x: LAY.ground[0], y: -H, w: LAY.ground[1] - LAY.ground[0], d: 2 * H, r: 2 }, h: 9, tile: 14,
+    pattern: SC.surface === "lanes" ? "lanes" : SC.surface === "plain" ? "none" : "tiles", lanes: [-H + 5, -LAY.gap + 2, LAY.gap - 2, H - 5] }));
   else {
     items.push(ground(c, { plan: { x: CURB.wall - 12, y: -H, w: CURB.curbAt - CURB.wall + 12, d: 2 * H, r: 2 }, h: 9, pattern: "tiles", tile: 14 }));
     items.push(...PROPS["curb-road"].build(c, { x: CURB.curbAt, y0: -H, y1: H, w: 60 }).items);

@@ -72,8 +72,9 @@ Like the crowd config (study, segments, figure, tension, page, tour, assert, cou
   `missing` (e.g. `["Not applicable"]`) count as no answer for that condition: drawn faded, left out of the median and n.
   The coding copies the answer words exactly; the builder maps them.
 - `scenery` (optional): the street's own end-of-lane props instead of the default curb, building and pod, so the street
-  belongs to the subject. `{ low: [item…], high: [item…] }`, item `{ prop, lane: 0 | 1 | "both", opts?, name? }`, lined
-  up outward from the scale, nearest first. Props come from `props/street.js` (e.g. `sedan` and `house` with
+  belongs to the subject. `{ low: [item…], high: [item…], surface? }`, item `{ prop, lane: 0 | 1 | "both", opts?, name? }`,
+  lined up outward from the scale, nearest first (an item across both lanes starts past whatever either lane holds).
+  `surface`: `tiles` (pavement, the default), `lanes` (lines along the scale: a track or road) or `plain`. Props come from `props/street.js` (e.g. `sedan` and `house` with
   `opts.state` `damaged` or `repaired`, `body-shop`); a new prop declares a `footprint`. Pick props whose low and high
   ends read as the scale's two ends.
 - `page.condLabel` (optional): what the condition control is called ("Moment", "Product"; default "Situation"). More
