@@ -10,12 +10,42 @@ A scene is a **pattern**, which sets how the data behaves, wearing a **world**, 
 |---|---|---|---|---|
 | **crowd** | a segment (rating, group, region) and one or more things people react to (acts, products, ads, moments), plus optional multi-mention wishes | one figure per respondent; standing = positive, seated = neutral or negative, faded = not asked; a scoreboard cell per positive; one prop per wish, with its count | `stadium` | `tools/patterns/crowd.mjs` |
 | **lineup** | a closed rating question (0–10, 1–5, 1–7) asked of everyone, by segment, in one or more conditions (situations, products, moments) | one figure per respondent standing at their own rating; a lane per group, people with the same rating one behind another (a dot plot); a marker at each lane's median; switching the condition walks everyone to their rating for it; no answer = faded, off the scale | `curb` | `tools/patterns/lineup.mjs` |
-| **journey** | ordered stages of one experience (find → buy → ship) with a count per stage; counts may overlap | carriers ride past every station; a gauge per station reads count of n; follow one respondent through their own stops | `conveyor`, `aisle` | hand-built spec (`pages/onepager.mjs`) |
-| **comparison** | 2–4 named options compared on the same measures (reach, ratings, reasons) | a bench per option; needles and tubes per measure; ghost needles for an earlier wave | `workbench` | hand-built spec (`pages/dashboard.mjs`) |
-| **sort** | one sample split many ways: exclusive groups and multi-mention reasons, told as chapters | coins (one per respondent) sorted into columns; drawers pulled out by count | `sortbench` | hand-built spec (`pages/scrolly.mjs`) |
+| **journey** | ordered stages of one experience (find → buy → ship) with a count per stage; counts may overlap | carriers ride past every station; a gauge per station reads count of n; follow one respondent through their own stops | `conveyor`, `aisle` | `tools/patterns/journey.mjs` |
+| **comparison** | 2–4 named options compared on the same measures (reach, ratings, reasons) | a bench per option; needles and tubes per measure; ghost needles for an earlier wave | `workbench` | `tools/patterns/comparison.mjs` |
+| **sort** | one sample split many ways: exclusive groups and multi-mention reasons, told as chapters | coins (one per respondent) sorted into columns; drawers pulled out by count | `sortbench` | `tools/patterns/sort.mjs` |
 
-Crowd and lineup have generic builders, and both render with the generic page (`pages/scene-page.mjs`). Journey, comparison and sort run on hand-written specs today. Porting them to `tools/patterns/` builders, as `crowd`
-already is, is the next step.
+Every pattern has a builder in `tools/patterns/`. They all enforce the same rules (`lib.mjs`). Crowd and lineup
+compute their scene from the coding. Journey, comparison and sort are **report-driven**: their config carries the
+report's own structure (stations, chapters, benches), and the coding attaches the people. Their pages are
+`pages/onepager.mjs` (journey), `pages/scrolly.mjs` (sort) and `pages/dashboard.mjs` (comparison); crowd and lineup
+render with `pages/scene-page.mjs`.
+
+## Report-driven configs (journey, sort, comparison)
+
+The config has the shape of the scene's spec, with every copy string written as a template:
+- `{stations.<key>.count}`, `{steps.<key>.stat.value}`, `{benches.<key>.users}`: report data by key
+- `{study.n}`, `{lit:…}` for non-data numbers, `@references` in tour captions
+
+Data fields (counts, a stat's value, the report's headline stats) stay plain numbers.
+
+**A number the report states that is not part of the scene's data** goes in `reportFacts`, by name and with where it
+came from, and copy cites it by name:
+```jsonc
+"reportFacts": { "kept_quant": { "value": 15, "from": "report: work customers keep outside Listen (advanced quant)" } }
+"body": "Customers still keep advanced quant ({reportFacts.kept_quant.value}) outside Listen."
+```
+Never link a number to a fact because the values match: two findings can share a number. Porting the first three
+studies found two such coincidences.
+
+People attach through `people: { filter, prefix, fields, method, privacyNote }`. Journey stations name their `code`,
+and the builder counts each station's coded people for the reconciliation. Sort chapters carry their `follow` map,
+which the builder checks against the column count. Comparison can add `wavesFrom: { file, minN, keys, note }` for a
+tracker's cohorts.
+
+The builders check each scene's limits:
+- **journey:** 3–5 stations, counts within n
+- **sort:** exclusive chapters place all n in 5 columns or fewer; cabinets have 7 drawers or fewer
+- **comparison:** 2–4 benches, users within the base, ratings 0–100
 
 ## The concept step
 

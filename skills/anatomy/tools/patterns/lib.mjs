@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 // Shared by every pattern builder: the filter language, copy templates over computed facts, and checked claims.
 // Keeping these in one place means every pattern enforces the same honesty rules:
 // · numbers enter copy only as {facts}; a literal digit fails the build ({lit:1–5} marks a non-data number)
@@ -10,6 +12,7 @@ export function holds(r, q) {
   if (q.not) return !holds(r, q.not);
   if (q.any) return q.any.some((x) => holds(r, x));
   if (q.complete) return r.is_complete !== false;
+  if (q.field) { const v = r[q.field]; return "eq" in q ? v === q.eq : q.in ? q.in.includes(v) : !!v; }   // a top-level row field (usable …)
   if (q.multi) { const [d, k] = q.multi.split("."); return k === "*" ? Object.values(r.codes?.[d] || {}).some(Boolean) : !!r.codes?.[d]?.[k]; }
   const v = q.dim ? r.codes?.[q.dim] : r.closed?.[q.closed];
   if ("eq" in q) return v === q.eq;
@@ -57,3 +60,54 @@ export function pickQuote(cands, min = 50) {
   return x ? { quote: x.e.quote, source: x.e.source, who: x.who } : null;
 }
 export const median = (xs) => { const s = xs.filter((v) => v != null).sort((a, b) => a - b); if (!s.length) return null; const m = s.length / 2; return s.length % 2 ? s[Math.floor(m)] : (s[m - 1] + s[m]) / 2; };
+
+// Report-driven patterns (journey, sort, comparison) carry the report's own numbers and copy in their config. Facts
+// index every array of keyed objects by key, so copy can say {stations.cart.count} or {benches.claude.users}.
+export function indexByKey(o) {
+  if (Array.isArray(o)) {
+    const arr = o.map(indexByKey);
+    if (o.length && o.every((x) => x && typeof x === "object" && typeof x.key === "string")) o.forEach((x, i) => { arr[x.key] = arr[i]; });
+    return arr;
+  }
+  if (o && typeof o === "object") return Object.fromEntries(Object.entries(o).map(([k, v]) => [k, indexByKey(v)]));
+  return o;
+}
+// Fill every copy string in a config through the fact templates. Skipped: verbatim quotes and their links, keys and
+// codes, camera and layout numbers, data values (a stat's value, a report fact's value), the report's own headline stats, and "@references" (resolved later by the script resolver, which has its own guard).
+const SKIP = new Set(["quote", "source", "sources", "url", "id", "key", "code", "metric", "prop", "camera", "wideCamera", "sheetCamera", "apartCamera", "sheetApartCamera",
+  "shopper", "target", "readableId", "codes", "evidence", "hold", "fig", "_source", "predicates", "headlineStats", "list", "empty", "value", "dim", "values", "multi", "lit", "event", "file"]);
+export function fillTree(o, fill, where = "") {
+  if (typeof o === "string") return o.startsWith("@") ? o : fill(o, where);
+  if (Array.isArray(o)) return o.map((v, i) => fillTree(v, fill, `${where}[${i}]`));
+  if (o && typeof o === "object") return Object.fromEntries(Object.entries(o).map(([k, v]) => [k, SKIP.has(k) ? v : fillTree(v, fill, where ? `${where}.${k}` : k)]));
+  return o;
+}
+export const readCodes = (dir, file = "codes/merged.json") => JSON.parse(readFileSync(join(dir, file), "utf8"));
+
+// The shared run of a report-driven pattern: read the config and the coding, let the pattern validate it and attach
+// its people, fill every copy string from the facts, check the claims, write the spec.
+import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+// A number the report states that is not part of the scene's data goes in cfg.reportFacts, by name, with where it came
+// from: { "<name>": { "value": 15, "from": "<report section or chart>" } }. Copy cites it as {reportFacts.<name>.value}.
+// Never match a number to a fact by value alone: two findings can share a number.
+export function runReportPattern(dir, { name, validate, attach }) {
+  const cfg = JSON.parse(readFileSync(join(dir, "scene.json"), "utf8"));
+  const codesFile = cfg.people?.codes || "codes/merged.json";
+  const rows = cfg.people ? readCodes(dir, codesFile).filter((r) => all(r, cfg.people.filter || [])).sort((a, b) => a.readable_id - b.readable_id) : [];
+  const reconFile = codesFile.replace(/\.json$/, "-recon.json");
+  const recon = existsSync(join(dir, reconFile)) ? JSON.parse(readFileSync(join(dir, reconFile), "utf8")) : [];
+  validate(cfg);
+  const extra = attach ? attach(cfg, rows, recon, codesFile) : {};
+  const draft = { ...cfg, ...extra.spec };
+  const facts = { ...indexByKey(draft), ...(extra.facts || {}), recon: Object.fromEntries(recon.map((x, i) => [i, x])) };
+  const { fill, check } = makeCopy(facts);
+  check(cfg.assert);
+  // people and their verbatim evidence pass through untouched; everything else is copy and gets filled
+  const keep = extra.keep || [];
+  const filled = fillTree(Object.fromEntries(Object.entries(draft).filter(([k]) => !keep.includes(k) && k !== "assert" && k !== "people" && k !== "pattern" && k !== "reportFacts" && k !== "wavesFrom")), fill);
+  const spec = { ...filled, ...Object.fromEntries(keep.map((k) => [k, draft[k]])) };
+  spec._source = `pattern ${name} · config ${join(dir, "scene.json")}${cfg.people ? ` · coding ${join(dir, codesFile)}` : ""}`;
+  mkdirSync(join(dir, "specs"), { recursive: true });
+  writeFileSync(join(dir, "specs/scene.figure.json"), JSON.stringify(spec, null, 2));
+  return spec;
+}
