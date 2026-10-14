@@ -73,7 +73,11 @@ PROPS["finish-arch"] = {
 
 **Fills are always paper.** A solid's tone colours its edges and the face shading, not a darker fill: `lo` gives a
 heavier outline, not a black object. To make an area read darker, hatch it, and give the hatched area a drawn edge for
-every hatch line to end on: the top edge of a slab with its default crease, or `L(k.planOutline(plan, z, P), …)`. For the scene's own light and dark themes,
+every hatch line to end on: the top edge of a slab with its default crease, or `L(k.planOutline(plan, z, P), …)`. Hatch only square-cornered
+areas (`r: 0`): in a rounded corner the hatch lines end short of the curve and float.
+
+**Line-drawn objects are see-through.** A bicycle or a railing made only of lines has no fill, so anything behind it
+shows through. Keep such objects where nothing sits behind them, or give them a solid part (a frame slab) to block it. For the scene's own light and dark themes,
 `mid` and `lo` survive both; `faint` details can vanish in dark, so keep anything that must read at `mid`.
 
 **Creases.** `crease: "none"` on a solid also drops its top edge line. Hatching or lines that should end on that edge
@@ -130,7 +134,8 @@ someone who hasn't seen the brief names it cold.
 
 ## Review checklist (the sheet, then the scene)
 
-1. **It names itself.** Someone who has not read the brief says what it is in two seconds, at azimuth 62.
+1. **It names itself.** Someone who has not read the brief says what it is in two seconds, at azimuth 62 and in the
+   "scene size" column, which draws it as small as a scene does.
 2. **Variants read as states.** Damaged vs repaired, empty vs full are told apart at a glance, not on close inspection.
 3. **Proportions.** Plausible against the person beside it.
 4. **Nothing floats or shows through.** Every detail sits on a face, the ground or another solid.

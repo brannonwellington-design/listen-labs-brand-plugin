@@ -43,7 +43,8 @@ function makeCtx(k, P) {
   };
   const rect = (a0, a1, z0, z1) => [[a0, z0], [a1, z0], [a1, z1], [a0, z1]];
   // diagonal hatching across a plan rectangle lying at height z: the way to make an area read darker (paint, tape,
-  // a chequer cell), since every fill is paper and tone colours only edges and lines. Returns a path d for L(…).
+  // a chequer cell), since every fill is paper and tone colours only edges and lines. Square-cornered areas only (a
+  // rounded corner leaves hatch ends floating). Returns a path d for L(…).
   const hatch = ({ x, y, w, d }, z, gap = 1.4) => {
     const out = [];
     for (let s = x + y + gap; s < x + w + y + d; s += gap) {
