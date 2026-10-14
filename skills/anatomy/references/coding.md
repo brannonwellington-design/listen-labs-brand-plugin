@@ -20,7 +20,8 @@ check a few transcripts by eye before trusting a text match.
 
 **`codebook.md`**, for the coders. Copy each dimension's definition from the report's own wording. For each one, give:
 - the question text it comes from, and which other questions (if any) it may draw on: coders must not take an answer
-  from a later question unless the codebook says so
+  from a later question unless the codebook says so. Interviewers move and reword questions, so say "the answer to this
+  question wherever the interviewer asked it, matched by gist" (an amount given early and quoted back later counts)
 - its allowed values, plus `none` for "never asked"
 - which values may rest on absence (no quote)
 

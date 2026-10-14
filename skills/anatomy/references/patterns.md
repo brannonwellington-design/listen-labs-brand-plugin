@@ -49,7 +49,8 @@ The builders check each scene's limits:
 
 ## The concept step
 
-Before building, propose **two or three concepts**. The person picks one; don't pick for them. Each concept is:
+Before building, propose **two or three concepts**. The person picks one, unless they've said to pick for them: then
+pick, and write why in `concepts.md` so they can overrule it. Each concept is:
 
 1. **A one-line picture**: what the reader sees ("a stadium; each interview is a fan; they stand for the act they're
    excited about").
@@ -87,7 +88,16 @@ Like the crowd config (study, segments, figure, tension, page, tour, assert, cou
   `none` is no answer. If the coded values are short keys, list them in `scale.keys`, in the same order as
   `scale.labels`. One condition is fine: the switch disappears and the tension shows its contrast without a walk.
 - `why`: `{ dim, map }`, a coded dimension naming the condition each person explained as lowest. Its quote attaches to
-  that condition.
+  that condition. For a scale where "lowest" doesn't fit (a price, a frequency), give each condition its own quote source
+  instead: `conditions[].quoteDim`, the coded dimension whose evidence explains that position. Beats quote it with
+  `quote: "quote:<cond>:<group>"` (`why:` works the same).
+- `scale.verb`: how the readout reads a person's position ("rated Good" by default; "would spend $300+", "plays weekly").
+- `scenery.lowGap` / `highGap`: how far the end props stand from the scale's end ticks (18 and 32 by default; smaller
+  pulls a prop right up to the end, so "the flagship sits at the top of the scale" reads, but keep room for the people
+  standing at the end).
+- `page.headlineStats`: `[{ value, base }]`, the big numbers in the header. The value is a fact like every other number:
+  the coding (`{group.casual.ceiling.high}`) or the report's own (`{report.<cond>.<g>}`, `{recon.N.report}`, and then say
+  "report" in the base). Don't headline a report number the scene draws differently without saying so.
 
 Facts include:
 - `group.<g>.<cond>.median`, `.medianWord` (the scale word, or "between Fair and Good"), `.n`, `.na` (answered

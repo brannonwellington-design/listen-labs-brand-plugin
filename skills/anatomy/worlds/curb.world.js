@@ -53,7 +53,9 @@ function sceneryPlaces(scenery) {
   const out = [];
   for (const end of ["low", "high"]) {
     // one cursor per lane, moving outward; an item across both lanes starts past whatever either lane holds, and pushes both
-    const start = end === "low" ? CURB.x0 - 18 : CURB.curbAt + 20, cursor = { 0: start, 1: start };   // clear of the scale's end, where people stand
+    // clear of the scale's end, where people stand; scenery.lowGap / highGap set the distance from the end tick
+    const scaleEnd = CURB.x0 + 10 * CURB.step;
+    const start = end === "low" ? CURB.x0 - (scenery.lowGap ?? 18) : scaleEnd + (scenery.highGap ?? 32), cursor = { 0: start, 1: start };
     const further = end === "low" ? Math.min : Math.max;
     (scenery[end] || []).forEach((it, i) => {
       const prop = PROPS[it.prop];
