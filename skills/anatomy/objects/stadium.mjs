@@ -20,9 +20,9 @@ export const API = "STAD", HOOK = "data-stadium";
 // structured facts a host can set as stat modules: every value computed by the pattern builder, each with the scene
 // state that shows it, so a host's "show me" can light the right part of the drawing
 export const facts = (spec) => [
-  ...spec.acts.map((a) => ({ key: "act." + a.key, value: a.up, base: spec.fans.filter((f) => f.feel[a.key]).length, label: `on their feet for ${a.name}`, group: a.when, scene: { act: a.key } })),
-  ...spec.acts.flatMap((a) => spec.blocks.map((b, i) => ({ key: `block.${b.key}.${a.key}`, value: spec.blockStats[i][a.key].positive, base: b.fans.length - spec.blockStats[i][a.key].none, label: `${b.name.toLowerCase()} on their feet for ${a.name}`, group: b.name, scene: { act: a.key, block: i } }))),
-  ...(spec.hopes || []).map((h, i) => ({ key: "hope." + h.key, value: h.count, base: h.base, label: `hoped for ${h.name.toLowerCase()}`, group: "Hopes", scene: { act: (spec.acts.find((a) => a.dressing === "hopes") || {}).key, hope: i } })),
+  ...spec.acts.map((a) => ({ key: "act." + a.key, value: a.up, base: spec.fans.filter((f) => f.feel[a.key]).length, label: `${spec.page.standPhrase || "on their feet for"} ${a.name}`, group: a.when, scene: { act: a.key } })),
+  ...spec.acts.flatMap((a) => spec.blocks.map((b, i) => ({ key: `block.${b.key}.${a.key}`, value: spec.blockStats[i][a.key].positive, base: b.fans.length - spec.blockStats[i][a.key].none, label: `${spec.page.standPhrase || "on their feet for"} ${a.name}`, group: b.name, scene: { act: a.key, block: i } }))),
+  ...(spec.hopes || []).map((h, i) => ({ key: "hope." + h.key, value: h.count, base: h.base, label: `${spec.page.hopePhrase || "hoped for"} ${h.name.toLowerCase()}`, group: spec.page.hopesHeading || "Hopes", scene: { act: (spec.acts.find((a) => a.dressing === "hopes") || {}).key, hope: i } })),
 ];
 export const CSS = `
 /* scoreboard cells: one per respondent; lit = on their feet */

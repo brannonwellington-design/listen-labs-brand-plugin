@@ -540,3 +540,18 @@ export function applyWorld(arg, spec) {
   }
   return objName;
 }
+
+// The reconciliation, printed on every scene page (non-negotiable 4): our coding of each interview next to the numbers
+// the report states. Builders put it in spec.reconciliation; QA fails a scene page without it.
+export const RECON_CSS = `
+.recon { margin-top: 64px; max-width: 760px; } .recon h2 { font-size: 20px; line-height: 28px; margin-bottom: 8px; } .recon p { font-size: 14px; line-height: 20px; color: var(--content-secondary); margin-bottom: 12px; }
+.recon table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
+.recon th { text-align: left; font-weight: 400; font-size: 12px; color: var(--content-secondary); border-bottom: 1px solid var(--content-disabled); padding: 6px 8px 6px 0; }
+.recon td { border-bottom: 1px solid var(--content-disabled); padding: 8px 8px 8px 0; } .recon td + td, .recon th + th { text-align: right; }
+.recon small { color: var(--content-secondary); font-size: 12px; }`;
+export function reconHtml(spec, t = (x) => x) {
+  const rows = spec.reconciliation || [];
+  if (!rows.length) return `<section class="recon" data-recon><h2>Against the report</h2><p>The report states no counts this coding can be checked against.</p></section>`;
+  return `<section class="recon" data-recon><h2>Against the report</h2><p>Our coding of each interview, next to the numbers the report states. The coding is never adjusted to match.</p>
+    <table><thead><tr><th>Measure</th><th>Our coding</th><th>Report</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${t(r.label)}</td><td>${r.transcript} of ${r.base}</td><td>${r.report} of ${r.reportBase}${r.derived ? ` <small>(from ${r.derived})</small>` : ""}</td></tr>`).join("")}</tbody></table></section>`;
+}

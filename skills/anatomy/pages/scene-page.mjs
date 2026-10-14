@@ -47,10 +47,7 @@ h1, h2 { font-weight: 400; margin: 0; text-wrap: balance; } p { margin: 0; text-
 .method { margin-top: 64px; max-width: 760px; } .method h2 { margin-bottom: 16px; }
 .method ul { margin: 0; padding-left: 18px; display: grid; gap: 10px; font-size: 14px; line-height: 20px; color: var(--content-secondary); }
 .method__source { margin-top: 16px; font-size: 13px; color: var(--content-secondary); }
-.recon { margin-top: 64px; max-width: 760px; } .recon h2 { font-size: 20px; line-height: 28px; margin-bottom: 8px; } .recon p { font-size: 14px; line-height: 20px; color: var(--content-secondary); margin-bottom: 12px; }
-.recon table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
-.recon th { text-align: left; font-weight: 400; font-size: 12px; color: var(--content-secondary); border-bottom: 1px solid var(--content-disabled); padding: 6px 8px 6px 0; }
-.recon td { border-bottom: 1px solid var(--content-disabled); padding: 8px 8px 8px 0; } .recon td + td, .recon th + th { text-align: right; }
+${S.RECON_CSS}
 @container (max-width: 960px) { .ws-figure, .ws-rail { grid-column: 1 / -1; } .ws-figure { position: static; } .ws-rail { margin-top: 24px; } }
 `;
 const html = `<!doctype html>
@@ -60,15 +57,14 @@ const html = `<!doctype html>
 <style>${css}</style></head>
 <body class="iso">
 <header class="ll-header"><span class="ll-brand">Listen Labs</span> / <span class="ll-title">${t(spec.study.title)}</span></header>
-<main class="page">
+<main class="page" data-scene-page>
   ${S.headerHtml(spec.page)}
   <section class="workspace">
     <div class="ws-figure">${scene.markup}</div>
     <aside class="ws-rail" aria-label="Findings">${rail}</aside>
   </section>
   ${quoteHtml ? `<section class="voices"><h2>In their words</h2>${quoteHtml}</section>` : ""}
-  ${(spec.reconciliation || []).length ? `<section class="recon"><h2>Against the report</h2><p>Our coding of each interview, next to the numbers the report states. The coding is never adjusted to match.</p>
-    <table><thead><tr><th>Measure</th><th>Our coding</th><th>Report</th></tr></thead><tbody>${spec.reconciliation.map((r) => `<tr><td>${t(r.label)}</td><td>${r.transcript} of ${r.base}</td><td>${r.report} of ${r.reportBase}</td></tr>`).join("")}</tbody></table></section>` : ""}
+  ${S.reconHtml(spec, t)}
   <section class="method"><h2>Read before sharing</h2><ul>${(spec.page.notes || []).map((n) => `<li>${t(n)}</li>`).join("")}</ul>
     <p class="method__source">Source: ${t(spec.study.title)} · Listen Labs study ${esc(spec.study.id)} · n&nbsp;=&nbsp;${spec.study.n} coded</p></section>
 </main>

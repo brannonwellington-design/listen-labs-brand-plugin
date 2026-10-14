@@ -143,7 +143,8 @@ function stadiumGeometry(k, spec, P, state = {}) {
     };
     // any other prop (a study's own, props/… with a footprint) takes the next free spot on the field beside the stage,
     // at ground level; it carries data (lit when its hope is selected), and QA checks it hides no fan
-    const FIELD_SLOTS = [[-48, -16], [46, -16], [-42, 6], [40, 6]], SLOT_MAX = [30, 24];
+    // in a row across the front of the field, clear of the runway, far enough apart that none hides another
+    const FIELD_SLOTS = [[-72, 26], [-36, 26], [36, 26], [72, 26]], SLOT_MAX = [30, 24];
     let free = 0;
     spec.hopes.forEach((h, hi) => {
       const lit = sel.hope === hi, part = "hope-" + h.key;
@@ -157,6 +158,9 @@ function stadiumGeometry(k, spec, P, state = {}) {
       dressing.push({ key: part, built: prop.build(c, { ...(h.propOpts || {}), x, y, lit, part }) });
     });
   }
+  // when every hope stands on the field, the stage would be bare: it keeps its backline
+  if (act.dressing !== "backline" && dressing.length && !dressing.some((d) => ["led-wall", "dance-floor", "guest-lift", "flags", "mic-stand", "line-array"].includes((spec.hopes.find((h) => "hope-" + h.key === d.key) || {}).prop)))
+    dressing.push({ key: "backline", built: PROPS.backline.build(c, { deck: DECK, z: Z }) });
   for (const d of dressing) items.push(...d.built.items);
 
   const parts = [

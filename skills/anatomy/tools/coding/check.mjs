@@ -11,7 +11,7 @@
 //   closed:    [<closed-question keys the coders copy, e.g. "familiarity">]
 //   checks:    { closed: { <key>: { in: [...] } } }                     optional value checks on closed answers
 //   answered:  { <dim>: [values meaning "never asked"] }                 default ["none"]
-//   report:    [{ label, count: <filter>, base: <filter>, report: [count, base] }]
+//   report:    [{ label, count: <filter>, base: <filter>, report: [count, base] | { pct, of } }]   (a percentage-only report number becomes a count, marked as derived)
 // A filter is an array of conditions, all of which must hold:
 //   { dim, eq | in }  ·  { multi: "dim.key" }  ·  { closed, eq | in | lte | gte | includes }  ·  { complete: true }
 //   ·  { answered: dim }  ·  { not: <condition> }  ·  { any: [<condition>…] }   ({ multi: "dim.*" } = any key true)
@@ -74,9 +74,11 @@ console.log(`respondents: ${rows.length} (complete ${count([{ complete: true }])
 problems.forEach((p) => console.log("  ✗ " + p));
 console.log("\nreconciliation                          transcript      report");
 const recon = (book.report || []).map((x) => {
+  // a report number given only as a percentage: report: { pct: 40, of: 50 } becomes a count, and the row says so
+  if (x.report && !Array.isArray(x.report)) { const n = Math.round((x.report.pct * x.report.of) / 100); x.derived = `${x.report.pct}% of ${x.report.of}`; x.report = [n, x.report.of]; }
   const v = count([...(x.base || []), ...x.count]), b = count(x.base);   // a count is always within its base
   console.log(`${x.label.padEnd(38)} ${String(v).padStart(4)} / ${String(b).padEnd(4)}  ${String(x.report[0]).padStart(4)} / ${x.report[1]}`);
-  return { label: x.label, transcript: v, base: b, report: x.report[0], reportBase: x.report[1] };
+  return { label: x.label, transcript: v, base: b, report: x.report[0], reportBase: x.report[1], ...(x.derived ? { derived: x.derived } : {}) };
 });
 for (const [dim, d] of Object.entries(book.multi || {})) {
   const base = book.multiBase?.[dim] || [];

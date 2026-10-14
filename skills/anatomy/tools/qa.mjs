@@ -69,6 +69,7 @@ const clm = cl.match(/eval: "(.*)"/);
 if (clm) { const list = JSON.parse(JSON.parse(`"${clm[1]}"`)); check("nothing cut off", !list.length, list.length ? list.join(" · ") + " (shorten it)" : ""); }
 // 4. content leaks
 const html = readFileSync(page, "utf8");
+if (/data-scene-page/.test(html)) check("reconciliation printed", /data-recon/.test(html), "the page shows our coding against the report");
 check("no placeholder copy", !/\b(TODO|lorem ipsum|FIXME)\b/i.test(html));
 check("brand weight only", !/font-weight:\s*[5-9]00|wght@[0-9;]*[5-9]00/.test(html), "Inter Regular 400 only");
 console.log(`\nscreenshots for the visual review: ${out}`);

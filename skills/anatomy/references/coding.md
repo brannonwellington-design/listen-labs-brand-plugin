@@ -47,13 +47,19 @@ Split respondents into batches of about 18. Start one subagent per batch, all in
 > link points to. Write a JSON array to `<abs path>/codes/batch<X>.json`, validate that it parses, and reply with only
 > the count coded and any you could not code. No quotes in your reply.
 
-## 4. Validate, then verify every quote
+## 4. Validate, then verify every quote against a fresh fetch
+
+A coder's saved transcripts are its own copies of the tool output, so a quote checked against them can repeat a copying
+slip. Every study gets an independent verifier, after the coders and before the scene:
 
 - `node "$A/tools/coding/check.mjs" scenes/<slug>` checks structure and evidence links, then prints the reconciliation. It
   writes `codes/merged.json` only when there are no problems.
-- Any quote a coder checked by eye rather than by script goes to a verifier subagent. It confirms each quote appears
-  verbatim in the answer its link points to, fixes the **batch file** (never `merged.json`, which is rebuilt), and
-  removes evidence it cannot find.
+- A verifier subagent (one per batch, or one for the study) that did not code fetches every coded respondent **fresh**
+  from the study tool and confirms each quote appears verbatim in the answer its source link points to, comparing
+  against what the tool returned in this fetch, not against the coder's saved files. It fixes the **batch file**
+  (never `merged.json`, which is rebuilt), removes evidence it cannot find, and reports how many it checked and changed.
+- Don't read the tool system's own stored outputs (anything under `~/.claude`) to get transcripts: that is private
+  session storage, not a data source.
 - Re-run the validator after any fix.
 
 ## Evidence rules (put these in every codebook)

@@ -1,0 +1,80 @@
+{
+  "_example": "Synthetic: the validator's codebook for the crowd example. See references/coding.md.",
+  "study": "00000000-example-crowd",
+  "closed": [
+    "attended"
+  ],
+  "checks": {
+    "closed": {
+      "attended": {
+        "in": [
+          "first",
+          "returning"
+        ]
+      }
+    }
+  },
+  "exclusive": {
+    "open_feel": {
+      "values": [
+        "positive",
+        "neutral",
+        "negative",
+        "none"
+      ],
+      "absent": [
+        "none"
+      ]
+    },
+    "head_feel": {
+      "values": [
+        "positive",
+        "neutral",
+        "negative",
+        "none"
+      ],
+      "absent": [
+        "none"
+      ]
+    }
+  },
+  "multi": {
+    "wants": {
+      "keys": [
+        "visuals",
+        "flags"
+      ],
+      "absent": []
+    }
+  },
+  "report": [
+    {
+      "label": "Returning festivalgoers",
+      "count": [
+        {
+          "closed": "attended",
+          "eq": "returning"
+        }
+      ],
+      "base": [],
+      "report": [
+        12,
+        18
+      ]
+    },
+    {
+      "label": "Positive about the headliner",
+      "count": [
+        {
+          "dim": "head_feel",
+          "eq": "positive"
+        }
+      ],
+      "base": [],
+      "report": {
+        "pct": 50,
+        "of": 18
+      }
+    }
+  ]
+}
