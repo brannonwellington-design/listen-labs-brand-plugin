@@ -16,12 +16,17 @@ export const TENSION_EVENTS = ["walk"];
 // ---------- scene contract (pages/scene.mjs) ----------
 export const API = "LINE", HOOK = "data-lineup";
 export const controls = (spec) => [
-  { kind: "segmented", label: "Situation", call: "setCond", get: "cond", options: spec.conds.map((c, i) => ({ value: i, label: c.short })) },
+  { kind: spec.conds.length > 4 ? "select" : "segmented", label: spec.page?.condLabel || "Situation", call: "setCond", get: "cond", placeholder: false, options: spec.conds.map((c, i) => ({ value: i, label: c.short })) },
   { kind: "select", label: "Follow…", call: "follow", get: "following", none: null, options: spec.people.map((p, i) => ({ value: i, label: "Follow " + p.label })) },
 ];
-export const facts = (spec) => spec.conds.flatMap((c, ci) => spec.groups.map((g, gi) => ({
-  key: `median.${c.key}.${g.key}`, value: spec.groupStats[gi][c.key].median, base: spec.scale.max, label: `median, ${g.name.toLowerCase()} (n = ${spec.groupStats[gi][c.key].n})`,   // the condition is the group heading
-  group: c.name, scene: { cond: ci, group: gi } })));
+// A numeric scale lists each lane's median; a worded scale's medians are too coarse to tell lanes apart (most read Good
+// or Excellent), so it lists how many in each lane rated it at the low threshold or worse, out of that lane's n.
+export const facts = (spec) => spec.conds.flatMap((c, ci) => spec.groups.map((g, gi) => {
+  const s = spec.groupStats[gi][c.key], L = spec.scale.labels;
+  return L ? { key: `low.${c.key}.${g.key}`, value: s.low, base: s.n, label: `${L[spec.scale.low - spec.scale.min]} or worse, ${g.name.toLowerCase()}`, group: c.name, scene: { cond: ci, group: gi } }
+    : { key: `median.${c.key}.${g.key}`, value: s.median, base: spec.scale.max, label: `median, ${g.name.toLowerCase()} (n = ${s.n})`,   // the condition is the group heading
+      group: c.name, scene: { cond: ci, group: gi } };
+}));
 export function prepare(spec, curly = (s) => s) {
   if (!spec.tension) return;
   if (!spec.tension.numbers.every((s) => /\d/.test(s))) throw new Error("tension numbers must state a number");
@@ -40,8 +45,9 @@ export function build(spec) {
   const G = api.geometry(k, spec, P, { cond: spec.conds[0].key });
   const svg = k.figureSvg({ width: WIDTH, height: HEIGHT, label: spec.figure.label, body: [G.body] });
   const SPEC = { scale: spec.scale, conds: spec.conds.map(({ key, name, short, dressing }) => ({ key, name, short, dressing })),
-    groups: spec.groups.map(({ key, name, people }) => ({ key, name, people })), people: spec.people.map(({ label, group, values }) => ({ label, group, values })),
-    groupStats: spec.groupStats.map((g) => Object.fromEntries(Object.entries(g).map(([c, s]) => [c, { median: s.median, n: s.n }]))) };
+    groups: spec.groups.map(({ key, name, people }) => ({ key, name, people })), people: spec.people.map(({ label, group, values, missing }) => ({ label, group, values, ...(missing ? { missing } : {}) })),
+    groupStats: spec.groupStats.map((g) => Object.fromEntries(Object.entries(g).map(([c, s]) => [c, spec.scale.labels ? { median: s.median, n: s.n, word: s.medianWord } : { median: s.median, n: s.n }]))),
+    ...(spec.scenery ? { scenery: spec.scenery } : {}) };
   const live = `
 const LINE = (() => {
 const KIT = { AZIMUTH, ELEVATION, ISO_CSS, SHADES, axisVector, boxCorners, cameraOf, circleRing, coil, corners, cylinder, depthOf, dotGrid, dotsSvg, extrude, faceTextSvg, fadeLineSvg, fadedSvg, figureSvg, fitProjection, groupSvg, haloOf, holdStill, insetPlan, iso, joinPaths, knurl, lineOnTop, lineSvg, onTop, pageHtml, pathOf, planOutline, plateHtml, pointsAt, radialTicks, ring, ringOf, ringSeam, rise, roundedPlan, screenRise, segment, sideArc, sideMatrix, sideRing, sideSeam, sideTicks, slabOf, solidSvg, topMatrix, topTicks, towardViewer, translateAlong, wireSvg };
@@ -66,22 +72,25 @@ let G = null;
 const state = () => ({ cond: SPEC.conds[cond].key, pos, sel: { group: selGroup }, follow });
 function rebuild() { G = curbGeometry(KIT, SPEC, P, state()); svg.innerHTML = G.body; parts.apply(P); }
 function drawPeople() { const layer = svg.querySelector("[data-people]"); if (layer) layer.innerHTML = G.peopleSvg(pos, state()); }
-const wideCam = () => (plate.clientWidth < 520 ? { az: WIDE.az, zoom: WIDE.zoom * 1.25, focus: [WIDE.focus[0] - 6, WIDE.focus[1], WIDE.focus[2]] } : WIDE);
+const wideCam = () => (plate.clientWidth < 520 && !SPEC.scenery ? { az: WIDE.az, zoom: WIDE.zoom * 1.25, focus: [WIDE.focus[0] - 6, WIDE.focus[1], WIDE.focus[2]] } : WIDE);
 const camera = makeCamera({ svg, KIT, P0, CENTER: ${JSON.stringify(LAY.CENTER)}, W: ${WIDTH}, H: ${HEIGHT}, start: WIDE, rebuild: (p) => { P = p; rebuild(); } });
 let PARTS = curbGeometry(KIT, SPEC, P, state()).parts;
-const order = () => ["base", "road", "ruler", "building", ...SPEC.groups.map((g) => "median-" + g.key), "pod", "dressing"];
+const order = () => PARTS.map((p) => p.key);
 let parts = makeParts({ svg, KIT, parts: PARTS, order: order() });
 const view = { blueprint: false, apart: false };
-const callouts = () => SPEC.groups.map((g, gi) => { const p = PARTS.find((q) => q.key === "median-" + g.key); const s = SPEC.groupStats[gi][SPEC.conds[cond].key]; return p ? { part: p.key, anchor: p.anchor, num: String(gi + 1).padStart(2, "0"), name: g.name + " · median", count: s.median, n: SPEC.scale.max } : null; }).filter(Boolean);
+const callouts = () => SPEC.groups.map((g, gi) => { const p = PARTS.find((q) => q.key === "median-" + g.key); const s = SPEC.groupStats[gi][SPEC.conds[cond].key]; return p ? { part: p.key, anchor: p.anchor, num: String(gi + 1).padStart(2, "0"), name: g.name + " · median", count: s.median, n: SPEC.scale.max, ...(s.word ? { text: s.word, count: s.median == null ? null : s.median - SPEC.scale.min + 1 } : {}) } : null; }).filter(Boolean);
 const bp = makeBlueprint({ plate, svg, KIT, items: callouts(), offset: (key) => parts.offset(key), onPick: (i) => selectGroup(i) });
 const pin = makePin({ plate, svg, KIT });
 const chip = TENSION ? makeTensionChip(plate, TENSION, "bottom") : null;
 function say() {
   const c = SPEC.conds[cond];
   if (walkT != null) { readout.textContent = "Walking to: " + c.name; return; }
-  if (follow != null) { const p = SPEC.people[follow], v = p.values[c.key]; readout.textContent = p.label + " · " + (v == null ? "no answer" : "rated " + v + " on " + SPEC.scale.min + "–" + SPEC.scale.max) + " · " + c.name; return; }
-  if (selGroup != null) { const g = SPEC.groups[selGroup], s = SPEC.groupStats[selGroup][c.key]; readout.textContent = g.name + " · median " + s.median + " on " + SPEC.scale.min + "–" + SPEC.scale.max + " (n = " + s.n + ") · " + c.name; return; }
-  readout.textContent = c.name + " · " + SPEC.groups.map((g, gi) => g.name + " median " + SPEC.groupStats[gi][c.key].median).join(" · ");
+  const L = SPEC.scale.labels, on = " on " + SPEC.scale.min + "–" + SPEC.scale.max;
+  const med = (s) => (L ? s.word ?? "–" : s.median + on);
+  if (follow != null) { const p = SPEC.people[follow], v = p.values[c.key]; readout.textContent = p.label + " · " + (v == null ? (p.missing && p.missing[c.key]) || "no answer" : "rated " + (L ? L[v - SPEC.scale.min] : v + on)) + " · " + c.name; return; }
+  if (selGroup != null) { const g = SPEC.groups[selGroup], s = SPEC.groupStats[selGroup][c.key]; readout.textContent = g.name + " · median " + med(s) + " (n = " + s.n + ") · " + c.name; return; }
+  readout.textContent = L ? c.short + " · medians: " + SPEC.groups.map((g, gi) => g.name + " " + med(SPEC.groupStats[gi][c.key])).join(" · ")
+    : c.name + " · " + SPEC.groups.map((g, gi) => g.name + " median " + SPEC.groupStats[gi][c.key].median).join(" · ");
 }
 function emit(type) { document.dispatchEvent(new CustomEvent("lineup", { detail: { type, cond, group: selGroup, follow } })); }
 function personCam(i) { const p = target[i]; return { az: ${AZ}, zoom: 2.4, focus: [p.x, p.y, 6] }; }

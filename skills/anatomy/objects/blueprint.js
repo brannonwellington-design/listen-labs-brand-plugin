@@ -4,7 +4,7 @@
 // a terminal dot on the part's surface and a scale of n ticks (one tick per respondent).
 // Browser code, inlined by object modules.
 function makeBlueprint(o) {
-  // o: { plate, svg, KIT, items: [{ part, anchor, num, name, count, n }], offset(partKey), onPick(i) }
+  // o: { plate, svg, KIT, items: [{ part, anchor, num, name, count, n, text? }], offset(partKey), onPick(i) }   (text replaces "count/n", e.g. a word on a worded scale)
   // anchor is a world point, or a function returning one (for parts whose position is data: a coin stack's top,
   // a drawer pulled out by its count). setItems() swaps the findings when the figure changes chapter.
   const NS = "http://www.w3.org/2000/svg";
@@ -41,7 +41,7 @@ function makeBlueprint(o) {
     el.className = "bp-label";
     el.dataset.i = String(i);
     el.innerHTML = `<span class="bp-label__head"><span class="bp-num">${it.num}</span><span class="bp-name">${it.name}</span></span>` +
-      `<span class="bp-count">${it.count == null ? "not reported" : it.count + "<span>/" + it.n + "</span>"}</span>${scale(it.count, it.n)}`;
+      `<span class="bp-count">${it.count == null ? "not reported" : it.text != null ? it.text : it.count + "<span>/" + it.n + "</span>"}</span>${scale(it.count, it.n)}`;
     el.setAttribute("aria-label", `${it.num} ${it.name}: ${it.count == null ? "not reported" : it.count + " of " + it.n}`);
     el.addEventListener("pointerenter", () => o.onPick && o.onPick(i, "hover"));
     el.addEventListener("click", () => o.onPick && o.onPick(i, "click"));

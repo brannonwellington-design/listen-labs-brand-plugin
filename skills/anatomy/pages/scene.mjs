@@ -3,7 +3,7 @@
 // the embed for other skills (/research-artifacts, /report, the product canvas) all mount scenes through this, so a
 // new object or world works everywhere as soon as it declares the scene contract:
 //   API, HOOK          the global its runtime registers (window.STAD …) and the attribute on its stage element
-//   controls(spec)     the in-figure controls it needs: [{ kind: select | segmented, label, call, get?, none?,
+//   controls(spec)     the in-figure controls it needs: [{ kind: select | segmented, label, call, get?, none?, placeholder?,
 //                      embedOnly?, options: [{ value, label }] }]; `call` is an API method, `get` an API getter
 //   scripts(spec)?     resolved tours (default: resolveScripts); prepare(spec)? tension (default: resolveTension)
 //   CSS?, STAGE_CSS?   object styles that must travel with it
@@ -31,7 +31,7 @@ const SCENE_CSS = `
 function controlsHtml(list, mode) {
   return list.filter((c) => mode === "embed" || !c.embedOnly).map((c, i) => c.kind === "segmented"
     ? `<span class="fig-seg" role="radiogroup" aria-label="${S.esc(c.label)}" data-ctl="${i}">${c.options.map((o) => `<button type="button" role="radio" aria-checked="false" data-v="${o.value}">${S.esc(o.label)}</button>`).join("")}</span>`
-    : `<select class="fig-play fig-ctl" aria-label="${S.esc(c.label)}" data-ctl="${i}"><option value="">${S.esc(c.label)}</option>${c.options.map((o) => `<option value="${o.value}">${S.esc(o.label)}</option>`).join("")}</select>`).join("");
+    : `<select class="fig-play fig-ctl" aria-label="${S.esc(c.label)}" data-ctl="${i}">${c.placeholder === false ? "" : `<option value="">${S.esc(c.label)}</option>`}${c.options.map((o) => `<option value="${o.value}">${S.esc(o.label)}</option>`).join("")}</select>`).join("");
 }
 // wire every control to the object's API, and keep it in step with the drawing (a click in the figure can change
 // what a control shows)
@@ -49,7 +49,7 @@ const controlsScript = (api, list) => `
     els.forEach((el) => {
       const c = CTL[+el.dataset.ctl]; if (!c.get) return;
       const v = A[c.get];
-      if (el.tagName === "SELECT") el.value = v == null || v === c.none ? "" : String(v);
+      if (el.tagName === "SELECT") el.value = c.placeholder === false ? String(v) : v == null || v === c.none ? "" : String(v);
       else el.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(String(v) === b.dataset.v)));
     });
   }

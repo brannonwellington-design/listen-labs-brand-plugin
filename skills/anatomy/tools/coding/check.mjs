@@ -74,7 +74,7 @@ console.log(`respondents: ${rows.length} (complete ${count([{ complete: true }])
 problems.forEach((p) => console.log("  ✗ " + p));
 console.log("\nreconciliation                          transcript      report");
 const recon = (book.report || []).map((x) => {
-  const v = count(x.count), b = count(x.base);
+  const v = count([...(x.base || []), ...x.count]), b = count(x.base);   // a count is always within its base
   console.log(`${x.label.padEnd(38)} ${String(v).padStart(4)} / ${String(b).padEnd(4)}  ${String(x.report[0]).padStart(4)} / ${x.report[1]}`);
   return { label: x.label, transcript: v, base: b, report: x.report[0], reportBase: x.report[1] };
 });
