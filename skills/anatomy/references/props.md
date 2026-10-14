@@ -61,7 +61,7 @@ PROPS["finish-arch"] = {
 | A box with rounded corners | `S(slab({ x, y, w, d, r }, z, h, steps, bevel), { tone })` |
 | A post, wheel, pot, head | `S(k.cylinder(cx, cy, radius, z, h, P, steps, bevel), { tone })` |
 | A rotated or irregular solid (a car askew, a wedge plan) | `S(k.extrude(ring, z, h, P, { convex: true }), { tone })`, ring = `[[x, y], …]` |
-| A roof, a pyramid, a stepped form | stacked slabs, each inset a little: slopes don't exist, steps read as roofs |
+| A stepped form (a podium, a plinth, a ziggurat) | stacked slabs, each inset a little |
 | An outline on a wall (window, door, sign) | `L(faceY(y, rect(x0, x1, z0, z1)), { tone })` or `faceX(x, rect(y0, y1, z0, z1))` |
 | A line in space (rope, crack, rail) | `L(k.segment([x, y, z], [x, y, z], P), { tone, free: true })` |
 | A line on the ground | `L(k.lineOnTop([x, y], [x, y], z, P), { tone })` |
@@ -83,8 +83,18 @@ shows through. Keep such objects where nothing sits behind them, or give them a 
 **Creases.** `crease: "none"` on a solid also drops its top edge line. Hatching or lines that should end on that edge
 then float; keep the default crease on any solid other lines end on.
 
-**No tilted solids.** Solids extrude straight up from a plan: there are no slopes, tilted planes or upright discs. A
-sagging roof is stepped slabs; a tyre is a low cylinder (a puck) plus an upright ring line on its visible side.
+**Solids in any orientation.** `slab` and `k.cylinder` extrude straight up. For anything sloped, tilted or on its
+side, use the context's 3D solids; each returns paths for `S(…)` plus its own `bounds` to merge into the item's:
+
+| Want | Use |
+|---|---|
+| A gable roof, a ramp, a wedge, a beam | `c.prism([[u, v]…], from, to)`: a convex profile swept between two 3D points (v points up). A gable roof is `[[-d/2, 0], [d/2, 0], [0, rise]]` swept along the ridge |
+| A leaning pole, a rail, a thick rope | `c.rod([x, y, z], [x, y, z], r)` |
+| A wheel, a tyre, a clock face, a coin on edge | `c.disc([x, y, z], r, thickness, "x" or "y")`: a cylinder standing on its edge, facing that axis |
+| A leaning sign, a fallen board, a sagging roof panel | `c.box3([x, y, z], [w, d, h], { rz, ry, rx })`: a box centred there, turned in degrees |
+| Any other convex shape | `c.solid3(vertices, faces)`: corners and the faces between them |
+
+Several solids in one item still draw in the order you push them: far ones first.
 
 **Line ends.** The line check (`scripts/lines.mjs`) needs every texture line to end on something: another stroke, a dot,
 an outline, or under a solid painted after it. A line that merely lies on a face's interior is not rooted. Fixes, in

@@ -54,7 +54,74 @@ function makeCtx(k, P) {
     return out.join("");
   };
   const box = (plan, z0, z1) => [plan.x, plan.y, z0, plan.x + plan.w, plan.y + plan.d, z1];
-  return { k, P, at, S, L, D, slab, byDepth, openBox, faceY, faceX, stadium, rect, box, hatch };
+  // ---------- solids in any orientation (the kit's own solids only extrude straight up) ----------
+  // solid3(verts, faces): any convex solid from its corners and faces (each a list of vertex indices). Visible faces,
+  // silhouette, creases and shading come from the camera, in the same layered paths the kit's solids use, so S(…) draws
+  // them with the same tones, shading and themes. Returns those paths plus `bounds` ([x0,y0,z0,x1,y1,z1]) for items.
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const crossV = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const unit = (a) => { const n = Math.hypot(...a) || 1; return [a[0] / n, a[1] / n, a[2] / n]; };
+  const hull2 = (pts) => {
+    const q = [...pts].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const half = (list) => { const h = []; for (const p of list) { while (h.length >= 2 && cr(h[h.length - 2], h[h.length - 1], p) <= 0) h.pop(); h.push(p); } h.pop(); return h; };
+    return [...half(q), ...half([...q].reverse())];
+  };
+  function solid3(verts, faces) {
+    const { sinA, cosA, sinE, cosE } = k.cameraOf(P);
+    const view = [cosA * cosE, sinA * cosE, sinE];                       // toward the viewer
+    const mid = verts.reduce((m, v) => [m[0] + v[0] / verts.length, m[1] + v[1] / verts.length, m[2] + v[2] / verts.length], [0, 0, 0]);
+    const info = faces.map((f) => {
+      let n = unit(crossV(sub(verts[f[1]], verts[f[0]]), sub(verts[f[2]], verts[f[0]])));
+      const fc = f.reduce((m, i) => [m[0] + verts[i][0] / f.length, m[1] + verts[i][1] / f.length, m[2] + verts[i][2] / f.length], [0, 0, 0]);
+      if (dot(n, sub(fc, mid)) < 0) n = [-n[0], -n[1], -n[2]];             // outward
+      return { f, n, seen: dot(n, view) > 1e-6 };
+    });
+    const pts = verts.map((v) => at(v)), path = (idx, closed) => k.pathOf(idx.map((i) => pts[i]), closed);
+    // each edge, and whether the faces on its two sides are seen
+    const edges = new Map();
+    info.forEach(({ f, seen }) => f.forEach((a, i) => { const b = f[(i + 1) % f.length], key = a < b ? a + "," + b : b + "," + a; (edges.get(key) || edges.set(key, []).get(key)).push(seen); }));
+    const outline = [], crease = [];
+    for (const [key, sides] of edges) { const [a, b] = key.split(",").map(Number); const n = sides.filter(Boolean).length; if (n === 1) outline.push(path([a, b])); else if (n === 2) crease.push(path([a, b])); }
+    // shading: faces that look up are the top; the rest go in the kit's shade buckets by how they face the light
+    const shades = Array.from({ length: k.SHADES }, () => []), tops = [];
+    const light = [-sinA, cosA];
+    for (const { f, n, seen } of info) {
+      if (!seen) continue;
+      if (n[2] > 0.55) { tops.push(path(f, true)); continue; }
+      const h = Math.hypot(n[0], n[1]) || 1, lit = Math.min(1, ((n[0] / h) * light[0] + (n[1] / h) * light[1] + 1) / 2 + Math.max(0, n[2]) * 0.4);
+      shades[Math.min(k.SHADES - 1, Math.max(0, Math.floor(lit * k.SHADES)))].push(path(f, true));
+    }
+    const xs = verts.map((v) => v[0]), ys = verts.map((v) => v[1]), zs = verts.map((v) => v[2]);
+    return { fill: k.pathOf(hull2(pts), true), outline: outline.join(""), crease: crease.join(""), top: tops.join(""), shades: shades.map((d) => d.join("")),
+      bounds: [Math.min(...xs), Math.min(...ys), Math.min(...zs), Math.max(...xs), Math.max(...ys), Math.max(...zs)] };
+  }
+  // prism(profile, from, to): a convex 2D profile [[u, v]…] swept straight from one 3D point to another. v points as
+  // close to straight up as the axis allows (u runs across): a gable roof is a triangle swept along the ridge, a ramp a
+  // right triangle, a beam a rectangle.
+  function prism(profile, from, to) {
+    const a = unit(sub(to, from));
+    const ref = Math.abs(a[2]) > 0.95 ? [1, 0, 0] : [0, 0, 1];
+    const e2 = unit(sub(ref, a.map((x) => x * dot(ref, a)))), e1 = crossV(a, e2);
+    const ring = (o) => profile.map(([u, v]) => [o[0] + u * e1[0] + v * e2[0], o[1] + u * e1[1] + v * e2[1], o[2] + u * e1[2] + v * e2[2]]);
+    const verts = [...ring(from), ...ring(to)], n = profile.length;
+    const faces = [profile.map((_, i) => i), profile.map((_, i) => n + i).reverse(), ...profile.map((_, i) => [i, (i + 1) % n, n + (i + 1) % n, n + i])];
+    return solid3(verts, faces);
+  }
+  const circle = (r, steps) => Array.from({ length: steps }, (_, i) => [r * Math.cos((i / steps) * 2 * Math.PI), r * Math.sin((i / steps) * 2 * Math.PI)]);
+  // rod(a, b, r): a round pole between any two points (a leaning post, a rail, a thick rope)
+  const rod = (a, b, r, steps = 10) => prism(circle(r, steps), a, b);
+  // disc([x, y, z], r, thickness, axis): a cylinder standing on its edge, facing along "x" or "y" (a wheel, a clock face)
+  const disc = ([x, y, z], r, t, axis = "y", steps = 20) => axis === "x" ? prism(circle(r, steps), [x - t / 2, y, z], [x + t / 2, y, z]) : prism(circle(r, steps), [x, y - t / 2, z], [x, y + t / 2, z]);
+  // box3([x, y, z], [w, d, h], { rz, ry, rx }): a box centred on (x, y, z), turned by degrees about z (spin), then y
+  // (tip along x) and x (tip along y): a leaning sign, a fallen slat, a sagging roof panel
+  function box3([x, y, z], [w, d, h], { rz = 0, ry = 0, rx = 0 } = {}) {
+    const R = (deg) => (deg * Math.PI) / 180, [cz, sz, cy, sy, cx, sx] = [Math.cos(R(rz)), Math.sin(R(rz)), Math.cos(R(ry)), Math.sin(R(ry)), Math.cos(R(rx)), Math.sin(R(rx))];
+    const turn = ([u, v, t]) => { let [a, b, cc] = [u * cz - v * sz, u * sz + v * cz, t]; [a, cc] = [a * cy + cc * sy, -a * sy + cc * cy]; [b, cc] = [b * cx - cc * sx, b * sx + cc * cx]; return [x + a, y + b, z + cc]; };
+    const verts = []; for (const t of [-h / 2, h / 2]) for (const [u, v] of [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]]) verts.push(turn([u, v, t]));
+    return solid3(verts, [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]]);
+  }
+  return { k, P, at, S, L, D, slab, byDepth, openBox, faceY, faceX, stadium, rect, box, hatch, solid3, prism, rod, disc, box3 };
 }
 
 // Order items for the painter. Within a phase, an edge a → b (a drawn first) is added only when the two items'
