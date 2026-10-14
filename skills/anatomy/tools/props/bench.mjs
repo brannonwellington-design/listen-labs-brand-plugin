@@ -3,6 +3,8 @@
 //
 // usage: node tools/props/bench.mjs <props.js> [--prop <name>] [--out <dir>] [--zoom 2] [--no-shots]
 //   --zoom draws every cell larger, for reviewing small details
+//   --blind letters the rows (A, B, …) instead of naming them, and writes the answer key to <name>-blind-key.json: the sheet a
+//           reviewer who has not seen the brief names cold (references/props.md, "The blind read")
 //   <props.js> is a study's own props file (scenes/<slug>/props/*.js) or a library file (props/*.js).
 //
 // Checks, per prop and variant (exit 1 if any fails):
@@ -12,8 +14,8 @@
 //              bounds gets depth-sorted wrong next to other things
 //   scale      height between 1 and 60 (a person is 7)
 //   brand      no colours, fonts or inline styles in the markup: tones only (the skin colours them, light and dark)
-//   lines      every texture line ends on something (scripts/lines.mjs on the sheet), light theme
-// The sheet: each variant at four azimuths, with a person in front and one behind for scale and occlusion, light and
+//   lines      every texture line ends on something (scripts/lines.mjs on the light sheet, always at zoom 2)
+// The sheet: each variant at four azimuths and once at the size a scene draws it, with a person in front and one behind for scale and occlusion, light and
 // dark. Open the PNGs and review them against references/props.md before wiring the prop into a world.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import { join, dirname, basename, resolve } from "node:path";
@@ -26,6 +28,7 @@ const args = process.argv.slice(2);
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
 const file = args.find((a, i) => !a.startsWith("--") && !args[i - 1]?.startsWith("--"));
 if (!file) { console.error("usage: node tools/props/bench.mjs <props.js> [--prop name] [--out dir] [--no-shots]"); process.exit(2); }
+const blind = args.includes("--blind");
 const only = opt("--prop", null), out = resolve(opt("--out", join(dirname(resolve(file)), "bench"))), shots = !args.includes("--no-shots");
 mkdirSync(out, { recursive: true });
 
@@ -44,7 +47,8 @@ const names = env.mine.filter((n) => !only || n === only);
 if (!names.length) { console.error(only ? `no prop "${only}" in ${file}` : `${file} defines no props`); process.exit(2); }
 
 const ZOOM = Math.max(1, Number(opt("--zoom", 1)));
-const AZ = [30, 45, 62, 80], CELL = [420 * ZOOM, 300 * ZOOM];   // the camera's whole range (objects/camera.js keeps azimuth within 30–80°)
+const AZ = [30, 45, 62, 80], CELL = [420 * ZOOM, 300 * ZOOM];
+const VIEWS = [...AZ.map((az) => ({ az })), { az: 62, scene: true }];   // the camera's whole range (objects/camera.js keeps azimuth within 30–80°)
 const fails = [], warns = [];
 const fail = (n, msg) => fails.push(`${n}: ${msg}`), warn = (n, msg) => warns.push(`${n}: ${msg}`);
 const fin = (a) => Array.isArray(a) && a.every((v) => typeof v === "number" && isFinite(v));
@@ -61,9 +65,12 @@ for (const name of names) {
     const tag = name + (Object.keys(v).length ? " " + JSON.stringify(v) : "");
     const cells = [];
     let top = 0, ok = true;
-    for (const az of AZ) {
-      // fit the cell to the footprint plus room for the two people
-      const P = k.fitProjection([[-fx / 2 - 12, -fy / 2 - 12, 0], [fx / 2 + 12, fy / 2 + 12, 0], [-fx / 2 - 12, fy / 2 + 12, 30], [fx / 2 + 12, -fy / 2 - 12, 30]], CELL[0], CELL[1], { pad: 18, azimuth: az });
+    for (const view of VIEWS) {
+      const az = view.az;
+      // fit the cell to the footprint plus room for the two people; the last cell draws the prop at the size a scene
+      // shows it (the lineup street at 62°), so a prop that only reads when enlarged is caught on the sheet
+      const P = view.scene ? k.fitProjection([[-91 / ZOOM, -40 / ZOOM, 0], [91 / ZOOM, 40 / ZOOM, 0]], CELL[0], CELL[1], { pad: 0, azimuth: az })
+        : k.fitProjection([[-fx / 2 - 12, -fy / 2 - 12, 0], [fx / 2 + 12, fy / 2 + 12, 0], [-fx / 2 - 12, fy / 2 + 12, 30], [fx / 2 + 12, -fy / 2 - 12, 30]], CELL[0], CELL[1], { pad: 18, azimuth: az });
       const c = env.makeCtx(k, P);
       let built;
       try { built = prop.build(c, { ...v, x: 0, y: 0 }); } catch (e) { fail(tag, "build threw: " + e.message); ok = false; break; }
@@ -98,26 +105,34 @@ for (const name of names) {
       // the cell: a plate, the prop, a person in front (toward +x) and one behind (toward -y), depth-sorted together
       const plate = env.ground(c, { plan: { x: -fx / 2 - 10, y: -fy / 2 - 10, w: fx + 20, d: fy + 20, r: 2 }, h: 3, pattern: "tiles", tile: 10 });
       const front = env.person(c, [fx / 2 + 5, 0, 0], { part: "scale-front" }), back = env.person(c, [-fx / 4, -fy / 2 - 5, 0], { part: "scale-back" });
-      cells.push({ az, svg: env.composeWorld([plate, ...built.items, front, back], k, P) });
+      cells.push({ az, tag: view.scene ? "scene size" : "az " + az, svg: env.composeWorld([plate, ...built.items, front, back], k, P) });
     }
     if (ok) rows.push({ tag, cells });
   }
 }
 
 // the sheet: one svg, a row per prop variant, a cell per azimuth
-const W = CELL[0] * AZ.length, H = CELL[1] * rows.length + 30 * rows.length;
-const body = rows.map((r, ri) => `<g transform="translate(0 ${ri * (CELL[1] + 30)})"><text class="bench-tag" x="8" y="18">${r.tag.replace(/[<&]/g, "")}</text>${r.cells.map((cell, ci) => `<g transform="translate(${ci * CELL[0]} 24)">${cell.svg}<text class="bench-tag" x="8" y="${CELL[1] - 8}">az ${cell.az}</text></g>`).join("")}</g>`).join("");
+const W = CELL[0] * VIEWS.length, H = CELL[1] * rows.length + 30 * rows.length;
+const label = (r, ri) => (blind ? String.fromCharCode(65 + ri) : r.tag.replace(/[<&]/g, ""));
+const body = rows.map((r, ri) => `<g transform="translate(0 ${ri * (CELL[1] + 30)})"><text class="bench-tag" x="8" y="18">${label(r, ri)}</text>${r.cells.map((cell, ci) => `<g transform="translate(${ci * CELL[0]} 24)">${cell.svg}<text class="bench-tag" x="8" y="${CELL[1] - 8}">${cell.tag}</text></g>`).join("")}</g>`).join("");
 const skin = read("skin/ll-skin.css");
 const page = (theme) => `<!doctype html><html data-theme="${theme}"><meta charset=utf-8><title>Prop bench</title><style>${k.ISO_CSS}${skin} html,body{margin:0;background:${theme === "dark" ? "#16130f" : "#faf8f4"}} .bench-tag{font:12px/1 Inter, system-ui, sans-serif; fill: var(--anatomy-muted, #888)}</style><body data-theme="${theme}"><div class="iso-plate" style="padding:0;border:0;border-radius:0;width:${W}px"><svg class="iso" data-theme="${theme}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${body}</svg></div>`;
-const stem = basename(file, ".js") + (only ? "-" + only : "");
+const stem = basename(file, ".js") + (only ? "-" + only : "") + (blind ? "-blind" : "");
+if (blind) writeFileSync(join(out, `${stem}-key.json`), JSON.stringify(Object.fromEntries(rows.map((r, ri) => [String.fromCharCode(65 + ri), r.tag])), null, 2));
 for (const theme of ["light", "dark"]) writeFileSync(join(out, `${stem}-${theme}.html`), page(theme));
 
-// line ends on the light sheet, then the screenshots for the review
-if (rows.length) {
+// line ends, always judged at zoom 2 (the check measures in screen pixels, so a pass must not depend on the sheet's
+// zoom): at zoom 1 the bench runs itself at zoom 2 for this one check. Then the screenshots for the review.
+if (rows.length && ZOOM < 2) {
+  const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), resolve(file), ...(only ? ["--prop", only] : []), "--zoom", "2", "--no-shots", "--out", join(out, "zoom2")], { encoding: "utf8" });
+  for (const l of (r.stdout || "").split("\n").filter((l) => l.startsWith("✗ lines:"))) fails.push(l.slice(2) + " (at zoom 2, ringed in bench/zoom2/)");
+} else if (rows.length) {
   const r = spawnSync(process.execPath, [join(ROOT, "scripts/lines.mjs"), join(out, `${stem}-light.html`), "--out", join(out, `${stem}-lines.png`), "--width", String(W), "--height", String(Math.min(H, 4000))], { encoding: "utf8" });
   const m = (r.stdout + r.stderr).match(/line ends: (\d+) of (\d+)/);
   if (!m) fail("lines", "the line check did not run: " + (r.stdout + r.stderr).trim().split("\n").slice(-2).join(" "));
   else if (m[1] !== "0") fail("lines", `${m[1]} floating line ends of ${m[2]} (ringed in ${stem}-lines.png)`);
+}
+if (rows.length) {
   if (shots) for (const theme of ["light", "dark"]) spawnSync(process.execPath, [join(ROOT, "scripts/capture.mjs"), join(out, `${stem}-${theme}.html`), "--out", join(out, `${stem}-${theme}.png`), "--width", String(W), "--height", String(Math.min(H, 4000)), "--scale", "1"], { encoding: "utf8" });
 }
 for (const w of warns) console.log("· " + w);

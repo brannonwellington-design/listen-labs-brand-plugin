@@ -6,6 +6,7 @@
 //   1. lines (reduced motion and with motion): every texture line ends on something
 //   2. console: no errors in light or dark
 //   3. phone: no horizontal scroll at 390 px
+//   3b. people: no respondent hidden behind scenery at the default view
 //   4. leaks: the page carries no transcript link without its quote, and no "TODO"/"lorem"
 //   5. screenshots: desktop light + dark, phone, and the figure in blueprint and apart views
 import { spawnSync } from "node:child_process";
@@ -45,6 +46,21 @@ for (const theme of ["light", "dark"]) {
 const ph = drive([["wait", 3000], ["eval", "document.documentElement.scrollWidth + ' ' + document.documentElement.clientWidth"], ["shot", join(out, "phone.png")]], ["--width", "390", "--height", "900"]);
 const [sw, cw] = ((ph.match(/eval: "(\d+) (\d+)"/) || [])).slice(1).map(Number);
 check("phone width", sw && sw <= cw, `${sw} / ${cw} px`);
+// 3b. every person visible: a respondent hidden behind scenery is a respondent the reader can't see. For each person
+// drawn ([data-p], [data-fan]) the check samples the head and the body; if a non-person part is on top at both, it is
+// hidden. Run at the default view, reduced motion (everyone at rest).
+const OCCLUDED = `(() => { const svg = document.querySelector(".iso-plate svg"); if (!svg) return "{}"; const hid = {}; let n = 0;
+  for (const g of svg.querySelectorAll("[data-p],[data-fan]")) { const r = g.getBoundingClientRect(); if (r.width < 2 || r.height < 3) continue; n++;
+    const cover = [0.2, 0.6].map((f) => { const t = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height * f).find((e) => svg.contains(e) && e !== svg);
+      if (!t || g.contains(t) || t.closest("[data-p],[data-fan]")) return null; const part = t.closest("[data-part]"); return part ? part.getAttribute("data-part") : "scenery"; });
+    if (cover[0] && cover[1]) hid[cover[0]] = (hid[cover[0]] || 0) + 1; }
+  return JSON.stringify({ n, hid }); })()`;
+const oc = drive([["wait", 2500], ["eval", OCCLUDED]], ["--reduced", "--width", "1440", "--height", "1000"]);
+const ocm = oc.match(/eval: "(.*)"/);
+if (ocm) {
+  const r = JSON.parse(JSON.parse(`"${ocm[1]}"`)), hidden = Object.values(r.hid || {}).reduce((a, b) => a + b, 0);
+  if (r.n) check("every person visible", hidden === 0, hidden ? `${hidden} of ${r.n} hidden behind ${Object.entries(r.hid).map(([k, v]) => `${k} (${v})`).join(", ")}` : `${r.n} people, none hidden`);
+}
 // 4. content leaks
 const html = readFileSync(page, "utf8");
 check("no placeholder copy", !/\b(TODO|lorem ipsum|FIXME)\b/i.test(html));

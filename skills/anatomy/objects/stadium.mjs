@@ -9,9 +9,11 @@ const k = await import(new URL("../kit/iso-kit.mjs", import.meta.url).href);
 export const WIDTH = 760;
 export const HEIGHT = 500;
 const AZ = 58;
-const SRC = ["engine/compose.js", "engine/primitives.js", "props/stage.js", "worlds/stadium.world.js"].map((f) => readFileSync(new URL("../" + f, import.meta.url), "utf8")).join("\n");
+const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
+// a study's own generated props (spec.propSource) load after the library and before the world
+const srcFor = (spec) => [read("engine/compose.js"), read("engine/primitives.js"), read("props/stage.js"), spec.propSource || "", read("worlds/stadium.world.js")].join("\n");
 const RT = ["camera", "parts", "blueprint", "tension", "pin"].map((f) => readFileSync(new URL(`./${f}.js`, import.meta.url), "utf8")).join("\n");
-const api = new Function("k", SRC + "\nreturn { layout: stadiumLayout, geometry: stadiumGeometry };")(k);
+const apiFor = (spec) => new Function("k", srcFor(spec) + "\nreturn { layout: stadiumLayout, geometry: stadiumGeometry };")(k);
 export const TENSION_EVENTS = ["wave"];
 // ---------- scene contract (pages/scene.mjs): how any host mounts, drives and controls this object ----------
 export const API = "STAD", HOOK = "data-stadium";
@@ -46,6 +48,7 @@ export function scripts(spec, curly = (s) => s) {
 }
 
 export function build(spec) {
+  const api = apiFor(spec), SRC = srcFor(spec);
   const LAY = api.layout(spec);
   const P = k.fitProjection(LAY.fit, WIDTH, HEIGHT, { pad: 12, azimuth: AZ });
   const actIdx = spec.acts.length - 1;

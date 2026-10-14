@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 // Shared by every pattern builder: the filter language, copy templates over computed facts, and checked claims.
 // Keeping these in one place means every pattern enforces the same honesty rules:
@@ -83,10 +83,18 @@ export function fillTree(o, fill, where = "") {
   return o;
 }
 export const readCodes = (dir, file = "codes/merged.json") => JSON.parse(readFileSync(join(dir, file), "utf8"));
+// a study's own generated props (cfg.props: files in the study folder, benched per references/props.md), as one source
+// string the scene objects load after the library
+export function readPropSource(dir, cfg) {
+  return (cfg.props || []).map((f) => {
+    if (!existsSync(join(dir, f))) throw new Error(`props file ${f} not found in ${dir}`);
+    return `// ${f}\n` + readFileSync(join(dir, f), "utf8");
+  }).join("\n");
+}
 
 // The shared run of a report-driven pattern: read the config and the coding, let the pattern validate it and attach
 // its people, fill every copy string from the facts, check the claims, write the spec.
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { writeFileSync, mkdirSync } from "node:fs";
 // A number the report states that is not part of the scene's data goes in cfg.reportFacts, by name, with where it came
 // from: { "<name>": { "value": 15, "from": "<report section or chart>" } }. Copy cites it as {reportFacts.<name>.value}.
 // Never match a number to a fact by value alone: two findings can share a number.
