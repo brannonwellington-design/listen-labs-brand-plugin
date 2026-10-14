@@ -1,0 +1,187 @@
+{
+  "_example": "Synthetic: a fictional caf\u00e9 study for learning the lineup config. No real study, people or quotes. Copy it into scenes/<slug>/ and replace everything.",
+  "pattern": "lineup",
+  "world": "curb",
+  "labelPrefix": "R",
+  "study": {
+    "id": "00000000-example",
+    "short": "example",
+    "title": "Example: caf\u00e9 regulars",
+    "url": "https://listenlabs.ai/p/example",
+    "reportN": 12
+  },
+  "scale": {
+    "labels": [
+      "Very poor",
+      "Poor",
+      "Fair",
+      "Good",
+      "Excellent"
+    ],
+    "keys": [
+      "very_poor",
+      "poor",
+      "fair",
+      "good",
+      "excellent"
+    ],
+    "missing": [
+      "Not applicable"
+    ],
+    "high": 4,
+    "low": 2,
+    "lowLabel": "Very poor",
+    "highLabel": "Excellent",
+    "lowPhrase": "or worse",
+    "highPhrase": "or better"
+  },
+  "segments": {
+    "closed": "visits",
+    "groups": [
+      {
+        "key": "weekday",
+        "name": "Weekday regulars",
+        "filter": [
+          {
+            "closed": "visits",
+            "eq": "weekday"
+          }
+        ]
+      },
+      {
+        "key": "weekend",
+        "name": "Weekend visitors",
+        "filter": [
+          {
+            "closed": "visits",
+            "eq": "weekend"
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": [
+    {
+      "key": "morning",
+      "name": "A visit in the morning rush",
+      "short": "Morning rush",
+      "closed": "r_morning"
+    },
+    {
+      "key": "afternoon",
+      "name": "A quiet afternoon visit",
+      "short": "Afternoon",
+      "closed": "r_afternoon"
+    },
+    {
+      "key": "wait",
+      "name": "How they describe the wait (coded from an open answer)",
+      "short": "The wait",
+      "dim": "wait"
+    }
+  ],
+  "why": {
+    "dim": "lowest",
+    "map": {
+      "morning": "morning",
+      "afternoon": "afternoon"
+    }
+  },
+  "scenery": {
+    "surface": "tiles",
+    "low": [
+      {
+        "prop": "house",
+        "lane": "both",
+        "opts": {
+          "state": "damaged"
+        },
+        "name": "Run-down shopfront"
+      }
+    ],
+    "high": [
+      {
+        "prop": "house",
+        "lane": "both",
+        "opts": {
+          "state": "repaired"
+        },
+        "name": "Smart shopfront"
+      }
+    ]
+  },
+  "assert": [
+    "recon.0.transcript == recon.0.report",
+    "group.weekday.morning.median < group.weekday.afternoon.median"
+  ],
+  "tension": {
+    "label": "The morning rush pulls weekday regulars down",
+    "from": "afternoon",
+    "cond": "morning",
+    "numbers": [
+      "Weekday regulars: median {group.weekday.morning.medianWord} in the rush (n = {group.weekday.morning.n})"
+    ]
+  },
+  "swing": "fall",
+  "figure": {
+    "fig": "Fig 1",
+    "title": "From the quiet hour to the rush",
+    "hint": "Pick a moment, or click a person to follow them",
+    "label": "An isometric street that doubles as a rating scale. {n} small figures stand on it, one per interview, at the rating they gave the selected moment.",
+    "caption": "One figure per interview ({n}). Back lane: weekday regulars. Front lane: weekend visitors. A cone marks each lane's median; faded figures gave no answer.",
+    "titleBlock": [
+      [
+        "Drawing",
+        "Example street"
+      ],
+      [
+        "Study",
+        "Example \u00b7 synthetic"
+      ],
+      [
+        "Base",
+        "n = {n}"
+      ],
+      [
+        "Method",
+        "Synthetic data"
+      ],
+      [
+        "Scale",
+        "{lit:1} figure = {lit:1} interview"
+      ]
+    ]
+  },
+  "page": {
+    "condLabel": "Moment",
+    "frame": "Example study \u00b7 {n} synthetic interviews",
+    "headline": "An example lineup, built from synthetic data",
+    "dek": "This page is built from the example config in examples/lineup. Every number on it comes from the facts.",
+    "notes": [
+      "Synthetic data: nothing on this page describes real people.",
+      "Directional: {n} interviews."
+    ]
+  },
+  "tour": [
+    {
+      "hold": 5,
+      "cond": "afternoon",
+      "title": "The quiet hour",
+      "caption": "Weekday regulars' median is {group.weekday.afternoon.medianWord}."
+    },
+    {
+      "hold": 6,
+      "cond": "morning",
+      "tension": true,
+      "title": "The morning rush",
+      "caption": "{group.weekday.morning.low} of {group.weekday.morning.n} weekday regulars rate it {scale.lowWord} {phrase.low}."
+    },
+    {
+      "hold": 5,
+      "cond": "wait",
+      "wide": true,
+      "title": "The wait, in their words",
+      "caption": "Coded from an open answer; {group.weekend.wait.na} weekend visitors gave none."
+    }
+  ]
+}

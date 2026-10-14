@@ -70,7 +70,9 @@ Like the crowd config (study, segments, figure, tension, page, tour, assert, cou
   counts in the facts. A worded scale gives `labels` (low to high, e.g. `["Very poor", "Poor", "Fair", "Good",
   "Excellent"]`) instead of `min`/`max`; the words stand at 1…n, so `high: 4` means Good or better. Answers listed in
   `missing` (e.g. `["Not applicable"]`) count as no answer for that condition: drawn faded, left out of the median and n.
-  The coding copies the answer words exactly; the builder maps them.
+  The coding copies the answer words exactly; the builder maps them. `lowPhrase` / `highPhrase` say how a threshold reads
+  in copy and on the rail: "or worse" / "or better" by default, "or less" / "or more" for prices and amounts. Keep each
+  word to about 12 characters ("$51–100", not "$51 to $100"); longer words shrink on the ruler and stop reading.
 - `scenery` (optional): the street's own end-of-lane props instead of the default curb, building and pod, so the street
   belongs to the subject. `{ low: [item…], high: [item…], surface? }`, item `{ prop, lane: 0 | 1 | "both", opts?, name? }`,
   lined up outward from the scale, nearest first (an item across both lanes starts past whatever either lane holds).
@@ -79,7 +81,11 @@ Like the crowd config (study, segments, figure, tension, page, tour, assert, cou
   ends read as the scale's two ends.
 - `page.condLabel` (optional): what the condition control is called ("Moment", "Product"; default "Situation"). More
   than four conditions show as a dropdown.
-- `conditions`: `[{ key, name, short, closed: "<closed key holding the rating>", dressing, reportMedian: { <group>: n } }]`.
+- `conditions`: `[{ key, name, short, closed: "<closed key holding the rating>" | dim: "<coded dimension>", dressing,
+  reportMedian: { <group>: n } }]`. Use `dim` when the position comes from an open answer coded onto the scale (a price
+  band, a frequency band): the coders code the dimension with its evidence, and the condition reads it. A coded value of
+  `none` is no answer. If the coded values are short keys, list them in `scale.keys`, in the same order as
+  `scale.labels`. One condition is fine: the switch disappears and the tension shows its contrast without a walk.
 - `why`: `{ dim, map }`, a coded dimension naming the condition each person explained as lowest. Its quote attaches to
   that condition.
 
@@ -89,7 +95,14 @@ Facts include:
 - `report.<cond>.<g>`, `drop.<g>`, and `swing.label` / `swing.from` / `swing.to` (`.fromWord` / `.toWord` on a worded scale): the largest fall from the first
   condition to the tension condition, with a reason
 
-Tour beats take `cond`, `group`, `follow: "swing"`, `tension`, and `quote: "why:<cond>:<group>"`.
+Tour beats take `cond`, `group`, `follow: "swing"`, `tension`, `wide: true` (keep the whole street in view, for beats
+where the scenery is the point), and `quote: "why:<cond>:<group>"`.
+
+`tension`: `{ label, from?, cond, numbers }`: everyone walks from `from` (default the first condition) to `cond`.
+`swing: "fall"` (default) or `"rise"` picks the person who moves furthest in that direction, for `follow: "swing"`.
+
+The page prints the reconciliation (the codebook's `report` rows) as a table, "Against the report"; notes need not repeat
+it.
 
 ## Crowd config (`scenes/<slug>/scene.json`)
 

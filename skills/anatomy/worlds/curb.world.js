@@ -30,7 +30,8 @@ function curbLayout(spec) {
       const side = gi === 0 ? -1 : 1, seen = {};
       g.people.forEach((pi) => {
         const v = spec.people[pi].values[condKey];
-        if (v == null) { const k = (seen.none = (seen.none || 0) + 1) - 1; out[pi] = { x: CURB.x0 - 7, y: side * (gap + k * CURB.slot), missing: true }; return; }
+        // no answer: faded, off the scale beside its low end, in columns that wrap like the rated ones (outward, away from the scale)
+        if (v == null) { const k = (seen.none = (seen.none || 0) + 1) - 1, col = Math.floor(k / CURB.perCol), row = k % CURB.perCol; out[pi] = { x: CURB.x0 - 7 - col * 3.4, y: side * (gap + row * CURB.slot), missing: true }; return; }
         const k = (seen[v] = (seen[v] || 0) + 1) - 1, col = Math.floor(k / CURB.perCol), row = k % CURB.perCol;
         out[pi] = { x: xOf(v) + (col ? (col % 2 ? 3 : -3) * Math.ceil(col / 2) : 0), y: side * (gap + row * CURB.slot), missing: false };
       });

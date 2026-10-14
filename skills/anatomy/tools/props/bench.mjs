@@ -69,7 +69,7 @@ for (const name of names) {
       const az = view.az;
       // fit the cell to the footprint plus room for the two people; the last cell draws the prop at the size a scene
       // shows it (the lineup street at 62°), so a prop that only reads when enlarged is caught on the sheet
-      const P = view.scene ? k.fitProjection([[-91 / ZOOM, -40 / ZOOM, 0], [91 / ZOOM, 40 / ZOOM, 0]], CELL[0], CELL[1], { pad: 0, azimuth: az })
+      const P = view.scene ? k.fitProjection([[-91 * ZOOM, -40 * ZOOM, 0], [91 * ZOOM, 40 * ZOOM, 0]], CELL[0], CELL[1], { pad: 0, azimuth: az })   // the same pixels per unit at any --zoom
         : k.fitProjection([[-fx / 2 - 12, -fy / 2 - 12, 0], [fx / 2 + 12, fy / 2 + 12, 0], [-fx / 2 - 12, fy / 2 + 12, 30], [fx / 2 + 12, -fy / 2 - 12, 30]], CELL[0], CELL[1], { pad: 18, azimuth: az });
       const c = env.makeCtx(k, P);
       let built;
@@ -117,7 +117,8 @@ const label = (r, ri) => (blind ? String.fromCharCode(65 + ri) : r.tag.replace(/
 const body = rows.map((r, ri) => `<g transform="translate(0 ${ri * (CELL[1] + 30)})"><text class="bench-tag" x="8" y="18">${label(r, ri)}</text>${r.cells.map((cell, ci) => `<g transform="translate(${ci * CELL[0]} 24)">${cell.svg}<text class="bench-tag" x="8" y="${CELL[1] - 8}">${cell.tag}</text></g>`).join("")}</g>`).join("");
 const skin = read("skin/ll-skin.css");
 const page = (theme) => `<!doctype html><html data-theme="${theme}"><meta charset=utf-8><title>Prop bench</title><style>${k.ISO_CSS}${skin} html,body{margin:0;background:${theme === "dark" ? "#16130f" : "#faf8f4"}} .bench-tag{font:12px/1 Inter, system-ui, sans-serif; fill: var(--anatomy-muted, #888)}</style><body data-theme="${theme}"><div class="iso-plate" style="padding:0;border:0;border-radius:0;width:${W}px"><svg class="iso" data-theme="${theme}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${body}</svg></div>`;
-const stem = basename(file, ".js") + (only ? "-" + only : "") + (blind ? "-blind" : "");
+// a zoomed run writes its own sheets (name-zoom2-…) instead of overwriting the review sheets
+const stem = basename(file, ".js") + (only ? "-" + only : "") + (blind ? "-blind" : "") + (ZOOM !== 1 ? "-zoom" + ZOOM : "");
 if (blind) writeFileSync(join(out, `${stem}-key.json`), JSON.stringify(Object.fromEntries(rows.map((r, ri) => [String.fromCharCode(65 + ri), r.tag])), null, 2));
 for (const theme of ["light", "dark"]) writeFileSync(join(out, `${stem}-${theme}.html`), page(theme));
 

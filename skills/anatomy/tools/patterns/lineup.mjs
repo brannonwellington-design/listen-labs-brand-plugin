@@ -21,6 +21,8 @@ const conds = cfg.conditions, why = cfg.why || null;
 const labels = cfg.scale.labels || null;
 const { min, max } = labels ? { min: 1, max: labels.length } : cfg.scale;
 const missingWords = cfg.scale.missing || [];
+const keys = cfg.scale.keys || null;
+if (keys && (!labels || keys.length !== labels.length)) throw new Error("scale.keys must match scale.labels one for one");
 const wordOf = (v) => (labels ? labels[v - min] : String(v));
 const medianWord = (m) => (m == null ? null : !labels ? String(m) : Number.isInteger(m) ? wordOf(m) : `between ${wordOf(Math.floor(m))} and ${wordOf(Math.ceil(m))}`);
 
@@ -29,10 +31,19 @@ const people = rows.map((r, i) => {
   if (!g) throw new Error(`respondent ${r.readable_id} falls in no group`);
   const missing = {};
   const values = Object.fromEntries(conds.map((c) => {
-    let v = r.closed?.[c.closed];
-    if (v != null && missingWords.includes(v)) { missing[c.key] = v; return [c.key, null]; }
-    if (labels && v != null) { const at = labels.indexOf(v); if (at < 0) throw new Error(`respondent ${r.readable_id}: ${c.closed} = "${v}" is not one of the scale's words`); v = min + at; }
-    if (v != null && (typeof v !== "number" || v < min || v > max)) throw new Error(`respondent ${r.readable_id}: ${c.closed} = ${v} is off the ${min}–${max} scale`);
+    // a condition reads a closed answer (c.closed) or a coded dimension (c.dim: an open answer coded onto the scale)
+    if (!c.closed === !c.dim) throw new Error(`condition ${c.key}: give exactly one of closed or dim`);
+    let v = c.closed ? r.closed?.[c.closed] : r.codes?.[c.dim];
+    const src = c.closed || c.dim;
+    // a coded dimension's "never asked / no answer" value (none, by the coding convention) is no answer here too
+    if (v != null && (missingWords.includes(v) || (c.dim && v === "none"))) { missing[c.key] = missingWords[0] || "no answer"; return [c.key, null]; }
+    if (labels && v != null) {
+      // coded values are keys (scale.keys, in the same order as the words); closed answers are the words themselves
+      const at = keys && keys.includes(v) ? keys.indexOf(v) : labels.indexOf(v);
+      if (at < 0) throw new Error(`respondent ${r.readable_id}: ${src} = "${v}" is not one of the scale's ${keys ? "keys or " : ""}words`);
+      v = min + at;
+    }
+    if (v != null && (typeof v !== "number" || v < min || v > max)) throw new Error(`respondent ${r.readable_id}: ${src} = ${v} is off the ${min}–${max} scale`);
     return [c.key, v ?? null];
   }));
   const whyCond = why ? why.map[r.codes?.[why.dim]] || null : null;
@@ -51,8 +62,13 @@ const groupStats = groups.map((g) => Object.fromEntries(conds.map((c) => {
 })));
 
 // the contrast: the person whose rating falls most from the first condition to the tension condition, with a reason
-const tensionCond = cfg.tension?.cond || conds[1]?.key;
-const drops = people.map((p, i) => ({ i, p, d: (p.values[conds[0].key] ?? NaN) - (p.values[tensionCond] ?? NaN) })).filter((x) => !isNaN(x.d));
+// the tension walks everyone from one condition (tension.from, default the first) to another; with one condition, or
+// from === cond, there is no walk and the tension is just the stated contrast. The swing is the person who moves furthest
+// in the scale's bad direction (swing: "fall", default) or good direction ("rise"), with a reason for the tension condition.
+const tensionCond = cfg.tension?.cond || conds[1]?.key || conds[0].key;
+const tensionFrom = cfg.tension?.from || conds[0].key;
+const swingDir = cfg.swing === "rise" ? -1 : 1;
+const drops = tensionFrom === tensionCond ? [] : people.map((p, i) => ({ i, p, d: swingDir * ((p.values[tensionFrom] ?? NaN) - (p.values[tensionCond] ?? NaN)) })).filter((x) => !isNaN(x.d) && x.d > 0);
 const swing = drops.filter((x) => x.p.why && x.p.why.cond === tensionCond).sort((a, b) => b.d - a.d || a.i - b.i)[0] || null;
 
 const facts = {
@@ -61,7 +77,9 @@ const facts = {
   group: Object.fromEntries(groups.map((g, gi) => [g.key, { size: g.people.length, ...Object.fromEntries(conds.map((c) => [c.key, groupStats[gi][c.key]])) }])),
   report: Object.fromEntries(conds.map((c) => [c.key, c.reportMedian || {}])),
   drop: Object.fromEntries(groups.map((g) => [g.key, drops.filter((x) => x.p.group === g.key && x.d >= (cfg.dropBy || 3)).length])),
-  swing: swing ? { label: swing.p.label, from: swing.p.values[conds[0].key], to: swing.p.values[tensionCond], drop: swing.d, fromWord: wordOf(swing.p.values[conds[0].key]), toWord: wordOf(swing.p.values[tensionCond]) } : null,
+  // how a worded scale's thresholds read in copy: "Fair or worse", "$51–100 or less"
+  phrase: { low: cfg.scale.lowPhrase || (labels ? "or worse" : "or lower"), high: cfg.scale.highPhrase || (labels ? "or better" : "or higher") },
+  swing: swing ? { label: swing.p.label, from: swing.p.values[tensionFrom], to: swing.p.values[tensionCond], drop: swing.d, fromWord: wordOf(swing.p.values[tensionFrom]), toWord: wordOf(swing.p.values[tensionCond]) } : null,
   recon: Object.fromEntries(recon.map((x, i) => [i, x])),
   coded: Object.fromEntries(Object.entries(cfg.countFacts || {}).map(([k, f]) => [k, rows.filter((r) => all(r, f)).length])),
 };
@@ -74,6 +92,7 @@ function beat(b, i) {
   const out = { hold: b.hold, cond: b.cond, title: fill(b.title, where + ".title", { title: true }), caption: fill(b.caption, where + ".caption") };
   if (b.group) out.group = gi(b.group);
   if (b.tension) out.tension = true;
+  if (b.wide) out.camera = "wide";   // keep the whole street in view (a group stays selected): for beats where the scenery is the point
   if (b.follow === "swing") { if (!swing) return null; out.follow = swing.i; out.quote = { quote: swing.p.why.quote, source: swing.p.why.source, who: swing.p.label }; }
   if (b.quote) { const [, cond, group] = b.quote.split(":"); const q = groupStats[gi(group)][cond].quote; out.quote = q ? { ...q } : null; }
   return out;
@@ -82,11 +101,14 @@ const propSource = readPropSource(dir, cfg);   // the study's own props, if any
 const spec = {
   _source: `pattern lineup · coding ${join(dir, "codes/merged.json")} · config ${join(dir, "scene.json")}`,
   study: { ...cfg.study, n: people.length, complete: facts.complete }, object: "lineup", world: cfg.world || "curb", ...(cfg.scenery ? { scenery: cfg.scenery } : {}), ...(propSource ? { propSource } : {}),
-  scale: { min, max, lowLabel: cfg.scale.lowLabel, highLabel: cfg.scale.highLabel, high: cfg.scale.high, low: cfg.scale.low, ...(labels ? { labels } : {}) },
+  scale: { min, max, lowLabel: cfg.scale.lowLabel, highLabel: cfg.scale.highLabel, high: cfg.scale.high, low: cfg.scale.low, ...(labels ? { labels } : {}),
+    lowPhrase: facts.phrase.low, highPhrase: facts.phrase.high },
+  // the reconciliation, printed on the page as a table (the coding is never tuned to match the report)
+  reconciliation: recon.map((x) => ({ label: x.label, transcript: x.transcript, base: x.base, report: x.report, reportBase: x.reportBase })),
   conds: conds.map((c) => ({ key: c.key, name: c.name, short: c.short || c.name, dressing: c.dressing, reportMedian: c.reportMedian || {} })),
   groups, groupStats, people,
   figure: { ...cfg.figure, label: fill(cfg.figure.label, "figure.label"), caption: fill(cfg.figure.caption, "figure.caption"), titleBlock: cfg.figure.titleBlock.map(([k, v], i) => [k, fill(v, `figure.titleBlock[${i}]`)]) },
-  tension: cfg.tension ? { label: fill(cfg.tension.label, "tension.label", { title: true }), event: "walk", cond: tensionCond, from: conds[0].key, numbers: fillAll(cfg.tension.numbers, "tension.numbers") } : null,
+  tension: cfg.tension ? { label: fill(cfg.tension.label, "tension.label", { title: true }), event: "walk", cond: tensionCond, from: tensionFrom, numbers: fillAll(cfg.tension.numbers, "tension.numbers") } : null,
   page: { frame: fill(cfg.page.frame, "page.frame"), headline: fill(cfg.page.headline, "page.headline", { title: true }), dek: fill(cfg.page.dek, "page.dek"),
     headlineStats: cfg.page.headlineStats, notes: fillAll(cfg.page.notes, "page.notes") },
   scripts: cfg.tour ? { tour: { title: "The tour", label: "The tour", beats: cfg.tour.map(beat).filter(Boolean) } } : {},
