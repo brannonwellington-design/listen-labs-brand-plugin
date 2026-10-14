@@ -13,7 +13,7 @@ curl -sL https://raw.githubusercontent.com/brannonwellington-design/listen-labs-
 Then **fully quit** (Cmd+Q on Mac) and reopen your Claude app.
 
 The installer configures both Claude apps:
-- **Claude Code** (the coding assistant — CLI / Desktop / IDE extensions): installs this repo as a **plugin** (`listen-labs-brand@listen-labs`), which carries the MCP brand tools *and* all five skills, with auto-update on.
+- **Claude Code** (the coding assistant — CLI / Desktop / IDE extensions): installs this repo as a **plugin** (`listen-labs-brand@listen-labs`), which carries the MCP brand tools *and* all six skills, with auto-update on.
 - **Claude Desktop** (the general chat app with Chat / Cowork / Code tabs): registers the MCP brand tools from a local clone that git-pulls before every launch.
 
 If you only have one of the two installed, the other config just sits idle until you install that app — no harm done. Re-running the installer is safe; it also upgrades older MCP-only installs to the plugin so the skills start loading.
@@ -42,7 +42,7 @@ Two delivery contexts share the same rules. On a **machine** (Claude Code, Claud
 
 ## Skills
 
-Five skills share one brand source. `/research-artifacts` is the front door for anything a researcher or stakeholder will look at; the others are specialists it hands off to.
+Six skills share one brand source. `/research-artifacts` is the front door for anything a researcher or stakeholder will look at; the others are specialists it hands off to.
 
 | Ask for… | Skill |
 |---|---|
@@ -51,6 +51,7 @@ Five skills share one brand source. `/research-artifacts` is the front door for 
 | Slide deck (.pptx) | `/pptx` |
 | A Chart.js chart, or a chart inside a report | `/data-viz` |
 | Type-heavy page or editorial layout | `/typography` |
+| A custom interactive scene from a study, where every figure is a real respondent (a stadium of fans, a store aisle, a machine) | `/anatomy` |
 
 ### `/research-artifacts` — Research Deliverables (any brand)
 
@@ -163,6 +164,22 @@ Or just ask Claude to create a report, summary, brief, or write-up — the skill
 **Output:** A single self-contained HTML document that opens in any browser, prints cleanly to PDF, or renders as the artifact in the product canvas.
 
 ---
+
+
+### `/anatomy` — Study Scenes
+
+Turns a Listen Labs study into an interactive isometric scene: a stadium where each interview is a fan, a store aisle a shopper walks, a machine with a gauge per stage. Each scene is a *pattern* (crowd, journey, comparison, sort) wearing a *world* chosen for the study's subject. Claude proposes two or three concepts and you pick one.
+
+```
+/anatomy
+```
+
+Or ask to turn a study into a scene, an explorable or an isometric figure.
+
+- **Real people, real words.** Every transcript is coded by parallel agents. Every code carries a verbatim quote and its source link, and every quote is verified against its transcript. The coding is reconciled against the report, and the reconciliation is printed on the page.
+- **Honesty enforced in code.** Numbers enter copy only from computed facts, claims are checked at build time, and missing answers are drawn as missing.
+- **Automatic QA.** One command runs the line, console, theme and phone checks and writes screenshots for a visual review.
+- **Needs Claude Code** with the Listen Labs study tools, Node and Chrome. Study data stays on your machine in a git-ignored folder; internal studies are never published.
 
 ## Brand Site
 

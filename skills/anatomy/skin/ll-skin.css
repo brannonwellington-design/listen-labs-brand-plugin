@@ -1,0 +1,122 @@
+/* =====================================================================
+   Listen Labs skin for the anatomy kit
+   Maps every --anatomy-* token onto the Listen Labs Paper theme
+   (brand_data.py snapshot 2026-09-17). Load AFTER ISO_CSS.
+   Rules carried over from the brand:
+     - one accent: the kit's single "lit" part becomes brand blue #0021CC
+     - warm cream / brown neutrals instead of grey
+     - Inter 400 only, no letter-spacing, sentence case
+     - no drop shadows: the soft halo becomes a faint flat floor tint
+   ===================================================================== */
+
+.iso,
+.iso[data-theme="light"] {
+  /* page + card */
+  --anatomy-page: #F9F4EB;          /* surface-primary */
+  --anatomy-card: #FBF9F4;          /* surface-highlight */
+  --anatomy-text: #6B6861;          /* content-secondary */
+  --anatomy-strong: #120F08;        /* content-primary */
+  --anatomy-muted: #6B6861;         /* content-secondary (never disabled for text) */
+
+  /* solids: paper = card so fills hide what is behind */
+  --anatomy-paper: #FBF9F4;
+  --anatomy-face: #FDFBF7;
+  --anatomy-top: #FEFCF8;
+
+  /* four side tones, warm, ~3% luminance apart, darkest = facing away */
+  --anatomy-shade-0: #E2DCCF;       /* surface-tertiary */
+  --anatomy-shade-1: #E8E2D6;
+  --anatomy-shade-2: #EEE8DD;       /* surface-secondary */
+  --anatomy-shade-3: #F4EFE6;
+
+  /* the lit part: a whisper of brand blue on its faces */
+  --anatomy-lit-top: #F3F5FC;
+  --anatomy-lit-shade: #D9DDF2;     /* surface-brand-secondary */
+
+  /* line tones */
+  --anatomy-hi: #4A453C;            /* the subject: one step darker than structure, not near-black — at one line weight
+                                       a black outline next to grey ones reads as a heavier, inconsistent stroke */
+  --anatomy-mid: #8E8A82;           /*                     structure   */
+  --anatomy-lo: #B6B4AF;            /* content-disabled  — base, minor ticks */
+  --anatomy-faint: #DAD4C8;         /*                     grooves     */
+  --anatomy-lit: #0021CC;           /* content-brand     — the ONE accent */
+
+  /* halo -> flat floor tint (brand avoids drop shadows) */
+  --anatomy-halo: #8C7E62;
+  --anatomy-halo-opacity: .14;
+  --anatomy-dot: #3A352B;
+
+  /* status colours, only when colour is the subject */
+  --anatomy-red: #B82214;           /* content-negative */
+  --anatomy-green: #0F8A38;         /* content-positive */
+  --anatomy-blue: #0021CC;          /* content-brand */
+
+  --anatomy-mono: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --anatomy-lift: none;
+}
+
+/* Paper dark — opt-in via data-theme="dark" or the OS preference */
+.iso[data-theme="dark"] {
+  --anatomy-page: #080603;
+  --anatomy-card: #130F06;
+  --anatomy-text: #9E9B94;
+  --anatomy-strong: #F9F4EB;
+  --anatomy-muted: #9E9B94;
+  --anatomy-paper: #130F06;
+  --anatomy-face: #1D1910;
+  --anatomy-top: #201C13;
+  --anatomy-shade-0: #0F0C05;
+  --anatomy-shade-1: #15110A;
+  --anatomy-shade-2: #19150D;
+  --anatomy-shade-3: #1D1910;
+  --anatomy-lit-top: #161C40;
+  --anatomy-lit-shade: #131939;
+  --anatomy-hi: #D6D1C7;
+  --anatomy-mid: #9E9B94;
+  --anatomy-lo: #504E49;
+  --anatomy-faint: #30291D;
+  --anatomy-lit: #3354FF;
+  --anatomy-halo: #000000;
+  --anatomy-halo-opacity: .5;
+  --anatomy-dot: #F9F4EB;
+  --anatomy-blue: #3354FF;
+}
+@media (prefers-color-scheme: dark) {
+  .iso:not([data-theme="light"]) {
+    --anatomy-page: #080603; --anatomy-card: #130F06; --anatomy-text: #9E9B94; --anatomy-strong: #F9F4EB; --anatomy-muted: #9E9B94;
+    --anatomy-paper: #130F06; --anatomy-face: #1D1910; --anatomy-top: #201C13;
+    --anatomy-shade-0: #0F0C05; --anatomy-shade-1: #15110A; --anatomy-shade-2: #19150D; --anatomy-shade-3: #1D1910;
+    --anatomy-lit-top: #161C40; --anatomy-lit-shade: #131939;
+    --anatomy-hi: #D6D1C7; --anatomy-mid: #9E9B94; --anatomy-lo: #504E49; --anatomy-faint: #30291D; --anatomy-lit: #3354FF;
+    --anatomy-halo: #000000; --anatomy-halo-opacity: .5; --anatomy-dot: #F9F4EB; --anatomy-blue: #3354FF;
+  }
+}
+
+/* The card, re-voiced: brand radius, 1px hairline, Inter, no tracking, no caps */
+.iso-plate {
+  border-radius: 12px;
+  border: 1px solid var(--anatomy-faint);
+  box-shadow: none;   /* the kit draws its card edge as a 1px ring outside the box: switched off, the border is the only edge */
+  padding: 56px 24px 48px;
+}
+.iso-plate-corners { inset: 20px 24px; }
+.iso-plate-corner,
+.iso-plate-corner[data-corner="title"],
+.iso-plate-corner[data-corner="hint"] {
+  font-family: var(--anatomy-mono);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--anatomy-text);
+}
+.iso-plate-corner[data-corner="fig"],
+.iso-plate-corner[data-corner="readout"] { color: var(--anatomy-strong); }
+.iso-plate-corner[data-corner="readout"] { font-variant-numeric: tabular-nums; }
+.iso-face-text { letter-spacing: normal; }
+.iso-halo { filter: blur(6px); }
+.iso-legend { font-size: 14px; line-height: 20px; color: var(--anatomy-text); }
+@media (max-width: 560px) {
+  .iso-plate { padding: 52px 12px 72px; }
+  .iso-plate-corner[data-corner="hint"] { bottom: 20px; }
+}
