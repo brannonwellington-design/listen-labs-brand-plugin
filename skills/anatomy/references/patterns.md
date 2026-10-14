@@ -140,7 +140,7 @@ it.
   negative). Standing means positive.
 - `people.filter` leaves coded rows out of the crowd (an interview that never reached the questions). Every remaining
   row must fall in a segment group; a group may match people never asked the segment question (a `not` / `any`
-  filter) and is named as such ("Country not asked").
+  filter) and is named as such ("Region not asked").
 - Rail wording: `page.standPhrase` ("on their feet for"), `page.hopePhrase` ("hoped for"), `page.hopesHeading`. Write
   them for the study: two questions about one product aren't "acts", so "said yes to" may read better than "on their feet".
 - Quotes need at least 50 characters (40 for hopes); the shortest qualifying quote is picked by rule.

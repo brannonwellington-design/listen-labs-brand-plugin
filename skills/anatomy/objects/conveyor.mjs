@@ -130,6 +130,7 @@ const CAMS = ${JSON.stringify(stations.map((s) => s.camera || { az: AZ, zoom: 1.
 const WIDE = ${JSON.stringify(spec.figure.wideCamera || { az: AZ, zoom: 1, focus: CENTER })};
 const TIPS = ${JSON.stringify(tipsFor(spec))};
 const ARRIVAL = ${JSON.stringify(spec.arrival || { code: "", on: "", off: "" })};
+const END_LABEL = ${JSON.stringify((spec.arrival || {}).endLabel || "reached the end")};
 const SHOPPERS = ${JSON.stringify((spec.shoppers || []).map((p) => ({ label: p.label, codes: p.codes })))};
 const STOP_CODES = ${JSON.stringify(stations.map((s) => s.code || null))};
 const NAMES = ${JSON.stringify(stations.map((s) => s.name))};
@@ -174,7 +175,7 @@ function applySel() {
   const hero = bags[0].querySelector(".iso-solid");
   if (replay) { hero.setAttribute("data-lit", ""); bags[0].setAttribute("data-tip", SHOPPERS[replay.i].label + " · one shopper’s session, replayed"); } else hero.removeAttribute("data-lit");
 }
-// ---------- replay: one shopper's bag rides alone; the line stops where they hesitated ----------
+// ---------- replay: one respondent's carrier rides alone; the line stops where their own words show a stop ----------
 let replay = null, others = 1;
 const PAUSE = 2.4, HOP = 2.4;
 function stopsFor(i) {
@@ -218,7 +219,7 @@ function stepReplay(dt) {
     readout.textContent = SHOPPERS[r.i].label + " · " + NAMES[st.k] + ": " + replayStatus(r.i, st.k);
     document.dispatchEvent(new CustomEvent("replay", { detail: { shopper: r.i, phase: "stop", station: st.k } }));
   }
-  if (r.s >= PATH_LEN - REST) { r.s = PATH_LEN - REST; r.end = 2.6; readout.textContent = SHOPPERS[r.i].label + " · back in the order already open"; document.dispatchEvent(new CustomEvent("replay", { detail: { shopper: r.i, phase: "end" } })); }
+  if (r.s >= PATH_LEN - REST) { r.s = PATH_LEN - REST; r.end = 2.6; readout.textContent = SHOPPERS[r.i].label + " · " + END_LABEL; document.dispatchEvent(new CustomEvent("replay", { detail: { shopper: r.i, phase: "end" } })); }
 }
 const camera = makeCamera({ svg, KIT, P0, CENTER: ${JSON.stringify(CENTER)}, W: ${WIDTH}, H: ${HEIGHT}, start: WIDE,
   rebuild: (p) => { P = p; svg.innerHTML = lineGeometry(KIT, SPEC, P).body; bind(); applySel(); if (typeof applyFollow === "function") try { applyFollow(); } catch (e) {} draw(); } });
@@ -271,7 +272,7 @@ function stepTension(dt) {
   if (beam) beam.setAttribute("data-tone", ten.t > T_RIDE && ten.t < T_RIDE + T_HOLD ? "lit" : "lo");
   if (ten.t > T_RIDE + T_HOLD + T_BACK + 0.3) { ten = null; if (beam) beam.setAttribute("data-tone", "lo"); }
 }
-// ---------- follow one shopper: their bag carries a pin, the stations where their own words show a hesitation
+// ---------- follow one respondent: their carrier wears a pin, at the stations where their own words show a stop
 // are outlined, and a replay keeps following them. Station 0 is how they arrived (spec.arrival), outlined when its code is set.
 let follow = -1, bag0 = null;
 const fpin = makePin({ plate, svg, KIT });

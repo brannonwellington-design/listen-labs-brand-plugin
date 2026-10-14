@@ -24,5 +24,8 @@ study ─► coding (per respondent, verbatim evidence) ─► spec ─► world
 - A count is drawn against a visible base n. Missing data is drawn as missing, never estimated, and never drawn like a negative answer.
 - Quotes are verbatim with their source link; a paraphrased lead-in stays outside the quotation marks.
 - Coding never gets tuned to match the report; the reconciliation is printed on the page.
-- Code holds no study-specific copy, categories or names. Those live in the spec (`arrival`, `predicates`, `page.*`).
+- Code holds no study-specific copy, categories or names, including a study's words for its people and findings ("shoppers",
+  "hesitated"). Those live in the spec (`arrival`, `predicates`, `page.who`, `page.stop`, `page.*`). Before every commit,
+  run `node skills/anatomy/tools/dev/leak-scan.mjs` from the repository root: it checks every tracked file for the
+  names, phrases and coded keys of every study on this machine, and must print 0 hits.
 - One line weight; highlights change colour only. Verify with `node scripts/lines.mjs <page> --reduced` (must print `line ends: 0`).

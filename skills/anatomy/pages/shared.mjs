@@ -228,7 +228,7 @@ export const BLUEPRINT_CSS = `
 .cut__leader { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; overflow: visible; }
 @container (max-width: 600px) { .cut { left: 8px; right: 8px; top: 52px; max-height: calc(100% - 60px); width: auto; } .cut__leader { display: none; } }
 
-/* follow one customer: their coin (or cited drawers) outlined in the accent, a pin naming them */
+/* follow one respondent: their coin (or cited drawers) outlined in the accent, a pin naming them */
 /* a followed part changes colour, never weight: the drawing keeps one line weight everywhere */
 .iso-solid[data-follow] > .iso-edge { stroke: var(--anatomy-lit); }
 .follow-pin { position: absolute; left: 0; top: 0; z-index: 3; display: grid; gap: 0; padding: 4px 8px; border-radius: 4px; background: var(--anatomy-card);
@@ -284,8 +284,8 @@ export function resolveRef(spec, ref) {
   if (parts[0] === "stations") {
     const s = spec.stations.find((x) => x.key === parts[1]) || fail();
     const f = parts[2];
-    if (f === "finding") return { text: `${s.count} of ${N} shoppers ${s.statement}.`, from: ref };
-    if (f === "contrast") return s.contrast ? { text: `${s.contrast.count} of ${N} shoppers ${s.contrast.statement}.`, from: ref } : fail();
+    if (f === "finding") return { text: `${s.count} of ${N} ${whoOf(spec).many} ${s.statement}.`, from: ref };
+    if (f === "contrast") return s.contrast ? { text: `${s.contrast.count} of ${N} ${whoOf(spec).many} ${s.contrast.statement}.`, from: ref } : fail();
     if (f === "quote") return { quote: s.quote, source: s.source, who: "Participant", from: ref };
     if (f === "implication" || f === "statement") return { text: s[f], from: ref };
     fail();
@@ -293,16 +293,16 @@ export function resolveRef(spec, ref) {
   if (parts[0] === "shoppers") {
     const p = spec.shoppers.find((x) => x.label === parts[1]) || fail();
     if (parts[2] === "path") {
-      // station 0 is how the session arrived (spec.arrival), not a hesitation — same rule as the replay
+      // station 0 is how the session arrived (spec.arrival), not a stop: same rule as the replay
       const stops = spec.stations.slice(1).filter((s) => s.code && p.codes[s.code]).map((s) => s.name);
       const A = spec.arrival, arrived = (p.codes[A.code] ? A.on : A.off).toLowerCase();
-      return { text: `${p.label}: ${arrived}; ${A.lastLabel} ${p.lastOrder}. Their own words show hesitation at ${stops.length ? stops.join(", ") : "no station"}.`, from: ref };
+      return { text: `${p.label}: ${arrived}; ${A.lastLabel} ${p.lastOrder}. Their own words show they ${stopOf(spec).at} ${stops.length ? stops.join(", ") : "no station"}.`, from: ref };
     }
     if (parts[2] === "at") {   // where this shopper stood at a station, from their own codes
       const k = spec.stations.findIndex((s) => s.key === parts[3]); if (k < 0) fail();
       const s = spec.stations[k];
       if (k === 0) return { text: `${p.label}: ${(p.codes[spec.arrival.code] ? spec.arrival.on : spec.arrival.off).toLowerCase()}.`, from: ref };
-      return { text: p.codes[s.code] ? `${p.label}: ${s.readout}.` : `${p.label}: no hesitation coded here.`, from: ref };
+      return { text: p.codes[s.code] ? `${p.label}: ${s.readout}.` : `${p.label}: ${stopOf(spec).off.toLowerCase()}.`, from: ref };
     }
     if (parts[2] === "evidence") { const e = p.evidence[parts[3]] || fail(); return { quote: e.quote, source: e.source, who: p.label, from: ref }; }
     fail();
@@ -540,6 +540,11 @@ export function applyWorld(arg, spec) {
   }
   return objName;
 }
+
+// Who the respondents are and what a journey stop is called come from the config (spec.page.who, spec.page.stop),
+// never from code: the engine names no study's people or findings.
+export const whoOf = (spec) => ({ one: "respondent", many: "respondents", ...((spec.page || {}).who || {}) });
+export const stopOf = (spec) => ({ on: "Stopped here", off: "No stop coded here", at: "stopped at", ...((spec.page || {}).stop || {}) });
 
 // The reconciliation, printed on every scene page (non-negotiable 4): our coding of each interview next to the numbers
 // the report states. Builders put it in spec.reconciliation; QA fails a scene page without it.

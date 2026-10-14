@@ -5,10 +5,11 @@ import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript, glScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
-const { LL_TOKENS, curly, esc, t, headerHtml, HEADER_CSS, cameraCardCss, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS } = await import("./shared.mjs");
+const { LL_TOKENS, curly, esc, t, headerHtml, HEADER_CSS, cameraCardCss, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS, reconHtml, RECON_CSS, whoOf, stopOf } = await import("./shared.mjs");
 
 const [objName, specPath, outPath] = process.argv.slice(2);
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
+const WHO = whoOf(spec), STOP = stopOf(spec);   // who the respondents are and what a stop is called: the config's words
 const SCRIPTS = resolveScripts(spec);   // captions are @references into the spec; the build fails on anything else
 const obj = await import(`../objects/${objName}.mjs`);
 spec.__tension = resolveTension(spec, obj.TENSION_EVENTS || []);   // fails the build unless its numbers resolve
@@ -180,6 +181,7 @@ p { margin: 0; text-wrap: pretty; }
 .act { grid-column: 1 / span 7; }
 .act ol { margin: 0; padding-left: 24px; display: grid; gap: 12px; color: var(--content-secondary); max-width: 640px; }
 .action__lead { color: var(--content-primary); }
+${RECON_CSS}
 .method { grid-column: 9 / -1; }
 .method h2 { font-size: 14px; line-height: 20px; color: var(--content-secondary); margin-bottom: 12px; }
 .method ul { margin: 0; padding-left: 16px; display: grid; gap: 8px; font-size: 14px; line-height: 20px; color: var(--content-secondary); }
@@ -266,7 +268,7 @@ ${PLAY_CSS}
 </head>
 <body class="iso">
 <header class="ll-header"><span class="ll-brand">Listen Labs /</span> <span class="ll-title">${esc(page.credit)}</span></header>
-<main class="page">
+<main class="page" data-scene-page>
   <!-- Intro -->${headerHtml(page)}
 
   <!-- Hero: the benches are the navigation -->
@@ -298,6 +300,7 @@ ${PLAY_CSS}
   <!-- Closing -->
   <section class="closing">
     <div class="act"><h2>${t(page.actionsTitle)}</h2><ol>${actions}</ol></div>
+  ${reconHtml(spec, t)}
     <div class="method">
       <h2>Read before sharing</h2>
       <ul>${notes}</ul>

@@ -386,8 +386,8 @@ PROPS.tote = { slots: { flow: "sink" }, build(c, { plan: TOTE, h: TOTE_H = 26 })
   };
 } };
 
-// ---------- snack bag: the carrier, built at the origin and moved live ----------
-PROPS["snack-bag"] = { slots: { individual: "carrier" }, build(c, { i }) {
+// ---------- product bag: the carrier, built at the origin and moved live ----------
+PROPS["product-bag"] = { slots: { individual: "carrier" }, build(c, { i }) {
   const { k, P, at, S, L, D, slab } = c;
   const plan = { x: -7, y: -9, w: 14, d: 18, r: 4 };
   const yAt = (x) => { const dx = Math.max(0, Math.abs(x) - 3); return 9 - 4 + Math.sqrt(16 - dx * dx); };

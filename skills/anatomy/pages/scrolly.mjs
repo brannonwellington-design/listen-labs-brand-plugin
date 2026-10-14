@@ -6,10 +6,11 @@ import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
-const { LL_TOKENS, curly, esc, t, headerHtml, HEADER_CSS, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS } = await import("./shared.mjs");
+const { LL_TOKENS, curly, esc, t, headerHtml, HEADER_CSS, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS, reconHtml, RECON_CSS, whoOf, stopOf } = await import("./shared.mjs");
 
 const [objName, specPath, outPath] = process.argv.slice(2);
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
+const WHO = whoOf(spec), STOP = stopOf(spec);   // who the respondents are and what a stop is called: the config's words
 const SCRIPTS = resolveScripts(spec);   // captions are @references into the spec; the build fails on anything else
 const obj = await import(`../objects/${objName}.mjs`);
 spec.__tension = resolveTension(spec, obj.TENSION_EVENTS || []);   // fails the build unless its numbers resolve
@@ -18,9 +19,9 @@ const skin = readFileSync(new URL("../skin/ll-skin.css", import.meta.url), "utf8
 const page = spec.page;
 const N = spec.study.n;
 
-// follow one customer (Phase 4): only when the spec carries validated per-customer codes
+// follow one respondent (Phase 4): only when the spec carries validated per-customer codes
 const CUSTOMERS = spec.customers || [];
-const FOLLOW_MENU = CUSTOMERS.length ? `<select class="fig-play fig-follow" aria-label="Follow one customer through every chapter"><option value="">Follow…</option>${CUSTOMERS.map((c, i) => `<option value="${i}">Follow ${c.label}</option>`).join("")}</select>` : "";
+const FOLLOW_MENU = CUSTOMERS.length ? `<select class="fig-play fig-follow" aria-label="Follow one ${esc(WHO.one)} through every chapter"><option value="">Follow…</option>${CUSTOMERS.map((c, i) => `<option value="${i}">Follow ${c.label}</option>`).join("")}</select>` : "";
 const plate = k.plateHtml({
   fig: spec.figure.fig + " · " + spec.figure.title,
   title: "",
@@ -48,14 +49,9 @@ const steps = spec.steps.map((s, i) => {
 }).join("");
 
 const checks = page.checks.map((c) => `<li><span class="check__lead">${t(c.lead)}</span> ${t(c.body)}</li>`).join("");
-// disclose how our per-customer coding compares with the report (generated from the validator, never hand-written)
-const recon = spec.customerCoding ? (() => {
-  const R = spec.customerCoding.recon.filter((x) => !/×|derived|unlikely/.test(x.label));
-  const exact = R.filter((x) => x.transcript === x.report).map((x) => x.label);
-  const wide = R.filter((x) => Math.abs(x.transcript - x.report) >= 4).map((x) => `${x.label} (${x.transcript} vs ${x.report})`);
-  return [`Following a customer uses our own coding of all ${spec.customers.length} transcripts against the report’s definitions, every code backed by a verbatim quote and its source. Columns, drawers and numbers keep the report’s counts; a followed customer is placed by their own coded answer. Our coding matches the report exactly on ${exact.length} of ${R.length} codes (${exact.join(", ")}) and differs most on ${wide.join(", ")}, where it reads the definitions more broadly.`,
-    ...(spec.customerCoding.privacyNote ? [spec.customerCoding.privacyNote] : [])];
-})() : [];
+// how following works, and the privacy note; the numbers themselves are in the reconciliation table
+const recon = spec.customerCoding ? [`Following one ${WHO.one} uses our own coding of all ${spec.customers.length} transcripts against the report’s definitions, every code backed by a verbatim quote and its source. Columns, drawers and numbers keep the report’s counts; a followed ${WHO.one} is placed by their own coded answer.`,
+  ...(spec.customerCoding.privacyNote ? [spec.customerCoding.privacyNote] : [])] : [];
 const notes = [...page.notes, ...recon].map((n) => `<li>${t(n)}</li>`).join("");
 
 const CSS = `
@@ -113,6 +109,7 @@ p { margin: 0; text-wrap: pretty; }
 .checks { grid-column: 1 / span 7; }
 .checks ol { margin: 0; padding-left: 24px; display: grid; gap: 12px; color: var(--content-secondary); max-width: 640px; }
 .check__lead { color: var(--content-primary); }
+${RECON_CSS}
 .method { grid-column: 9 / -1; }
 .method h2 { font-size: 14px; line-height: 20px; color: var(--content-secondary); margin-bottom: 12px; }
 .method ul { margin: 0; padding-left: 16px; display: grid; gap: 8px; font-size: 14px; line-height: 20px; color: var(--content-secondary); }
@@ -172,7 +169,7 @@ const hashEl = fromHash && document.getElementById("chapter-" + fromHash);
 if (hashEl) requestAnimationFrame(() => { hashEl.scrollIntoView({ block: "center" }); pick(); });
 window.__goStep = (i) => { stepsEl[i].scrollIntoView({ block: "center" }); };
 pick();
-// ---------- follow one customer: their coded place in every chapter, with the quote that put them there ----------
+// ---------- follow one respondent: their coded place in every chapter, with the quote that put them there ----------
 const FOLLOW_DATA = ${JSON.stringify({ steps: spec.steps.map((s) => ({ follow: s.follow || null, labels: (s.sorter ? s.sorter.labels : s.cabinet.labels).map((l) => l.replace(/ \(derived[^)]*\)/, "")) })), customers: CUSTOMERS.map((c) => ({ label: c.label, codes: c.codes, evidence: c.evidence })) })};
 (() => {
   const menu = document.querySelector(".fig-follow");
@@ -233,7 +230,7 @@ ${PLAY_CSS}
 </head>
 <body class="iso">
 <header class="ll-header"><span class="ll-brand">Listen Labs /</span> <span class="ll-title">${esc(page.credit)}</span></header>
-<main class="page">
+<main class="page" data-scene-page>
   <!-- Intro: title left, key figures in the top-right space -->${headerHtml(page)}
 
   <!-- Scrolly: steps drive the pinned bench -->
@@ -253,6 +250,7 @@ ${PLAY_CSS}
       <h2>${t(page.checksTitle)}</h2>
       <ol>${checks}</ol>
     </div>
+  ${reconHtml(spec, t)}
     <div class="method">
       <h2>Read before sharing</h2>
       <ul>${notes}</ul>

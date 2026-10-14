@@ -118,7 +118,7 @@ function curbGeometry(k, spec, P, state = {}) {
   items.push({ phase: "carrier", raw: true, svg: `<g data-people>${curbPeopleSvg(c, spec, pos, state)}</g>` });
   // the scenery street's own props; otherwise the pod waiting at the curb, and the condition's dressing
   const scenery = SC ? LAY.places.map((q) => { const b = PROPS[q.prop].build(c, { ...(q.opts || {}), x: q.x, y: q.y, part: q.part }); items.push(...b.items); return { key: q.part, ...b.part, ...(q.name ? { name: q.name } : {}) }; }) : [];
-  const pod = SC ? null : PROPS["robotaxi-pod"].build(c, { x: CURB.curbAt + 24, y: 0 });
+  const pod = SC ? null : PROPS["driverless-pod"].build(c, { x: CURB.curbAt + 24, y: 0 });
   if (pod) items.push(...pod.items);
   const dress = SC ? null : cond.dressing === "night" ? PROPS["street-lamps"].build(c, { x: CURB.curbAt - 2, ys: [-H + 10, H - 10] })
     : cond.dressing === "airport" ? PROPS["airport-canopy"].build(c, { x0: CURB.curbAt - 30, x1: CURB.curbAt - 4, y0: -H + 8, y1: H - 22 })

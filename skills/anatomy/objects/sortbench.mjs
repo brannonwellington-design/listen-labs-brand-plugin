@@ -87,8 +87,9 @@ const PULL_MAX = ${PULL_MAX}, DRAWERS = ${DRAWERS}, SHAPE = ${JSON.stringify(SHA
 const STATES = ${JSON.stringify(STATES)};
 const EVIDENCE = ${JSON.stringify(evidence)};
 const TENSION = ${JSON.stringify(spec.__tension || null)};
-// follow one customer: each chapter's coded dimension, and every customer's own codes (labels C01, C02 …)
+// follow one respondent: each chapter's coded dimension, and every customer's own codes (labels C01, C02 …)
 const FOLLOWS = ${JSON.stringify(spec.steps.map((s) => s.follow || null))};
+const WHO_ONE = ${JSON.stringify(((spec.page || {}).who || {}).one || "respondent")};
 const CUSTOMERS = ${JSON.stringify((spec.customers || []).map((c) => ({ label: c.label, codes: c.codes })))};
 const COL_LABELS = ${JSON.stringify(spec.steps.map((s) => (s.sorter ? s.sorter.labels : s.cabinet.labels)))};
 const PARTS = ${JSON.stringify(parts)}, CAB_SHIFT = ${CAB_SHIFT}, DRAWER_Z = ${JSON.stringify(DRAWER_Z)};
@@ -145,7 +146,7 @@ function setLit(lit) {
 }
 let tipSorter = null, tipCab = null;
 function applyTips() {
-  if (tipSorter) coins.forEach((el, i) => { const c = C[i].col; el.setAttribute("data-tip", "Token · one anonymous customer. Column: " + tipSorter.labels[c] + " · " + tipSorter.counts[c] + " of " + N); });
+  if (tipSorter) coins.forEach((el, i) => { const c = C[i].col; el.setAttribute("data-tip", "Token · one anonymous " + WHO_ONE + ". Column: " + tipSorter.labels[c] + " · " + tipSorter.counts[c] + " of " + N); });
   drawers.forEach((el, i) => el.setAttribute("data-tip", tipCab && tipCab.counts[i] != null ? "Drawer · " + tipCab.labels[i] + ": " + tipCab.counts[i] + " of " + N + " cited this (pull = share)" : "Drawer closed in this chapter"));
 }
 function applyLit() {
@@ -284,7 +285,7 @@ function calloutsFor(i) {
 }
 const bp = makeBlueprint({ plate: plateEl, svg, KIT, items: [], offset: parts.offset });
 let introLeft = 0, phase = "";
-// ---------- follow one customer ----------
+// ---------- follow one respondent ----------
 // The customer is placed by their own coded answer, never the other way round. In a sorter chapter they become a coin
 // already sitting in their column (on the right side of a highlighted subgroup); the pin glides there, so nothing has to
 // fly through a stack. In a cabinet chapter every drawer they cited is outlined. No column for their answer: the pin says so.

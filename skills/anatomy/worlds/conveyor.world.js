@@ -40,7 +40,7 @@ function conveyorGeometry(k, spec, P, opts = {}) {
   const frame = PROPS["conveyor-frame"].build(c, { X0, X1, LEGS, BUMP, m: M });
   const props = stations.map((s, i) => ({ s, i, key: PROP_PART[s.prop], built: PROPS[s.prop].build(c, { x: STATION_X[i], m: M }) }));
   const tote = PROPS.tote.build(c, { plan: TOTE });
-  const bags = Array.from({ length: BAGS }, (_, i) => PROPS["snack-bag"].build(c, { i }).svg).join("");
+  const bags = Array.from({ length: BAGS }, (_, i) => PROPS["product-bag"].build(c, { i }).svg).join("");
   const gauges = stations.map((s, i) => PROPS["dial-gauge"].build(c, { i, x: STATION_X[i], y: GAUGE_Y, n: N, value: s.count }));
   const wires = stations.map((_, i) => PROPS["signal-wire"].build(c, { i, x: STATION_X[i] + 6, fromY: GAUGE_Y - 13, toY: 23, z: M.RAIL_Z0 + 3 }));
 

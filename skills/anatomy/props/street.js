@@ -63,7 +63,7 @@ PROPS["traffic-cone"] = { slots: { median: "position" }, build(c, { x, y, lit = 
 } };
 
 // ---------- driverless pod: a boxy, symmetric vehicle, no driver's seat; glass band, carriage doors, light bars ----------
-PROPS["robotaxi-pod"] = { slots: {}, build(c, { x, y, part = "pod" }) {
+PROPS["driverless-pod"] = { slots: {}, build(c, { x, y, part = "pod" }) {
   const { k, P, S, L, D, slab, faceY, faceX, rect, at } = c;
   const W = 34, Dp = 22, z0 = -3;
   const B = { x: x - W / 2, y: y - Dp / 2, w: W, d: Dp, r: 5 };
