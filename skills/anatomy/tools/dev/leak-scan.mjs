@@ -1,7 +1,7 @@
 // Leak scan: the plugin repository is public, so no study's fingerprint may appear in tracked files. Reads every local
 // study's config and codebook (git-ignored: scenes/*/ and skills/anatomy/studies/*/) and collects what identifies it:
 //   - names: station, condition, group, hope, act and title strings of two or more words, matched as whole phrases
-//   - coded keys with a separator (ride_along, late-night) from codebooks and configs
+//   - coded keys with a separator (first_try, not-asked) from codebooks and configs
 //   - words not in the system dictionary (brands, coined terms) from those names
 // Words the synthetic examples use, or that several studies share, are left out. Then every tracked file is searched.
 //
