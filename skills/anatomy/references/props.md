@@ -66,13 +66,21 @@ PROPS["finish-arch"] = {
 | A line in space (rope, crack, rail) | `L(k.segment([x, y, z], [x, y, z], P), { tone, free: true })` |
 | A line on the ground | `L(k.lineOnTop([x, y], [x, y], z, P), { tone })` |
 | A ring on the ground (puddle, mark) | `L(k.ring(cx, cy, r, z, P, steps), { tone: "faint", free: true })` |
+| An upright ring (a wheel, a porthole, a clock face) | `L(k.sideRing([x, y, z], r, "x" or "y", P), { tone })`: "x" stands in the plane facing +x, "y" facing +y |
 | A dot (handle, lamp, rivet) | `D([at([x, y, z])], { size: 0.5, tone })` |
 | A seam around a slab | `S(..., { inner: L(k.sideSeam(plan, z, P, steps), { tone: "faint" }) })` |
 | An area that should read darker (paint, tape, a chequer cell, a tarp) | `L(c.hatch({ x, y, w, d }, z, gap), { tone })`: diagonal hatching |
 
 **Fills are always paper.** A solid's tone colours its edges and the face shading, not a darker fill: `lo` gives a
-heavier outline, not a black object. To make an area read darker, hatch it. For the scene's own light and dark themes,
+heavier outline, not a black object. To make an area read darker, hatch it, and give the hatched area a drawn edge for
+every hatch line to end on: the top edge of a slab with its default crease, or `L(k.planOutline(plan, z, P), …)`. For the scene's own light and dark themes,
 `mid` and `lo` survive both; `faint` details can vanish in dark, so keep anything that must read at `mid`.
+
+**Creases.** `crease: "none"` on a solid also drops its top edge line. Hatching or lines that should end on that edge
+then float; keep the default crease on any solid other lines end on.
+
+**No tilted solids.** Solids extrude straight up from a plan: there are no slopes, tilted planes or upright discs. A
+sagging roof is stepped slabs; a tyre is a low cylinder (a puck) plus an upright ring line on its visible side.
 
 **Line ends.** The line check (`scripts/lines.mjs`) needs every texture line to end on something: another stroke, a dot,
 an outline, or under a solid painted after it. A line that merely lies on a face's interior is not rooted. Fixes, in
@@ -94,8 +102,9 @@ the line, or mark an end that truly stops in the air with `free: true` (both end
 ## The loop
 
 1. Write the props file.
-2. Bench it: `node "$A/tools/props/bench.mjs" scenes/<slug>/props/<name>.js` (add `--zoom 2` to see small details;
-   floating line ends are ringed in `bench/<name>-lines.png`). It checks the contract, the footprint,
+2. Bench it: `node "$A/tools/props/bench.mjs" scenes/<slug>/props/<name>.js` (add `--zoom 2` to see small details).
+   The line check always runs at zoom 2, so a pass doesn't depend on the zoom you view at; floating ends are ringed in
+   `bench/zoom2/<name>-lines.png` (or `bench/<name>-lines.png` at zoom 2). It checks the contract, the footprint,
    the bounds at four azimuths, the scale, the brand and the line ends, and writes a light and a dark contact sheet next to
    the file (`bench/`). Fix until it passes. Never loosen a check; fix the prop.
 3. Open both sheets and review them against the checklist below. Fix and re-bench until every item holds.

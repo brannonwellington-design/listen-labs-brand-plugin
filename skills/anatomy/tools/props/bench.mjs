@@ -3,7 +3,7 @@
 //
 // usage: node tools/props/bench.mjs <props.js> [--prop <name>] [--out <dir>] [--zoom 2] [--no-shots]
 //   --zoom draws every cell larger, for reviewing small details
-//   --blind letters the rows (A, B, …) instead of naming them, and writes the answer key to <name>-key.json: the sheet a
+//   --blind letters the rows (A, B, …) instead of naming them, and writes the answer key to <name>-blind-key.json: the sheet a
 //           reviewer who has not seen the brief names cold (references/props.md, "The blind read")
 //   <props.js> is a study's own props file (scenes/<slug>/props/*.js) or a library file (props/*.js).
 //
@@ -14,7 +14,7 @@
 //              bounds gets depth-sorted wrong next to other things
 //   scale      height between 1 and 60 (a person is 7)
 //   brand      no colours, fonts or inline styles in the markup: tones only (the skin colours them, light and dark)
-//   lines      every texture line ends on something (scripts/lines.mjs on the sheet), light theme
+//   lines      every texture line ends on something (scripts/lines.mjs on the light sheet, always at zoom 2)
 // The sheet: each variant at four azimuths, with a person in front and one behind for scale and occlusion, light and
 // dark. Open the PNGs and review them against references/props.md before wiring the prop into a world.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
@@ -117,12 +117,18 @@ const stem = basename(file, ".js") + (only ? "-" + only : "") + (blind ? "-blind
 if (blind) writeFileSync(join(out, `${stem}-key.json`), JSON.stringify(Object.fromEntries(rows.map((r, ri) => [String.fromCharCode(65 + ri), r.tag])), null, 2));
 for (const theme of ["light", "dark"]) writeFileSync(join(out, `${stem}-${theme}.html`), page(theme));
 
-// line ends on the light sheet, then the screenshots for the review
-if (rows.length) {
+// line ends, always judged at zoom 2 (the check measures in screen pixels, so a pass must not depend on the sheet's
+// zoom): at zoom 1 the bench runs itself at zoom 2 for this one check. Then the screenshots for the review.
+if (rows.length && ZOOM < 2) {
+  const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), resolve(file), ...(only ? ["--prop", only] : []), "--zoom", "2", "--no-shots", "--out", join(out, "zoom2")], { encoding: "utf8" });
+  for (const l of (r.stdout || "").split("\n").filter((l) => l.startsWith("✗ lines:"))) fails.push(l.slice(2) + " (at zoom 2, ringed in bench/zoom2/)");
+} else if (rows.length) {
   const r = spawnSync(process.execPath, [join(ROOT, "scripts/lines.mjs"), join(out, `${stem}-light.html`), "--out", join(out, `${stem}-lines.png`), "--width", String(W), "--height", String(Math.min(H, 4000))], { encoding: "utf8" });
   const m = (r.stdout + r.stderr).match(/line ends: (\d+) of (\d+)/);
   if (!m) fail("lines", "the line check did not run: " + (r.stdout + r.stderr).trim().split("\n").slice(-2).join(" "));
   else if (m[1] !== "0") fail("lines", `${m[1]} floating line ends of ${m[2]} (ringed in ${stem}-lines.png)`);
+}
+if (rows.length) {
   if (shots) for (const theme of ["light", "dark"]) spawnSync(process.execPath, [join(ROOT, "scripts/capture.mjs"), join(out, `${stem}-${theme}.html`), "--out", join(out, `${stem}-${theme}.png`), "--width", String(W), "--height", String(Math.min(H, 4000)), "--scale", "1"], { encoding: "utf8" });
 }
 for (const w of warns) console.log("· " + w);
