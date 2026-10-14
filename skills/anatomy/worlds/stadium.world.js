@@ -9,6 +9,26 @@
 // Plain source, concatenated after engine/compose.js, engine/primitives.js and props/stage.js.
 
 const STADIUM = { straight: 150, radius: 62, rows: 7, depth: 9, rise: 5, d0: 6, aisle: 7 };
+// What the stage hides: its deck footprint up to the top of the truss and line arrays, seen from the stadium's camera
+// (azimuth 58° ± the orbit used by the default and block views, elevation 30°). A seat whose fan would stand inside that
+// silhouette, behind it, is never used: every respondent stays visible (tools/qa.mjs checks this).
+const STAGE_SHADOW = { x0: -31, x1: 31, y0: -39, y1: -5, z0: 0, z1: 56, az: [48, 53, 58, 63, 68], el: 30 };
+function behindStage([x, y, z]) {
+  const B = STAGE_SHADOW;
+  return B.az.some((a) => {
+    const A = (a * Math.PI) / 180, E = (B.el * Math.PI) / 180, cA = Math.cos(A), sA = Math.sin(A), cE = Math.cos(E), sE = Math.sin(E);
+    const uv = ([X, Y, Z]) => [-X * sA + Y * cA, Z * cE - (X * cA + Y * sA) * sE];
+    const depth = ([X, Y, Z]) => (X * cA + Y * sA) * cE + Z * sE;
+    const pts = []; for (const X of [B.x0, B.x1]) for (const Y of [B.y0, B.y1]) for (const Z of [B.z0, B.z1]) pts.push([X, Y, Z]);
+    if (depth([x, y, z]) >= Math.min(...pts.map(depth))) return false;   // in front of the stage: nothing hides it
+    // convex hull of the box's silhouette, then point-in-polygon
+    const P = pts.map(uv).sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+    const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const half = (list) => { const h = []; for (const p of list) { while (h.length >= 2 && cross(h[h.length - 2], h[h.length - 1], p) <= 0) h.pop(); h.push(p); } h.pop(); return h; };
+    const hull = [...half(P), ...half([...P].reverse())], q = uv([x, y, z]);
+    return hull.every((p, i) => cross(p, hull[(i + 1) % hull.length], q) >= 0);
+  });
+}
 
 function stadiumLayout(spec) {
   const T = racetrack(0, 0, STADIUM.straight, STADIUM.radius);
@@ -20,21 +40,22 @@ function stadiumLayout(spec) {
   const total = sizes.reduce((a, b) => a + b, 0), room = S1 - S0 - A * (spec.blocks.length - 1);
   let s = S0;
   const blocks = spec.blocks.map((b, i) => { const len = (room * sizes[i]) / total, r = { key: b.key, s0: s, s1: s + len }; s += len + A; return r; });
-  // seats: front rows first, evenly spread along the block
+  // seats: front rows first, spread along the block, skipping any seat the stage would hide
   const seats = new Array(spec.fans.length);
   spec.blocks.forEach((b, bi) => {
     const B = blocks[bi], len = B.s1 - B.s0;
     const cap = Math.max(1, Math.floor(len / 8.5));
-    const rowsUsed = Math.ceil(b.fans.length / cap);
+    const seatAt = (r, sAt) => { const [x, y] = T.point(Math.min(sAt, B.s1 - 2), STADIUM.d0 + r * STADIUM.depth + STADIUM.depth * 0.45); return { x, y, z: (r + 1) * STADIUM.rise, row: r, block: bi, s: sAt }; };
+    const open = (st) => !behindStage([st.x, st.y, st.z + 3]) && !behindStage([st.x, st.y, st.z + 6.5]);
     let k = 0;
-    for (let r = 0; r < rowsUsed; r++) {
-      const inRow = Math.min(cap, b.fans.length - k);
-      for (let j = 0; j < inRow; j++, k++) {
-        const sAt = B.s0 + ((j + 0.5 + (r % 2) * 0.25) * len) / inRow;
-        const [x, y] = T.point(Math.min(sAt, B.s1 - 2), STADIUM.d0 + r * STADIUM.depth + STADIUM.depth * 0.45);
-        seats[b.fans[k]] = { x, y, z: (r + 1) * STADIUM.rise, row: r, block: bi, s: sAt };
-      }
+    for (let r = 0; r < STADIUM.rows && k < b.fans.length; r++) {
+      const left = b.fans.length - k;
+      // a full row's slots, minus the hidden ones; a part row spreads its fans evenly over the open slots
+      const slots = Array.from({ length: cap }, (_, j) => seatAt(r, B.s0 + ((j + 0.5 + (r % 2) * 0.25) * len) / cap)).filter(open);
+      const take = Math.min(left, slots.length);
+      for (let j = 0; j < take; j++, k++) seats[b.fans[k]] = left >= slots.length ? slots[j] : slots[Math.floor(((j + 0.5) * slots.length) / take)];
     }
+    if (k < b.fans.length) throw new Error(`stadium: block ${b.key} has ${b.fans.length} fans but only ${k} seats the stage doesn't hide`);
   });
   const back = STADIUM.d0 + STADIUM.rows * STADIUM.depth;
   return { T, arc, blocks, seats, back, CENTER: [-30, -40, 18],
@@ -120,7 +141,21 @@ function stadiumGeometry(k, spec, P, state = {}) {
       "mic-stand": (lit, part) => PROPS["mic-stand"].build(c, { x: 0, y: RUN.y + RUN.d - 6, z: Z, lit, part }),
       "line-array": (lit, part) => PROPS["line-array"].build(c, { at: [[DECK.x + 6, DECK.y + DECK.d - 2], [DECK.x + DECK.w - 6, DECK.y + DECK.d - 2]], top: 52, lit, part }),
     };
-    spec.hopes.forEach((h, hi) => { if (!make[h.prop]) throw new Error("stadium: no stage placement for prop " + h.prop); dressing.push({ key: "hope-" + h.key, built: make[h.prop](sel.hope === hi, "hope-" + h.key) }); });
+    // any other prop (a study's own, props/… with a footprint) takes the next free spot on the field beside the stage,
+    // at ground level; it carries data (lit when its hope is selected), and QA checks it hides no fan
+    const FIELD_SLOTS = [[-48, -16], [46, -16], [-42, 6], [40, 6]], SLOT_MAX = [30, 24];
+    let free = 0;
+    spec.hopes.forEach((h, hi) => {
+      const lit = sel.hope === hi, part = "hope-" + h.key;
+      if (make[h.prop]) { dressing.push({ key: part, built: make[h.prop](lit, part) }); return; }
+      const prop = PROPS[h.prop];
+      if (!prop) throw new Error("stadium: unknown prop " + h.prop + " (library props/stage.js, or the study's props files)");
+      if (!prop.footprint) throw new Error("stadium: prop " + h.prop + " declares no footprint, so it can't be placed");
+      if (prop.footprint[0] > SLOT_MAX[0] || prop.footprint[1] > SLOT_MAX[1]) throw new Error(`stadium: prop ${h.prop} is ${prop.footprint.join("×")}; a field spot takes ${SLOT_MAX.join("×")} at most`);
+      if (free >= FIELD_SLOTS.length) throw new Error("stadium: more than " + FIELD_SLOTS.length + " study props for the field");
+      const [x, y] = FIELD_SLOTS[free++];
+      dressing.push({ key: part, built: prop.build(c, { ...(h.propOpts || {}), x, y, lit, part }) });
+    });
   }
   for (const d of dressing) items.push(...d.built.items);
 

@@ -87,6 +87,8 @@ the line, or mark an end that truly stops in the air with `free: true` (both end
   silhouette is wrong.
 - States are variants of one prop (`damaged` / `repaired`, `empty` / `full`, `before` / `after`) that keep the same
   footprint, so the two ends of a scale read as the same thing changed.
+- A prop that carries data takes `lit` (true while its data is selected, e.g. a stadium hope) and passes it to its
+  main solid: `S(..., { tone, lit })`. Scenery that carries no data ignores it.
 - No study names, brands or copy in a prop. A prop that turns out generic can be promoted into `props/` later.
 
 ## The loop
@@ -97,8 +99,25 @@ the line, or mark an end that truly stops in the air with `free: true` (both end
    the bounds at four azimuths, the scale, the brand and the line ends, and writes a light and a dark contact sheet next to
    the file (`bench/`). Fix until it passes. Never loosen a check; fix the prop.
 3. Open both sheets and review them against the checklist below. Fix and re-bench until every item holds.
-4. Put the props in the scene (`props` and `scenery` in `scene.json`), build, run `tools/qa.mjs`, and review the scene
-   screenshots: the props must not hide people, cones or the scale words, and must read at the scene's own zoom.
+4. Do the blind read (below) and redraw until every prop and state passes it.
+5. Put the props in the scene (`props` and `scenery` in `scene.json`), build, run `tools/qa.mjs`, and review the scene
+   screenshots: the props must not hide people, cones or the scale words, and must read at the scene's own zoom. QA's
+   "every person visible" check fails if scenery hides anyone.
+
+## The blind read
+
+The person who wrote a prop can't judge whether it names itself: they know what it is. Before a prop goes in a scene,
+someone who hasn't seen the brief names it cold.
+
+1. Bench with `--blind`. The sheet's rows are lettered, and the answer key goes to `bench/<name>-blind-key.json`.
+2. Start a fresh subagent with no brief, only this prompt and the light sheet's path:
+   > Open this image. It is a contact sheet of small isometric objects, one per lettered row, each shown from four
+   > angles with small figures for scale. For each row, say in a few words what the object is, and if two rows look
+   > like the same object in different states, say what changed. Don't guess from context; say "unclear" if it is.
+   > Image: `<path to bench/<name>-blind-light.png>`
+3. Compare its answers with the key. A row passes when the answer names the same thing (a "gate" for a finish arch
+   with tape is close enough; a "fence" is not) and a state pair passes when the change is named. Redraw what fails,
+   following what the reviewer saw instead, and run a fresh reviewer: one who has seen an earlier sheet isn't blind.
 
 ## Review checklist (the sheet, then the scene)
 
@@ -108,4 +127,4 @@ the line, or mark an end that truly stops in the air with `free: true` (both end
 4. **Nothing floats or shows through.** Every detail sits on a face, the ground or another solid.
 5. **Clean in both themes.** Light and dark sheets both read; no part disappears into the paper.
 6. **It belongs.** Same bevels, stepped forms and line weight as the library props on the same page.
-7. **In the scene:** it hides no person, cone or scale word, and the scene still reads as the subject.
+7. **In the scene:** it hides no person (QA checks), cone or scale word, and the scene still reads as the subject.

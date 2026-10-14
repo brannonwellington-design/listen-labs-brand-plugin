@@ -6,9 +6,9 @@
 // usage: node tools/patterns/lineup.mjs <study dir>     → <dir>/specs/scene.figure.json
 // Honesty rules come from ./lib.mjs (numbers only from facts, no numbers in titles, claims checked by assert, quotes
 // by rule). Missing ratings stay missing: drawn faded off the scale and left out of that condition's median and n.
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { all, makeCopy, pickQuote, median } from "./lib.mjs";
+import { all, makeCopy, pickQuote, median, readPropSource } from "./lib.mjs";
 
 const dir = process.argv[2];
 if (!dir) { console.error("usage: node tools/patterns/lineup.mjs <study dir>"); process.exit(2); }
@@ -78,10 +78,7 @@ function beat(b, i) {
   if (b.quote) { const [, cond, group] = b.quote.split(":"); const q = groupStats[gi(group)][cond].quote; out.quote = q ? { ...q } : null; }
   return out;
 }
-// the study's own props (cfg.props: files under the study folder, written and benched per references/props.md)
-const propFiles = cfg.props || [];
-for (const f of propFiles) if (!existsSync(join(dir, f))) throw new Error(`props file ${f} not found in ${dir}`);
-const propSource = propFiles.map((f) => `// ${f}\n` + readFileSync(join(dir, f), "utf8")).join("\n");
+const propSource = readPropSource(dir, cfg);   // the study's own props, if any
 const spec = {
   _source: `pattern lineup · coding ${join(dir, "codes/merged.json")} · config ${join(dir, "scene.json")}`,
   study: { ...cfg.study, n: people.length, complete: facts.complete }, object: "lineup", world: cfg.world || "curb", ...(cfg.scenery ? { scenery: cfg.scenery } : {}), ...(propSource ? { propSource } : {}),

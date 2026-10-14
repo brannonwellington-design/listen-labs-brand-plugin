@@ -14,7 +14,7 @@
 // · Quotes are picked by rule (from the group's most common answer, the shortest of at least 50 characters), never by hand.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { holds, all, makeCopy } from "./lib.mjs";
+import { holds, all, makeCopy, readPropSource } from "./lib.mjs";
 
 const dir = process.argv[2];
 if (!dir) { console.error("usage: node tools/patterns/crowd.mjs <study dir>"); process.exit(2); }
@@ -56,7 +56,7 @@ const blockStats = blocks.map((b) => {
 const hopes = W ? W.items.map((h) => {
   const list = fans.filter((f) => f.hopes.includes(h.key));
   const q = list.map((f) => ({ f, e: f.evidence[`${W.dim}.${h.key}`] })).filter((x) => x.e && x.e.quote.length >= 40).sort((a, b) => a.e.quote.length - b.e.quote.length)[0];
-  return { key: h.key, name: h.name, prop: h.prop, propName: h.propName, count: list.length, base: hopesBase, quote: q ? { quote: q.e.quote, source: q.e.source, who: q.f.label } : null };
+  return { key: h.key, name: h.name, prop: h.prop, ...(h.propOpts ? { propOpts: h.propOpts } : {}), propName: h.propName, count: list.length, base: hopesBase, quote: q ? { quote: q.e.quote, source: q.e.source, who: q.f.label } : null };
 }) : [];
 const up = (c) => fans.filter((f) => f.feel[c] === "positive").length;
 const asked = (c) => fans.filter((f) => f.feel[c]).length;
@@ -104,7 +104,7 @@ const page = cfg.page;
 const spec = {
   _source: `pattern crowd · coding ${join(dir, "codes/merged.json")} · config ${join(dir, "scene.json")}`,
   study: { ...cfg.study, n: fans.length, complete: facts.complete },
-  object: cfg.world || "stadium",
+  object: cfg.world || "stadium", ...(cfg.props ? { propSource: readPropSource(dir, cfg) } : {}),
   acts: conds.map((c) => ({ key: c.key, name: c.name, when: c.when, code: c.dim, dressing: c.dressing, report: { count: c.report[0], base: c.report[1] }, up: up(c.key) })),
   blocks, blockStats, hopes, fans,
   figure: { ...cfg.figure, label: fill(cfg.figure.label, "figure.label"), caption: fill(cfg.figure.caption, "figure.caption"), titleBlock: cfg.figure.titleBlock.map(([k, v], i) => [k, fill(v, `figure.titleBlock[${i}]`)]) },

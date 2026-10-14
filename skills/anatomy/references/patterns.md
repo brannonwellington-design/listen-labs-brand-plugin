@@ -112,6 +112,11 @@ Tour beats take `cond`, `group`, `follow: "swing"`, `tension`, and `quote: "why:
 }
 ```
 
+**Hope props.** `prop` names a stage prop from `props/stage.js` (`led-wall`, `dance-floor`, `guest-lift`, `flags`,
+`mic-stand`, `line-array`: each has its own spot on the stage) or any prop from the study's own `props` files with a
+footprint of at most 30×24. Those stand on the field beside the stage, up to four, built with `{ x, y, lit, part,
+...propOpts }`: `lit` is true while that hope is selected, so the prop's main solid takes the accent (it carries data).
+
 **Copy rules the builder enforces:**
 - Numbers enter copy only as `{facts}` (see the `facts` object in `crowd.mjs`). A literal digit fails the build, except
   a non-data number written `{lit:1–5}` and the report's own numbers in `headlineStats` and `report`.

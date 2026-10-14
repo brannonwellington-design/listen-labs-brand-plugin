@@ -3,6 +3,8 @@
 //
 // usage: node tools/props/bench.mjs <props.js> [--prop <name>] [--out <dir>] [--zoom 2] [--no-shots]
 //   --zoom draws every cell larger, for reviewing small details
+//   --blind letters the rows (A, B, …) instead of naming them, and writes the answer key to <name>-key.json: the sheet a
+//           reviewer who has not seen the brief names cold (references/props.md, "The blind read")
 //   <props.js> is a study's own props file (scenes/<slug>/props/*.js) or a library file (props/*.js).
 //
 // Checks, per prop and variant (exit 1 if any fails):
@@ -26,6 +28,7 @@ const args = process.argv.slice(2);
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
 const file = args.find((a, i) => !a.startsWith("--") && !args[i - 1]?.startsWith("--"));
 if (!file) { console.error("usage: node tools/props/bench.mjs <props.js> [--prop name] [--out dir] [--no-shots]"); process.exit(2); }
+const blind = args.includes("--blind");
 const only = opt("--prop", null), out = resolve(opt("--out", join(dirname(resolve(file)), "bench"))), shots = !args.includes("--no-shots");
 mkdirSync(out, { recursive: true });
 
@@ -106,10 +109,12 @@ for (const name of names) {
 
 // the sheet: one svg, a row per prop variant, a cell per azimuth
 const W = CELL[0] * AZ.length, H = CELL[1] * rows.length + 30 * rows.length;
-const body = rows.map((r, ri) => `<g transform="translate(0 ${ri * (CELL[1] + 30)})"><text class="bench-tag" x="8" y="18">${r.tag.replace(/[<&]/g, "")}</text>${r.cells.map((cell, ci) => `<g transform="translate(${ci * CELL[0]} 24)">${cell.svg}<text class="bench-tag" x="8" y="${CELL[1] - 8}">az ${cell.az}</text></g>`).join("")}</g>`).join("");
+const label = (r, ri) => (blind ? String.fromCharCode(65 + ri) : r.tag.replace(/[<&]/g, ""));
+const body = rows.map((r, ri) => `<g transform="translate(0 ${ri * (CELL[1] + 30)})"><text class="bench-tag" x="8" y="18">${label(r, ri)}</text>${r.cells.map((cell, ci) => `<g transform="translate(${ci * CELL[0]} 24)">${cell.svg}<text class="bench-tag" x="8" y="${CELL[1] - 8}">az ${cell.az}</text></g>`).join("")}</g>`).join("");
 const skin = read("skin/ll-skin.css");
 const page = (theme) => `<!doctype html><html data-theme="${theme}"><meta charset=utf-8><title>Prop bench</title><style>${k.ISO_CSS}${skin} html,body{margin:0;background:${theme === "dark" ? "#16130f" : "#faf8f4"}} .bench-tag{font:12px/1 Inter, system-ui, sans-serif; fill: var(--anatomy-muted, #888)}</style><body data-theme="${theme}"><div class="iso-plate" style="padding:0;border:0;border-radius:0;width:${W}px"><svg class="iso" data-theme="${theme}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${body}</svg></div>`;
-const stem = basename(file, ".js") + (only ? "-" + only : "");
+const stem = basename(file, ".js") + (only ? "-" + only : "") + (blind ? "-blind" : "");
+if (blind) writeFileSync(join(out, `${stem}-key.json`), JSON.stringify(Object.fromEntries(rows.map((r, ri) => [String.fromCharCode(65 + ri), r.tag])), null, 2));
 for (const theme of ["light", "dark"]) writeFileSync(join(out, `${stem}-${theme}.html`), page(theme));
 
 // line ends on the light sheet, then the screenshots for the review
