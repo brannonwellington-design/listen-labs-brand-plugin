@@ -66,7 +66,7 @@ const html = `<!doctype html>
   ${quoteHtml ? `<section class="voices"><h2>In their words</h2>${quoteHtml}</section>` : ""}
   ${S.reconHtml(spec, t)}
   <section class="method"><h2>Read before sharing</h2><ul>${(spec.page.notes || []).map((n) => `<li>${t(n)}</li>`).join("")}</ul>
-    <p class="method__source">Source: ${t(spec.study.title)} · Listen Labs study ${esc(spec.study.id)} · n&nbsp;=&nbsp;${spec.study.n} coded</p></section>
+    <p class="method__source">Source: ${t(spec.study.title)} · Listen Labs study ${esc(spec.study.id)} · n&nbsp;=&nbsp;${spec.study.coded ?? spec.study.n} coded</p></section>
 </main>
 <script type="module">
 ${(scene.js + `

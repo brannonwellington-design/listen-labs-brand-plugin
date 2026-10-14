@@ -1,0 +1,398 @@
+[
+ {
+  "readable_id": 1,
+  "response_uuid": "00000000-0000-0000-0002-000000000000",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": false,
+   "price_check": false,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000000?message=4#a-4"
+   }
+  }
+ },
+ {
+  "readable_id": 2,
+  "response_uuid": "00000000-0000-0000-0002-000000000001",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": false,
+   "browsed": false,
+   "price_check": true,
+   "left": true
+  },
+  "evidence": {
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000001?message=6#a-6"
+   },
+   "left": {
+    "quote": "(Synthetic example answer about the left step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000001?message=7#a-7"
+   }
+  }
+ },
+ {
+  "readable_id": 3,
+  "response_uuid": "00000000-0000-0000-0002-000000000002",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": true,
+   "price_check": true,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000002?message=4#a-4"
+   },
+   "browsed": {
+    "quote": "(Synthetic example answer about the browsed step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000002?message=5#a-5"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000002?message=6#a-6"
+   }
+  }
+ },
+ {
+  "readable_id": 4,
+  "response_uuid": "00000000-0000-0000-0002-000000000003",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this month"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": true,
+   "price_check": true,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000003?message=4#a-4"
+   },
+   "browsed": {
+    "quote": "(Synthetic example answer about the browsed step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000003?message=5#a-5"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000003?message=6#a-6"
+   }
+  }
+ },
+ {
+  "readable_id": 5,
+  "response_uuid": "00000000-0000-0000-0002-000000000004",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": false,
+   "price_check": true,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000004?message=4#a-4"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000004?message=6#a-6"
+   }
+  }
+ },
+ {
+  "readable_id": 6,
+  "response_uuid": "00000000-0000-0000-0002-000000000005",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": false,
+   "price_check": true,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000005?message=4#a-4"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000005?message=6#a-6"
+   }
+  }
+ },
+ {
+  "readable_id": 7,
+  "response_uuid": "00000000-0000-0000-0002-000000000006",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": false,
+   "browsed": true,
+   "price_check": false,
+   "left": false
+  },
+  "evidence": {
+   "browsed": {
+    "quote": "(Synthetic example answer about the browsed step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000006?message=5#a-5"
+   }
+  }
+ },
+ {
+  "readable_id": 8,
+  "response_uuid": "00000000-0000-0000-0002-000000000007",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this month"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": false,
+   "price_check": true,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000007?message=4#a-4"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000007?message=6#a-6"
+   }
+  }
+ },
+ {
+  "readable_id": 9,
+  "response_uuid": "00000000-0000-0000-0002-000000000008",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": true,
+   "price_check": true,
+   "left": true
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000008?message=4#a-4"
+   },
+   "browsed": {
+    "quote": "(Synthetic example answer about the browsed step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000008?message=5#a-5"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000008?message=6#a-6"
+   },
+   "left": {
+    "quote": "(Synthetic example answer about the left step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000008?message=7#a-7"
+   }
+  }
+ },
+ {
+  "readable_id": 10,
+  "response_uuid": "00000000-0000-0000-0002-000000000009",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this month"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": false,
+   "price_check": false,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000009?message=4#a-4"
+   }
+  }
+ },
+ {
+  "readable_id": 11,
+  "response_uuid": "00000000-0000-0000-0002-000000000010",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": true,
+   "price_check": true,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000010?message=4#a-4"
+   },
+   "browsed": {
+    "quote": "(Synthetic example answer about the browsed step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000010?message=5#a-5"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000010?message=6#a-6"
+   }
+  }
+ },
+ {
+  "readable_id": 12,
+  "response_uuid": "00000000-0000-0000-0002-000000000011",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": false,
+   "price_check": true,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000011?message=4#a-4"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000011?message=6#a-6"
+   }
+  }
+ },
+ {
+  "readable_id": 13,
+  "response_uuid": "00000000-0000-0000-0002-000000000012",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this month"
+  },
+  "codes": {
+   "easy_start": false,
+   "browsed": true,
+   "price_check": false,
+   "left": false
+  },
+  "evidence": {
+   "browsed": {
+    "quote": "(Synthetic example answer about the browsed step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000012?message=5#a-5"
+   }
+  }
+ },
+ {
+  "readable_id": 14,
+  "response_uuid": "00000000-0000-0000-0002-000000000013",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": false,
+   "price_check": true,
+   "left": true
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000013?message=4#a-4"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000013?message=6#a-6"
+   },
+   "left": {
+    "quote": "(Synthetic example answer about the left step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000013?message=7#a-7"
+   }
+  }
+ },
+ {
+  "readable_id": 15,
+  "response_uuid": "00000000-0000-0000-0002-000000000014",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this month"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": false,
+   "price_check": true,
+   "left": true
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000014?message=4#a-4"
+   },
+   "price_check": {
+    "quote": "(Synthetic example answer about the price check step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000014?message=6#a-6"
+   },
+   "left": {
+    "quote": "(Synthetic example answer about the left step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000014?message=7#a-7"
+   }
+  }
+ },
+ {
+  "readable_id": 16,
+  "response_uuid": "00000000-0000-0000-0002-000000000015",
+  "is_complete": true,
+  "closed": {
+   "last_visit": "this week"
+  },
+  "codes": {
+   "easy_start": true,
+   "browsed": true,
+   "price_check": false,
+   "left": false
+  },
+  "evidence": {
+   "easy_start": {
+    "quote": "(Synthetic example answer about the easy start step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000015?message=4#a-4"
+   },
+   "browsed": {
+    "quote": "(Synthetic example answer about the browsed step.)",
+    "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000015?message=5#a-5"
+   }
+  }
+ }
+]

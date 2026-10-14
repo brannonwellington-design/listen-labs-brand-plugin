@@ -1,0 +1,171 @@
+{
+  "_example": "Synthetic: a fictional caf\u00e9-app study for learning the journey config (references/patterns.md, 'Journey config'). Copy into scenes/<slug>/ and replace everything.",
+  "pattern": "journey",
+  "world": "conveyor",
+  "study": {
+    "id": "00000000-example-journey",
+    "title": "Example: ordering ahead",
+    "url": "https://listenlabs.ai/p/example-journey",
+    "n": 16
+  },
+  "people": {
+    "filter": [
+      {
+        "complete": true
+      }
+    ],
+    "prefix": "R",
+    "fields": {
+      "lastOrder": "last_visit"
+    },
+    "method": "Synthetic coding of every interview, each code backed by a quote."
+  },
+  "arrival": {
+    "code": "easy_start",
+    "on": "Started easily",
+    "off": "No easy start in their words",
+    "lastLabel": "last visit",
+    "endLabel": "order collected"
+  },
+  "stations": [
+    {
+      "key": "start",
+      "name": "Starting",
+      "prop": "hopper",
+      "count": 13,
+      "code": "easy_start",
+      "statement": "found it easy to start",
+      "readout": "found it easy",
+      "implication": "(Synthetic implication for this stage.)",
+      "quote": "(Synthetic example quote about starting.)",
+      "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000000?message=6#a-6"
+    },
+    {
+      "key": "browse",
+      "name": "Browsing",
+      "prop": "bin-rack",
+      "count": 7,
+      "code": "browsed",
+      "statement": "browsed the menu before choosing",
+      "readout": "browsed first",
+      "implication": "(Synthetic implication for this stage.)",
+      "quote": "(Synthetic example quote about browsing.)",
+      "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000001?message=6#a-6"
+    },
+    {
+      "key": "price",
+      "name": "Price check",
+      "prop": "labeler",
+      "count": 11,
+      "code": "price_check",
+      "statement": "stopped to check the price",
+      "readout": "checked the price",
+      "implication": "(Synthetic implication for this stage.)",
+      "quote": "(Synthetic example quote about price check.)",
+      "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000002?message=6#a-6"
+    },
+    {
+      "key": "leave",
+      "name": "Leaving",
+      "prop": "threshold-gate",
+      "count": 4,
+      "code": "left",
+      "statement": "left without ordering at least once",
+      "readout": "left once",
+      "implication": "(Synthetic implication for this stage.)",
+      "quote": "(Synthetic example quote about leaving.)",
+      "source": "https://listenlabs.ai/response/00000000-0000-0000-0002-000000000003?message=6#a-6"
+    }
+  ],
+  "assert": [
+    "stations.start.count > study.n * 0.5"
+  ],
+  "figure": {
+    "fig": "Fig 1",
+    "title": "Ordering ahead",
+    "hint": "Hover a gauge \u00b7 click it for quotes",
+    "label": "An isometric conveyor with four stations; a gauge at each reads how many of the {study.n} interviews mention that stage.",
+    "caption": "Each gauge reads its stage's count of {study.n} interviews. Follow one respondent to see the stages their own words support.",
+    "titleBlock": [
+      [
+        "Drawing",
+        "Example conveyor"
+      ],
+      [
+        "Study",
+        "Example \u00b7 synthetic"
+      ],
+      [
+        "Base",
+        "n = {study.n}"
+      ],
+      [
+        "Method",
+        "Synthetic data"
+      ],
+      [
+        "Scale",
+        "gauge = count of n"
+      ]
+    ]
+  },
+  "tension": {
+    "label": "Some leave before ordering",
+    "event": "stall",
+    "target": {
+      "station": "leave"
+    },
+    "numbers": [
+      "@stations.leave.finding"
+    ]
+  },
+  "page": {
+    "frame": "Example study \u00b7 {study.n} synthetic interviews",
+    "headline": "An example journey, built from synthetic data",
+    "dek": "This page is built from the example config in examples/journey.",
+    "who": {
+      "one": "customer",
+      "many": "customers"
+    },
+    "stop": {
+      "on": "Mentioned here",
+      "off": "Not mentioned here",
+      "at": "mentioned"
+    },
+    "headlineStats": [
+      {
+        "value": "{stations.start.count}",
+        "base": "of {study.n} found it easy to start (report)"
+      }
+    ],
+    "notes": [
+      "Synthetic data: nothing on this page describes real people."
+    ]
+  },
+  "scripts": {
+    "tour": {
+      "title": "The tour",
+      "beats": [
+        {
+          "hold": 5,
+          "camera": "wide",
+          "title": "Four stages",
+          "caption": "@page.dek"
+        },
+        {
+          "hold": 5,
+          "station": "start",
+          "title": "Starting",
+          "caption": "@stations.start.finding",
+          "quote": "@stations.start.quote"
+        },
+        {
+          "hold": 6,
+          "station": "leave",
+          "title": "Leaving",
+          "caption": "@stations.leave.finding"
+        }
+      ]
+    }
+  }
+}

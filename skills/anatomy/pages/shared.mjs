@@ -286,7 +286,7 @@ export function resolveRef(spec, ref) {
     const f = parts[2];
     if (f === "finding") return { text: `${s.count} of ${N} ${whoOf(spec).many} ${s.statement}.`, from: ref };
     if (f === "contrast") return s.contrast ? { text: `${s.contrast.count} of ${N} ${whoOf(spec).many} ${s.contrast.statement}.`, from: ref } : fail();
-    if (f === "quote") return { quote: s.quote, source: s.source, who: "Participant", from: ref };
+    if (f === "quote") return { quote: s.quote, source: s.source, who: labelFor(spec, s.source), from: ref };
     if (f === "implication" || f === "statement") return { text: s[f], from: ref };
     fail();
   }
@@ -312,7 +312,7 @@ export function resolveRef(spec, ref) {
     const st = (spec.steps || []).find((x) => x.key === parts[1]) || fail();
     const f = parts[2];
     if (f === "stat") return { text: `${st.stat.value} ${st.stat.base}.`, from: ref };
-    if (f === "quote") return st.quote ? { quote: st.quote.text, source: st.quote.source, who: "Participant", from: ref } : fail();
+    if (f === "quote") return st.quote ? { quote: st.quote.text, source: st.quote.source, who: labelFor(spec, st.quote.source), from: ref } : fail();
     if (["title", "kicker", "body", "caveat"].includes(f)) return st[f] ? { text: st[f], from: ref } : fail();
     fail();
   }
@@ -329,7 +329,7 @@ export function resolveRef(spec, ref) {
     const f = parts[2];
     if (f === "users") return { text: `${b.users} of ${base} used ${b.name} in the past month.`, from: ref };
     // a paraphrased lead-in stays outside the quotation marks: only the participant's own words are quoted
-    if (f === "quote") return { quote: b.quote.text, lead: b.quote.lead || "", source: b.quote.source, who: "Participant", from: ref };
+    if (f === "quote") return { quote: b.quote.text, lead: b.quote.lead || "", source: b.quote.source, who: labelFor(spec, b.quote.source), from: ref };
     if (f === "reasons") { const r = b.reasons[+parts[3]] || fail(); return { text: `${r.pct}% of ${b.name}’s ${b.users} users: ${r.label.toLowerCase()}.`, from: ref }; }
     if (f === "dials") return { text: b.appeal == null ? `${b.name}’s appeal and trust: not reported as values in the analysis, so its dials stay capped.` : `${b.appeal}% of ${b.name}’s users find it appealing; ${b.trust}% trust it.`, from: ref };
     if (["headline", "body", "name"].includes(f)) return { text: b[f], from: ref };
@@ -371,7 +371,7 @@ export function resolveRef(spec, ref) {
     fail();
   }
   if (parts[0] === "page" && parts[1] === "headlineStats") { const h = spec.page.headlineStats[+parts[2]] || fail(); return { text: `${h.value} ${h.base}.`, from: ref }; }
-  if (parts[0] === "exit" && parts[1] === "quote") return { quote: spec.exit.quote, source: spec.exit.source, who: "Participant", from: ref };
+  if (parts[0] === "exit" && parts[1] === "quote") return { quote: spec.exit.quote, source: spec.exit.source, who: labelFor(spec, spec.exit.source), from: ref };
   if (parts[0] === "page") {
     const v = parts.slice(1).reduce((o, k) => (o == null ? o : o[k]), spec.page);
     if (v == null) fail();
@@ -543,6 +543,12 @@ export function applyWorld(arg, spec) {
 
 // Who the respondents are and what a journey stop is called come from the config (spec.page.who, spec.page.stop),
 // never from code: the engine names no study's people or findings.
+// who said a report quote: the coded respondent whose transcript its source link points to, else "Participant"
+export function labelFor(spec, source) {
+  const id = ((source || "").match(/response\/([0-9a-f-]{36})/) || [])[1];
+  const p = id && [...(spec.shoppers || []), ...(spec.customers || []), ...(spec.people || [])].find((x) => x.uuid === id);
+  return p ? p.label : "Participant";
+}
 export const whoOf = (spec) => ({ one: "respondent", many: "respondents", ...((spec.page || {}).who || {}) });
 export const stopOf = (spec) => ({ on: "Stopped here", off: "No stop coded here", at: "stopped at", ...((spec.page || {}).stop || {}) });
 

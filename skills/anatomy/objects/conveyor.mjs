@@ -40,7 +40,8 @@ const WORLDS = {
 function worldOf(spec) {
   const w = WORLDS[spec.__world || "conveyor"];
   if (!w) throw new Error("unknown world " + spec.__world + " (have " + Object.keys(WORLDS).join(", ") + ")");
-  const src = w.files.map((f) => readFileSync(new URL("../" + f, import.meta.url), "utf8")).join("\n") +
+  // a study's own props (spec.propSource) load after the library, before the world's geometry runs
+  const src = w.files.map((f) => readFileSync(new URL("../" + f, import.meta.url), "utf8")).join("\n") + "\n" + (spec.propSource || "") +
     `\nfunction lineGeometry(k, spec, P) { return ${w.fn}Geometry(k, spec, P); }\nfunction lineNeedle(k, P, x, v, N) { return ${w.fn}Needle(k, P, x, v, N); }\nfunction lineCleats(k, P, X0, X1, BUMP, RIDE, offset) { return ${w.fn}Cleats(k, P, X0, X1, BUMP, RIDE, offset); }`;
   const api = new Function("k", src + "\nreturn { layout: " + w.fn + "Layout, geometry: lineGeometry };")(k);
   return { src, ...api };
@@ -126,7 +127,7 @@ const TENSION = ${JSON.stringify(spec.__tension || null)};
 const SHEET = ${JSON.stringify(spec.figure.sheetCamera || { az: AZ, zoom: 0.74, focus: [8, 12, 38] })};
 const APART = ${JSON.stringify(spec.figure.apartCamera || { az: 58, zoom: 0.78, focus: [10, 24, 44] })};
 const SHEET_APART = ${JSON.stringify(spec.figure.sheetApartCamera || { az: 58, zoom: 0.66, focus: [10, 14, 60] })};
-const CAMS = ${JSON.stringify(stations.map((s) => s.camera || { az: AZ, zoom: 1.6, focus: [0, 20, 25] }))};
+const CAMS = ${JSON.stringify(stations.map((s, i) => s.camera || { az: AZ, zoom: 1.6, focus: [STATION_X[i], 20, 25] }))};   // each station frames its own fitting unless the spec says otherwise
 const WIDE = ${JSON.stringify(spec.figure.wideCamera || { az: AZ, zoom: 1, focus: CENTER })};
 const TIPS = ${JSON.stringify(tipsFor(spec))};
 const ARRIVAL = ${JSON.stringify(spec.arrival || { code: "", on: "", off: "" })};
