@@ -1,10 +1,10 @@
 // Aisle world: the same ordered-journey data as the conveyor, staged as a walk through a grocery store.
 // Carts roll in through the entrance, along an aisle past each station's fitting, over the exit threshold and out
-// to the curbside tote; a row of produce scales in front reads each station's count against n.
+// to the pickup tote; a row of produce scales in front reads each station's count against n.
 // The spec is unchanged: its station roles (the conveyor's prop names) map to shop props here.
 // Plain source, concatenated after engine/compose.js and props/shop.js (and props/machine.js for the tote).
 
-const AISLE_ROLE = { hopper: "store-entrance", "bin-rack": "snack-gondola", "photo-eye": "self-checkout", labeler: "price-sign", "threshold-gate": "exit-gates" };
+const AISLE_ROLE = { hopper: "store-entrance", "bin-rack": "gondola-shelf", "photo-eye": "self-checkout", labeler: "price-sign", "threshold-gate": "exit-gates" };
 
 function aisleLayout(spec) {
   const SLOTS = [-161, -95, -25, 45, 110];
@@ -50,7 +50,7 @@ function aisleGeometry(k, spec, P, opts = {}) {
   const parts = [
     { key: "base", ...floor.part },
     ...props.map((p) => ({ key: p.key, ...p.built.part, station: p.i })),
-    { key: "tote", ...tote.part, name: "Curbside tote" },
+    { key: "tote", ...tote.part, name: "Pickup tote" },
     ...scales.map((g, i) => ({ key: "gauge-" + i, name: stations[i].name + " scale", ...g.part, station: i })),
   ].map((p) => ({ key: p.key, name: p.name, move: p.move, anchor: p.anchor, station: p.station ?? -1 }));
   return { body: composeWorld(items, k, P, { sort: opts.sort }), parts, layout: LAY };

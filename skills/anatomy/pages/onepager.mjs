@@ -5,10 +5,11 @@ import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
-const { LL_TOKENS: SHARED_TOKENS, applyWorld, headerHtml, HEADER_CSS, cameraCardCss, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS } = await import("./shared.mjs");
+const { LL_TOKENS: SHARED_TOKENS, applyWorld, headerHtml, HEADER_CSS, cameraCardCss, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS, reconHtml, RECON_CSS, whoOf, stopOf } = await import("./shared.mjs");
 
 const [objArg, specPath, outPath] = process.argv.slice(2);
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
+const WHO = whoOf(spec), STOP = stopOf(spec);   // who the respondents are and what a stop is called: the config's words
 const objName = applyWorld(objArg, spec);   // "conveyor@aisle": the conveyor's data and runtime, staged in another world
 const SCRIPTS = resolveScripts(spec);   // captions are @references into the spec; the build fails on anything else
 const obj = await import(`../objects/${objName}.mjs`);
@@ -36,7 +37,7 @@ const figure0 = k.plateHtml({
   hint: spec.figure.hint,
   readout: "",
   caption: curly(spec.figure.caption),
-  body: `${viewToolsHtml(SCRIPTS, (spec.shoppers || []).length ? `<select class="fig-play fig-follow" aria-label="Follow one shopper"><option value="">Follow…</option>${spec.shoppers.map((p, i) => `<option value="${i}">Follow ${p.label}</option>`).join("")}</select>` : "")}${titleBlockHtml(spec.figure.titleBlock, esc)}${captionHtml()}<div class="replay-quote" data-replay-quote hidden><p data-rq="text"></p><a data-rq="src" target="_blank" rel="noopener">Source</a></div><div class="iso-stage" data-conveyor tabindex="0" role="slider" aria-label="${esc(spec.figure.title)}: arrow keys move between stations" aria-valuemin="1" aria-valuemax="${spec.stations.length}" aria-valuenow="1">${svg}</div>`,
+  body: `${viewToolsHtml(SCRIPTS, (spec.shoppers || []).length ? `<select class="fig-play fig-follow" aria-label="Follow one ${esc(WHO.one)}"><option value="">Follow…</option>${spec.shoppers.map((p, i) => `<option value="${i}">Follow ${p.label}</option>`).join("")}</select>` : "")}${titleBlockHtml(spec.figure.titleBlock, esc)}${captionHtml()}<div class="replay-quote" data-replay-quote hidden><p data-rq="text"></p><a data-rq="src" target="_blank" rel="noopener">Source</a></div><div class="iso-stage" data-conveyor tabindex="0" role="slider" aria-label="${esc(spec.figure.title)}: arrow keys move between stations" aria-valuemin="1" aria-valuemax="${spec.stations.length}" aria-valuenow="1">${svg}</div>`,
 });
 const figure = figure0;
 
@@ -49,8 +50,7 @@ const tabs = spec.stations.map((s, i) => `
 const actions = page.actions.map((a) => `
         <li class="action"><span class="action__lead">${t(a.lead)}</span> <span class="action__body">${t(a.body)}</span></li>`).join("");
 
-const recon = spec.shoppers ? [`We re-coded all ${spec.shoppers.length} transcripts against the report’s own definitions to put a real shopper behind every bag. That coding matches the report on occasion (${spec.stations[0].transcriptCount} vs ${spec.stations[0].count} ride-along) and lands close on price (${spec.stations[3].transcriptCount} vs ${spec.stations[3].count}); it is stricter on assortment (${spec.stations[1].transcriptCount} vs ${spec.stations[1].count}) and shipping (${spec.stations[4].transcriptCount} vs ${spec.stations[4].count}), counting only shoppers who named it as a reason, and broader on praised-but-rejected (${spec.stations[2].transcriptCount} vs ${spec.stations[2].count}). Gauges show the report’s counts; replayed bags stop only where a quote supports it.`] : [];
-const notes = [...page.notes, ...recon].map((n) => `<li>${t(n)}</li>`).join("");
+const notes = [...page.notes].map((n) => `<li>${t(n)}</li>`).join("");
 
 // DATA block the live panel reads (one place, editable)
 const DATA = {
@@ -63,19 +63,20 @@ const panelScript = `
 // merge one key into the hash, keeping the others (#view=… survives a station click)
 function setHash(key, value) { const q = new URLSearchParams(location.hash.slice(1)); q.delete("station"); q.delete("shopper"); if (value) q.set(key, value); history.replaceState(null, "", "#" + q.toString().replace(/%2C/g, ",")); }
 const DATA = ${JSON.stringify(DATA, null, 2)};
+const STOP = ${JSON.stringify(stopOf(spec))}, WHO = ${JSON.stringify(whoOf(spec))};
 const ARRIVAL = ${JSON.stringify(spec.arrival || { code: "", altCode: "", on: "", off: "", lastLabel: "" })};
 const panel = document.getElementById("station-panel");
 const tabsEl = [...document.querySelectorAll(".station-tab")];
 const nbsp = (s) => s.replace(/ of (\\d+)/g, " of\\u00A0$1");
 let followIdx = -1, current = 0;
-// the followed shopper at this station: their own words, or that no hesitation was coded here
+// the followed respondent at this station: their own words, or that no stop was coded here
 function renderFollow() {
   const card = panel.querySelector("[data-f=follow]");
   if (followIdx < 0) { card.hidden = true; return; }
   const p = DATA.shoppers[followIdx], s = DATA.stations[current], k = current;
   const code = k === 0 ? (p.codes[ARRIVAL.code] ? ARRIVAL.code : ARRIVAL.altCode) : s.code;
   const on = k === 0 || p.codes[code], e = on ? p.evidence[code] : null;
-  const status = k === 0 ? (p.codes[ARRIVAL.code] ? ARRIVAL.on : ARRIVAL.off) : on ? "Hesitated here" : "No hesitation coded here";
+  const status = k === 0 ? (p.codes[ARRIVAL.code] ? ARRIVAL.on : ARRIVAL.off) : on ? STOP.on : STOP.off;
   card.hidden = false;
   card.innerHTML = '<p class="follow-k">' + p.label + '</p><p>' + status + '</p>' + (e ? '<blockquote class="follow-q"><p>\u201C' + e.quote.replace(/</g, "&lt;") + '\u201D</p><footer>' + p.label + ' · <a href="' + e.source + '" target="_blank" rel="noopener">Source</a></footer></blockquote>' : "");
 }
@@ -85,13 +86,13 @@ function render(i) {
   tabsEl.forEach((b, j) => { b.setAttribute("aria-selected", String(i === j)); b.tabIndex = i === j ? 0 : -1; });
   panel.setAttribute("aria-labelledby", "tab-" + s.key);
   panel.querySelector("[data-f=num]").textContent = s.count;
-  panel.querySelector("[data-f=base]").textContent = "of " + DATA.n + " shoppers";
+  panel.querySelector("[data-f=base]").textContent = "of " + DATA.n + " " + WHO.many;
   panel.querySelector("[data-f=name]").textContent = s.name;
   panel.querySelector("[data-f=statement]").textContent = s.statement + ".";
   const c = panel.querySelector("[data-f=contrast]");
   c.hidden = !s.contrast;
   const tc = panel.querySelector("[data-f=transcript]");
-  tc.hidden = s.transcriptCount == null || s.key === "occasion";
+  tc.hidden = s.transcriptCount == null || s.noTranscriptCount;
   if (!tc.hidden) tc.textContent = "Our transcript coding: " + s.transcriptCount + " of " + DATA.n + (s.transcriptCount < s.count ? " named it as a reason (stricter than the report)" : s.transcriptCount > s.count ? " (broader than the report)" : "") + ".";
   if (s.contrast) c.textContent = "Versus " + s.contrast.count + " of " + DATA.n + " who " + s.contrast.statement + ".";
   panel.querySelector("[data-f=quote]").textContent = "\\u201C" + s.quote + "\\u201D";
@@ -131,7 +132,7 @@ function stepHtml(p, s, k) {
   const code = k === 0 ? (p.codes[ARRIVAL.code] ? ARRIVAL.code : ARRIVAL.altCode) : s.code;
   const on = k === 0 || p.codes[code];
   const e = on ? p.evidence[code] : null;
-  const status = k === 0 ? (p.codes[ARRIVAL.code] ? ARRIVAL.on : ARRIVAL.off) : on ? s.readout.charAt(0).toUpperCase() + s.readout.slice(1) : "No hesitation coded here";
+  const status = k === 0 ? (p.codes[ARRIVAL.code] ? ARRIVAL.on : ARRIVAL.off) : on ? s.readout.charAt(0).toUpperCase() + s.readout.slice(1) : STOP.off;
   return '<li class="rstep' + (on ? "" : " is-off") + '" data-k="' + k + '"><p class="rstep__name">' + s.name + '</p><p class="rstep__status">' + status + '</p>' +
     (e ? '<p class="rstep__quote">\u201C' + e.quote.replace(/</g, "&lt;") + '\u201D</p><p class="rstep__src">' + p.label + ' · <a href="' + e.source + '" target="_blank" rel="noopener">Source</a></p>' : "") + "</li>";
 }
@@ -294,6 +295,7 @@ p { margin: 0; text-wrap: pretty; }
 .exit__lead { font-size: 16px; line-height: 24px; color: var(--content-secondary); margin-bottom: 20px; }
 
 /* Method */
+${RECON_CSS}
 .method { margin-top: 80px; border-top: 1px solid var(--content-disabled); padding-top: 24px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); }
 .method h2 { grid-column: 1 / span 3; font-size: 14px; line-height: 20px; color: var(--content-secondary); }
 .method ul { grid-column: 4 / -1; margin: 0; padding: 0 0 0 16px; font-size: 14px; line-height: 20px; color: var(--content-secondary); display: grid; gap: 8px; max-width: 720px; }
@@ -362,7 +364,7 @@ ${PLAY_CSS}
 <!-- Credit line (standalone artifact) -->
 <header class="ll-header"><span class="ll-brand">Listen Labs /</span> <span class="ll-title">${esc(page.credit)}</span></header>
 
-<main class="page">
+<main class="page" data-scene-page>
   <!-- Intro -->
   <!-- Intro: the shared header (eyebrow, headline, dek; key figures top right) -->${headerHtml(page)}
 
@@ -404,15 +406,15 @@ ${PLAY_CSS}
         </div>
       </div>
 
-      <!-- Shoppers pane: every bag is one of the 31 -->
+      <!-- People pane: every carrier is one of the coded respondents -->
       <div class="ws-pane replay" id="pane-shoppers" role="tabpanel" aria-labelledby="mode-shoppers" data-pane="shoppers" hidden>
-        <p class="replay__lede">Every bag is one of the ${DATA_N} shoppers. Pick one and their bag rides the belt alone; the line stops wherever their own words show a hesitation.</p>
-        <div class="replay__chips" role="group" aria-label="Shoppers">${CHIPS}
+        <p class="replay__lede">${t(page.replayLede || `Every carrier is one of the ${DATA_N} ${WHO.many}. Pick one and theirs travels alone, stopping wherever their own words show a stop.`)}</p>
+        <div class="replay__chips" role="group" aria-label="${esc(WHO.many.charAt(0).toUpperCase() + WHO.many.slice(1))}">${CHIPS}
         </div>
         <div class="replay__card" data-replay-card hidden>
           <div class="replay__cardhead">
             <p class="replay__who" data-r="who"></p>
-            <button class="replay__back" type="button" data-r="back">Back to all shoppers</button>
+            <button class="replay__back" type="button" data-r="back">Back to all ${esc(WHO.many)}</button>
           </div>
           <ol class="replay__path" data-r="path"></ol>
         </div>
@@ -420,7 +422,7 @@ ${PLAY_CSS}
     </aside>
   </section>
 
-  <!-- Act + where the purchase went -->
+  <!-- Act + exit -->
   <section class="closing">
     <div class="act">
       <h2>${t(page.actTitle)}</h2>
@@ -438,6 +440,7 @@ ${PLAY_CSS}
   </section>
 
   <!-- Method -->
+  ${reconHtml(spec, t)}
   <section class="method">
     <h2>Read before sharing</h2>
     <ul>${notes}</ul>

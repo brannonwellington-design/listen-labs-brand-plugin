@@ -48,9 +48,9 @@ PROPS["store-entrance"] = { slots: { flow: "source" }, build(c, { x }) {
   };
 } };
 
-// ---------- snack gondola: shelving on the far side of the aisle, with gaps where the range runs out ----------
+// ---------- gondola shelf: shelving on the far side of the aisle, with gaps where the range runs out ----------
 // o: { x, gaps } — gaps is the share of facings left empty (drawn, not data: the count lives on the scale).
-PROPS["snack-gondola"] = { slots: {}, build(c, { x, gaps = 0.45 }) {
+PROPS["gondola-shelf"] = { slots: {}, build(c, { x, gaps = 0.45 }) {
   const { k, P, at, S, L, D, slab, faceX, rect } = c;
   const G = { x: x - 26, y: -48, w: 52, d: 26 };
   const SHELVES = [6, 26, 46];
@@ -80,7 +80,7 @@ PROPS["snack-gondola"] = { slots: {}, build(c, { x, gaps = 0.45 }) {
   out.push(D([G.x + 4, G.x + G.w - 4].map((px) => at([px, G.y + G.d - 3, 72])), { size: 0.4 }));
   return {
     items: [{ phase: "far", part: "rack", svg: out.join(""), bounds: [G.x, G.y, 0, G.x + G.w, G.y + G.d, 72] }],
-    part: { name: "Snack shelf", move: [0, -30, 30], anchor: [x, G.y + G.d, 72] },
+    part: { name: "Shelf", move: [0, -30, 30], anchor: [x, G.y + G.d, 72] },
     fit: [[G.x, G.y, 72], [G.x + G.w, G.y + G.d, 72]],
   };
 } };
@@ -160,7 +160,7 @@ PROPS["threshold-strip"] = { slots: {}, build(c, { bump: B }) {
   return { items: [{ phase: "far", part: "gate", svg, bounds: c.box(strip, 0, B.h) }] };
 } };
 
-// ---------- shopping cart: the carrier. A shopper's order with snacks riding along; built at the origin ----------
+// ---------- shopping cart: the carrier, a basket of groceries; built at the origin ----------
 PROPS["shopping-cart"] = { slots: { individual: "carrier" }, build(c, { i }) {
   const { k, P, at, S, L, D, slab, openBox } = c;
   const out = [];
@@ -172,7 +172,7 @@ PROPS["shopping-cart"] = { slots: { individual: "carrier" }, build(c, { i }) {
   out.push(S(slab({ x: -10, y: -5.5, w: 1, d: 1, r: 0.2 }, 4.8, 24, 2), { tone: "mid" }));              // far upright
   const basket = openBox({ x: -10, y: -7, w: 21, d: 14, r: 0.6 }, 15, 10, 0.8, "mid");
   out.push(basket.far);
-  // the bigger order: a cereal box, a carton, and the snack bag riding along on top
+  // the bigger basket: a cereal box, a carton, and a bag on top
   out.push(S(slab({ x: -7, y: -5, w: 5, d: 8, r: 0.4 }, 15.8, 12, 2, 0.3), { tone: "mid" }));
   out.push(S(slab({ x: -1, y: -5.5, w: 6, d: 5, r: 0.4 }, 15.8, 8, 2, 0.3), { tone: "mid" }));
   const bag = { x: 1, y: 0, w: 8, d: 6, r: 2.4 };
