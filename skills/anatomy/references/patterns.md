@@ -9,11 +9,12 @@ A scene is a **pattern**, which sets how the data behaves, wearing a **world**, 
 | Pattern | Fits when the study has… | Encodings | Worlds today | Builder |
 |---|---|---|---|---|
 | **crowd** | a segment (rating, group, region) and one or more things people react to (acts, products, ads, moments), plus optional multi-mention wishes | one figure per respondent; standing = positive, seated = neutral or negative, faded = not asked; a scoreboard cell per positive; one prop per wish, with its count | `stadium` | `tools/patterns/crowd.mjs` |
+| **lineup** | a closed rating question (0–10, 1–5, 1–7) asked of everyone, by segment, in one or more conditions (situations, products, moments) | one figure per respondent standing at their own rating; a lane per group, people with the same rating one behind another (a dot plot); a marker at each lane's median; switching the condition walks everyone to their rating for it; no answer = faded, off the scale | `curb` | `tools/patterns/lineup.mjs` |
 | **journey** | ordered stages of one experience (find → buy → ship) with a count per stage; counts may overlap | carriers ride past every station; a gauge per station reads count of n; follow one respondent through their own stops | `conveyor`, `aisle` | hand-built spec (`pages/onepager.mjs`) |
 | **comparison** | 2–4 named options compared on the same measures (reach, ratings, reasons) | a bench per option; needles and tubes per measure; ghost needles for an earlier wave | `workbench` | hand-built spec (`pages/dashboard.mjs`) |
 | **sort** | one sample split many ways: exclusive groups and multi-mention reasons, told as chapters | coins (one per respondent) sorted into columns; drawers pulled out by count | `sortbench` | hand-built spec (`pages/scrolly.mjs`) |
 
-Journey, comparison and sort run on hand-written specs today. Porting them to `tools/patterns/` builders, as `crowd`
+Crowd and lineup have generic builders, and both render with the generic page (`pages/scene-page.mjs`). Journey, comparison and sort run on hand-written specs today. Porting them to `tools/patterns/` builders, as `crowd`
 already is, is the next step.
 
 ## The concept step
@@ -31,6 +32,22 @@ Before building, propose **two or three concepts**. The person picks one; don't 
 
 Prefer a world that belongs to the study's subject (a stadium for a halftime show, a store for shopping, a track for
 running shoes) over a generic machine, and only when the mapping stays honest.
+
+## Lineup config (`studies/<slug>/scene.json`)
+
+Like the crowd config (study, segments, figure, tension, page, tour, assert, countFacts), plus:
+- `scale`: `{ min, max, high, low, lowLabel, highLabel }`. `high` and `low` define the "at or above" and "at or below"
+  counts in the facts.
+- `conditions`: `[{ key, name, short, closed: "<closed key holding the rating>", dressing, reportMedian: { <group>: n } }]`.
+- `why`: `{ dim, map }`, a coded dimension naming the condition each person explained as lowest. Its quote attaches to
+  that condition.
+
+Facts include:
+- `group.<g>.<cond>.median`, `.n`, `.high`, `.low` and `.counts`
+- `report.<cond>.<g>`, `drop.<g>`, and `swing.label` / `swing.from` / `swing.to`: the largest fall from the first
+  condition to the tension condition, with a reason
+
+Tour beats take `cond`, `group`, `follow: "swing"`, `tension`, and `quote: "why:<cond>:<group>"`.
 
 ## Crowd config (`studies/<slug>/scene.json`)
 

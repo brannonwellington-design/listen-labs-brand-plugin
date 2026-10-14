@@ -51,7 +51,7 @@ const controlsScript = (api, list) => `
       else el.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(String(v) === b.dataset.v)));
     });
   }
-  ["click", "keyup", "played", "view", "stadium", "station", "replay"].forEach((t) => document.addEventListener(t, () => requestAnimationFrame(sync)));
+  ["click", "keyup", "played", "view", "stadium", "station", "replay", "lineup", "scene"].forEach((t) => document.addEventListener(t, () => requestAnimationFrame(sync)));
   sync();
 })();
 `;

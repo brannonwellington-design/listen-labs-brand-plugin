@@ -34,10 +34,11 @@ like: a stadium, a store, a machine). Read `references/patterns.md` before propo
 3. **Code.** Follow `references/coding.md`: write the codebook (md for coders, json for the validator), run parallel
    coders, then run `node tools/coding/check.mjs studies/<slug>`, then verify any quote not checked by script.
 4. **Spec.** Write `studies/<slug>/scene.json` (crowd: the schema in `references/patterns.md`) and build it:
-   `node tools/patterns/crowd.mjs studies/<slug>`. The builder refuses hand-typed numbers, titles with numbers, and
+   `node tools/patterns/crowd.mjs studies/<slug>` or `node tools/patterns/lineup.mjs studies/<slug>`. The builder refuses hand-typed numbers, titles with numbers, and
    claims whose `assert` fails. Fix the copy, not the check.
    Journey, comparison and sort still use hand-written specs; follow the shape of the closest existing one.
-5. **Build.** For crowd: `node pages/stadium.mjs studies/<slug>/specs/scene.figure.json studies/out/<slug>.html`. For
+5. **Build.** Any scene: `node pages/scene-page.mjs <object> studies/<slug>/specs/scene.figure.json studies/out/<slug>.html`
+   (`lineup`, `stadium` …; the stadium also has its own richer page, `pages/stadium.mjs`). For
    the other patterns, use `pages/onepager.mjs` (journey, `conveyor` or `conveyor@aisle`), `pages/dashboard.mjs`
    (comparison) or `pages/scrolly.mjs` (sort).
 6. **QA.** Run `node tools/qa.mjs studies/out/<slug>.html` (pass `--api CONV`, `WB` or `BENCH` for the other patterns).

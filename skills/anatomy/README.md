@@ -12,10 +12,10 @@ study ─► coding (per respondent, verbatim evidence) ─► spec ─► world
 | `kit/` | The vendored isometric kit (MIT, unmodified; see `kit/README.md`). |
 | `skin/` | Maps the kit's tokens to Listen Labs Paper, light and dark. |
 | `engine/` | `compose.js`: props emit items with 3D bounds and a phase (ground, far, carrier, near, front); the composer depth-sorts them, so any world stacks correctly without hand ordering. `primitives.js`: racetrack bands (tiers, lanes, rows), ground, person. |
-| `props/` | Prop libraries: `machine.js`, `shop.js`, `stage.js`. A prop is `build(ctx, options) → { items, part }` and declares the data slots it can carry. |
-| `worlds/` | A world lays props out for a study's data: `conveyor` and `aisle` (ordered journey), `stadium` (one figure per respondent, by segment, reacting to a condition). |
+| `props/` | Prop libraries: `machine.js`, `shop.js`, `stage.js`, `street.js`. A prop is `build(ctx, options) → { items, part }` and declares the data slots it can carry. |
+| `worlds/` | A world lays props out for a study's data: `conveyor` and `aisle` (ordered journey), `stadium` (one figure per respondent, by segment, reacting to a condition), `curb` (one figure per respondent standing at their own rating, a lane per group). |
 | `objects/` | Live runtimes (camera, parts, blueprint, follow, tension, scripts) and the earlier sorter and workbench objects, not yet on the engine. |
-| `pages/` | Page shells: `onepager`, `scrolly`, `dashboard`, `stadium`, and `stage` (16:9 for video). |
+| `pages/` | `scene.mjs` (the one builder every host uses), `scene-page.mjs` (a finished page for any scene), the older shells `onepager`, `scrolly`, `dashboard`, `stadium`, and `stage` (16:9 for video). |
 | `scripts/`, `tools/` | Line check, browser driver, recorder; `tools/dev/` holds engine regression checks. |
 | `studies/` | **Git-ignored.** Specs, codes, quotes and renders. Study data never enters this repository: some studies are internal or customer-confidential, and this repository is public. |
 

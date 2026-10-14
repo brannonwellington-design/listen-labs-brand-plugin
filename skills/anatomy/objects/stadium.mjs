@@ -224,6 +224,7 @@ stage.addEventListener("keydown", (e) => {
 });
 // ---------- scene: the one state a script, a video frame or a deep link can ask for ----------
 function scene(sc) {
+  touched = true;   // a script or a host's "show me" is in control: the automatic wave never plays over it
   const a = sc.act == null ? act : typeof sc.act === "number" ? sc.act : SPEC.acts.findIndex((x) => x.key === sc.act);
   if (a !== act) setAct(a);
   const v = sc.view || { blueprint: false, apart: false };

@@ -14,6 +14,7 @@
 // · Quotes are picked by rule (from the group's most common answer, the shortest of at least 50 characters), never by hand.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { holds, all, makeCopy } from "./lib.mjs";
 
 const dir = process.argv[2];
 if (!dir) { console.error("usage: node tools/patterns/crowd.mjs <study dir>"); process.exit(2); }
@@ -21,21 +22,6 @@ const cfg = JSON.parse(readFileSync(join(dir, "scene.json"), "utf8"));
 const rows = JSON.parse(readFileSync(join(dir, "codes/merged.json"), "utf8")).sort((a, b) => a.readable_id - b.readable_id);
 const recon = JSON.parse(readFileSync(join(dir, "codes/merged-recon.json"), "utf8"));
 const FEELS = ["positive", "neutral", "negative"];
-
-// ---------- filters (same language as tools/coding/check.mjs) ----------
-function holds(r, q) {
-  if (q.not) return !holds(r, q.not);
-  if (q.any) return q.any.some((x) => holds(r, x));
-  if (q.complete) return r.is_complete !== false;
-  if (q.multi) { const [d, k] = q.multi.split("."); return k === "*" ? Object.values(r.codes?.[d] || {}).some(Boolean) : !!r.codes?.[d]?.[k]; }
-  const v = q.dim ? r.codes?.[q.dim] : r.closed?.[q.closed];
-  if ("eq" in q) return v === q.eq;
-  if (q.in) return q.in.includes(v);
-  if ("lte" in q) return v <= q.lte;
-  if ("gte" in q) return v >= q.gte;
-  throw new Error("unknown filter " + JSON.stringify(q));
-}
-const all = (r, f = []) => f.every((q) => holds(r, q));
 
 // ---------- the crowd ----------
 const seg = cfg.segments, conds = cfg.conditions, W = cfg.hopes;
@@ -92,32 +78,10 @@ const facts = {
   coded: Object.fromEntries(Object.entries(cfg.countFacts || {}).map(([k, f]) => [k, rows.filter((r) => all(r, f)).length])),
 };
 facts.study = cfg.study;
-const get = (path) => path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), facts);
-function fill(tpl, where, { title = false } = {}) {
-  if (tpl == null) return tpl;
-  const bare = tpl.replace(/\{[^}]+\}/g, "");
-  if (/\d/.test(bare)) throw new Error(`${where}: a number typed into copy ("${tpl}"). Use a {placeholder} from the facts, or {lit:…} for a non-data number`);
-  const out = tpl.replace(/\{([^}]+)\}/g, (_, p) => {
-    if (p.startsWith("lit:")) return p.slice(4);
-    let v = get(p.replace(/\|lower$/, ""));
-    if (v === undefined || v === null || typeof v === "object") throw new Error(`${where}: unknown fact {${p}}`);
-    if (p.endsWith("|lower")) v = String(v).toLowerCase();
-    return String(v);
-  });
-  if (title && /\d/.test(out)) throw new Error(`${where}: titles carry no numbers ("${out}")`);
-  return out;
-}
-const fillAll = (o, where) => (Array.isArray(o) ? o.map((x, i) => fillAll(x, `${where}[${i}]`)) : typeof o === "string" ? fill(o, where) : o);
+const { get, fill, fillAll, check } = makeCopy(facts);
 
 // ---------- claims: copy that says "all", "most", "more" names the fact behind it, and the build checks it ----------
-for (const a of cfg.assert || []) {
-  const m = a.match(/^\s*([\w.]+)\s*(==|>=|<=|>|<)\s*([\w.]+|\d+(?:\.\d+)?)\s*(?:\*\s*([\d.]+))?\s*$/);
-  if (!m) throw new Error("assert: cannot read " + a);
-  const L = get(m[1]), R = (/^\d/.test(m[3]) ? +m[3] : get(m[3])) * (m[4] ? +m[4] : 1);
-  if (typeof L !== "number" || typeof R !== "number") throw new Error("assert: " + a + " does not compare two numbers");
-  const ok = { "==": L === R, ">=": L >= R, "<=": L <= R, ">": L > R, "<": L < R }[m[2]];
-  if (!ok) throw new Error(`assert failed: ${a} (${L} vs ${R}) — the copy that relies on it is no longer true`);
-}
+check(cfg.assert);
 
 // ---------- spec ----------
 const bi = (key) => { const i = blocks.findIndex((b) => b.key === key); if (i < 0) throw new Error("unknown block " + key); return i; };
