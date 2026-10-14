@@ -48,6 +48,11 @@ PROPS["finish-arch"] = {
 - A person is 7 tall. A door is about 12, a car about 30 long, a house about 24 wide, a storey about 9.
 - The camera looks from the +x, +y side, above, at an azimuth between 30° and 80°. The visible faces are the top, +x
   and +y: put doors, windows, signs and damage on those. A face toward -x or -y is never seen.
+- **Small things vanish at scene size.** A paddle, a cup or a phone is 1–2 units next to a 7-unit person: at the scene's
+  zoom it is a few pixels, and a dozen of them packed together merge into one lumpy mass. Draw such objects larger than
+  life, use few of them (three, not twelve), keep clear gaps between them, and keep the one feature that names them (a
+  handle, a spout) big. Check the "scene size" column, not the close-up ones: two separate runs drew a bin of a dozen
+  paddles that read close up and failed the blind read at scene size.
 - Keep props low where people stand behind them. A tall prop belongs past the end of a lane, not beside one.
 - At the lineup street's azimuth (62°), y is the depth axis: things meant to read side by side (a podium's three steps,
   a row of signs) run along x. A row along y stacks up behind itself and loses its shape. Check the 62° column of the

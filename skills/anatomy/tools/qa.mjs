@@ -61,6 +61,12 @@ if (ocm) {
   const r = JSON.parse(JSON.parse(`"${ocm[1]}"`)), hidden = Object.values(r.hid || {}).reduce((a, b) => a + b, 0);
   if (r.n) check("every person visible", hidden === 0, hidden ? `${hidden} of ${r.n} hidden behind ${Object.entries(r.hid).map(([k, v]) => `${k} (${v})`).join(", ")}` : `${r.n} people, none hidden`);
 }
+// 3c. nothing cut off: a figure corner (title, hint, readout) or a control label that overflows its box is cut with an
+// ellipsis or clipped, so the reader loses words. Desktop width, after the intro settles.
+const CLIPPED = `JSON.stringify([...document.querySelectorAll(".iso-plate-corner, .fig-tools button, .fig-tools select")].filter((e) => e.offsetParent && e.scrollWidth > e.clientWidth + 1).map((e) => (e.dataset.corner || e.tagName.toLowerCase()) + ": " + e.textContent.trim().slice(0, 40)))`;
+const cl = drive([["wait", 3000], ["eval", CLIPPED]], ["--reduced", "--width", "1440", "--height", "1000"]);
+const clm = cl.match(/eval: "(.*)"/);
+if (clm) { const list = JSON.parse(JSON.parse(`"${clm[1]}"`)); check("nothing cut off", !list.length, list.length ? list.join(" · ") + " (shorten it)" : ""); }
 // 4. content leaks
 const html = readFileSync(page, "utf8");
 check("no placeholder copy", !/\b(TODO|lorem ipsum|FIXME)\b/i.test(html));

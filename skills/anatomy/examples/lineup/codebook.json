@@ -1,0 +1,106 @@
+{
+  "_example": "Synthetic: the validator's codebook for the example study. See references/coding.md and the comment at the top of tools/coding/check.mjs.",
+  "study": "00000000-example",
+  "closed": [
+    "visits",
+    "r_morning",
+    "r_afternoon"
+  ],
+  "checks": {
+    "closed": {
+      "visits": {
+        "in": [
+          "weekday",
+          "weekend"
+        ]
+      },
+      "r_morning": {
+        "in": [
+          "Very poor",
+          "Poor",
+          "Fair",
+          "Good",
+          "Excellent",
+          "Not applicable",
+          null
+        ]
+      },
+      "r_afternoon": {
+        "in": [
+          "Very poor",
+          "Poor",
+          "Fair",
+          "Good",
+          "Excellent",
+          "Not applicable",
+          null
+        ]
+      }
+    }
+  },
+  "exclusive": {
+    "lowest": {
+      "values": [
+        "morning",
+        "afternoon",
+        "tie"
+      ],
+      "absent": [
+        "tie"
+      ]
+    },
+    "wait": {
+      "values": [
+        "very_poor",
+        "poor",
+        "fair",
+        "good",
+        "excellent",
+        "none"
+      ],
+      "absent": [
+        "none"
+      ]
+    }
+  },
+  "multi": {},
+  "report": [
+    {
+      "label": "Weekday regulars",
+      "count": [
+        {
+          "closed": "visits",
+          "eq": "weekday"
+        }
+      ],
+      "base": [],
+      "report": [
+        7,
+        12
+      ]
+    },
+    {
+      "label": "Weekday: morning Fair or worse",
+      "count": [
+        {
+          "closed": "r_morning",
+          "in": [
+            "Very poor",
+            "Poor",
+            "Fair"
+          ]
+        }
+      ],
+      "base": [
+        {
+          "closed": "visits",
+          "eq": "weekday"
+        }
+      ],
+      "report": [
+        7,
+        7
+      ]
+    }
+  ]
+}

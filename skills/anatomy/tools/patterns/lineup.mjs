@@ -48,15 +48,19 @@ const people = rows.map((r, i) => {
   }));
   const whyCond = why ? why.map[r.codes?.[why.dim]] || null : null;
   const ev = why && r.evidence?.[why.dim];
+  // a condition can name its own quote source (quoteDim: the coded dimension whose evidence explains that position)
+  const quotes = Object.fromEntries(conds.filter((c) => c.quoteDim && r.evidence?.[c.quoteDim]).map((c) => [c.key, { quote: r.evidence[c.quoteDim].quote, source: r.evidence[c.quoteDim].source }]));
   return { label: (cfg.labelPrefix || "R") + String(i + 1).padStart(2, "0"), readableId: r.readable_id, complete: r.is_complete !== false, group: g.key, values, ...(Object.keys(missing).length ? { missing } : {}),
-    why: ev ? { cond: whyCond, quote: ev.quote, source: ev.source } : null };
+    why: ev ? { cond: whyCond, quote: ev.quote, source: ev.source } : null, ...(Object.keys(quotes).length ? { quotes } : {}) };
 });
 const groups = cfg.segments.groups.map((g) => ({ key: g.key, name: g.name, people: people.map((p, i) => (p.group === g.key ? i : -1)).filter((i) => i >= 0) }));
 const groupStats = groups.map((g) => Object.fromEntries(conds.map((c) => {
   const vals = g.people.map((i) => people[i].values[c.key]).filter((v) => v != null);
   const counts = Array.from({ length: max - min + 1 }, (_, k) => vals.filter((v) => v === min + k).length);
   // a representative "why it was low" quote: from someone in this group whose lowest situation was this one
-  const quote = pickQuote(g.people.map((i) => people[i]).filter((p) => p.why && p.why.cond === c.key).map((p) => ({ e: p.why, who: p.label })), 50);
+  const quote = c.quoteDim
+    ? pickQuote(g.people.map((i) => people[i]).filter((p) => p.quotes?.[c.key]).map((p) => ({ e: p.quotes[c.key], who: p.label })), 50)
+    : pickQuote(g.people.map((i) => people[i]).filter((p) => p.why && p.why.cond === c.key).map((p) => ({ e: p.why, who: p.label })), 50);
   const m = median(vals);
   return [c.key, { median: m, medianWord: medianWord(m), n: vals.length, na: g.people.filter((i) => people[i].missing?.[c.key]).length, counts, quote, high: vals.filter((v) => v >= cfg.scale.high).length, low: vals.filter((v) => v <= cfg.scale.low).length }];
 })));
@@ -69,7 +73,8 @@ const tensionCond = cfg.tension?.cond || conds[1]?.key || conds[0].key;
 const tensionFrom = cfg.tension?.from || conds[0].key;
 const swingDir = cfg.swing === "rise" ? -1 : 1;
 const drops = tensionFrom === tensionCond ? [] : people.map((p, i) => ({ i, p, d: swingDir * ((p.values[tensionFrom] ?? NaN) - (p.values[tensionCond] ?? NaN)) })).filter((x) => !isNaN(x.d) && x.d > 0);
-const swing = drops.filter((x) => x.p.why && x.p.why.cond === tensionCond).sort((a, b) => b.d - a.d || a.i - b.i)[0] || null;
+const reasonFor = (p, cond) => p.quotes?.[cond] || (p.why && p.why.cond === cond ? p.why : null);
+const swing = drops.filter((x) => reasonFor(x.p, tensionCond)).sort((a, b) => b.d - a.d || a.i - b.i)[0] || null;
 
 const facts = {
   n: people.length, complete: people.filter((p) => p.complete).length, reportN: cfg.study.reportN, study: cfg.study,
@@ -93,7 +98,7 @@ function beat(b, i) {
   if (b.group) out.group = gi(b.group);
   if (b.tension) out.tension = true;
   if (b.wide) out.camera = "wide";   // keep the whole street in view (a group stays selected): for beats where the scenery is the point
-  if (b.follow === "swing") { if (!swing) return null; out.follow = swing.i; out.quote = { quote: swing.p.why.quote, source: swing.p.why.source, who: swing.p.label }; }
+  if (b.follow === "swing") { if (!swing) return null; out.follow = swing.i; const r = reasonFor(swing.p, tensionCond); out.quote = { quote: r.quote, source: r.source, who: swing.p.label }; }
   if (b.quote) { const [, cond, group] = b.quote.split(":"); const q = groupStats[gi(group)][cond].quote; out.quote = q ? { ...q } : null; }
   return out;
 }
@@ -102,7 +107,7 @@ const spec = {
   _source: `pattern lineup · coding ${join(dir, "codes/merged.json")} · config ${join(dir, "scene.json")}`,
   study: { ...cfg.study, n: people.length, complete: facts.complete }, object: "lineup", world: cfg.world || "curb", ...(cfg.scenery ? { scenery: cfg.scenery } : {}), ...(propSource ? { propSource } : {}),
   scale: { min, max, lowLabel: cfg.scale.lowLabel, highLabel: cfg.scale.highLabel, high: cfg.scale.high, low: cfg.scale.low, ...(labels ? { labels } : {}),
-    lowPhrase: facts.phrase.low, highPhrase: facts.phrase.high },
+    lowPhrase: facts.phrase.low, highPhrase: facts.phrase.high, verb: cfg.scale.verb || "rated" },
   // the reconciliation, printed on the page as a table (the coding is never tuned to match the report)
   reconciliation: recon.map((x) => ({ label: x.label, transcript: x.transcript, base: x.base, report: x.report, reportBase: x.reportBase })),
   conds: conds.map((c) => ({ key: c.key, name: c.name, short: c.short || c.name, dressing: c.dressing, reportMedian: c.reportMedian || {} })),
@@ -110,7 +115,10 @@ const spec = {
   figure: { ...cfg.figure, label: fill(cfg.figure.label, "figure.label"), caption: fill(cfg.figure.caption, "figure.caption"), titleBlock: cfg.figure.titleBlock.map(([k, v], i) => [k, fill(v, `figure.titleBlock[${i}]`)]) },
   tension: cfg.tension ? { label: fill(cfg.tension.label, "tension.label", { title: true }), event: "walk", cond: tensionCond, from: tensionFrom, numbers: fillAll(cfg.tension.numbers, "tension.numbers") } : null,
   page: { frame: fill(cfg.page.frame, "page.frame"), headline: fill(cfg.page.headline, "page.headline", { title: true }), dek: fill(cfg.page.dek, "page.dek"),
-    headlineStats: cfg.page.headlineStats, notes: fillAll(cfg.page.notes, "page.notes") },
+    // headline numbers come from facts like every other number: the coding ({group…}) or, labelled as the report's in
+    // its base text, the report ({report…}, {recon.N.report}); a typed digit fails the build
+    headlineStats: (cfg.page.headlineStats || []).map((h, i) => ({ value: fill(String(h.value), `page.headlineStats[${i}].value`), base: fill(h.base, `page.headlineStats[${i}].base`) })),
+    notes: fillAll(cfg.page.notes, "page.notes") },
   scripts: cfg.tour ? { tour: { title: "The tour", label: "The tour", beats: cfg.tour.map(beat).filter(Boolean) } } : {},
 };
 mkdirSync(join(dir, "specs"), { recursive: true });

@@ -91,7 +91,7 @@ function say() {
   if (walkT != null) { readout.textContent = "Walking to: " + c.name; return; }
   const L = SPEC.scale.labels, on = " on " + SPEC.scale.min + "–" + SPEC.scale.max;
   const med = (s) => (L ? s.word ?? "–" : s.median + on);
-  if (follow != null) { const p = SPEC.people[follow], v = p.values[c.key]; readout.textContent = p.label + " · " + (v == null ? (p.missing && p.missing[c.key]) || "no answer" : "rated " + (L ? L[v - SPEC.scale.min] : v + on)) + " · " + c.name; return; }
+  if (follow != null) { const p = SPEC.people[follow], v = p.values[c.key]; readout.textContent = p.label + " · " + (v == null ? (p.missing && p.missing[c.key]) || "no answer" : (SPEC.scale.verb || "rated") + " " + (L ? L[v - SPEC.scale.min] : v + on)) + " · " + c.name; return; }
   if (selGroup != null) { const g = SPEC.groups[selGroup], s = SPEC.groupStats[selGroup][c.key]; readout.textContent = g.name + " · median " + med(s) + " (n = " + s.n + ") · " + c.name; return; }
   readout.textContent = L ? c.short + " · medians: " + SPEC.groups.map((g, gi) => g.name + " " + med(SPEC.groupStats[gi][c.key])).join(" · ")
     : c.name + " · " + SPEC.groups.map((g, gi) => g.name + " median " + SPEC.groupStats[gi][c.key].median).join(" · ");
