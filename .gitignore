@@ -2,3 +2,6 @@
 .mcp.json
 __pycache__/
 *.pyc
+
+# Study scenes built in this folder (skills/anatomy): study data never enters git
+scenes/

@@ -1,7 +1,7 @@
 // Dashboard page shell: an anatomy hero that acts as navigation, a synced detail panel,
 // and a grid of small brand charts. usage: node pages/dashboard.mjs <object> <spec.json> <out.html>
-import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript, glScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
@@ -310,5 +310,6 @@ ${(kitScript() + glScript() + live + panelScript).replace(/<\/(script)/gi, "<\\/
 </script>
 </body>
 </html>`;
+mkdirSync(outDir(outPath), { recursive: true });
 writeFileSync(outPath, html);
 console.log("wrote", outPath);

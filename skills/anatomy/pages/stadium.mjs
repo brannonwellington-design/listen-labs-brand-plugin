@@ -1,7 +1,7 @@
 // Stadium page: header, the stadium figure with an act switch, a rail of blocks / hopes / the selected detail, method.
 // usage: node pages/stadium.mjs <spec.json> <out.html>
-import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const { LL_TOKENS, esc, curly, t, headerHtml, HEADER_CSS } = await import("./shared.mjs");
 const [specPath, outPath] = process.argv.slice(2);
@@ -164,5 +164,6 @@ ${(scene.js + panelScript).replace(/<\/(script)/gi, "<\\/$1")}
 </script>
 </body>
 </html>`;
+mkdirSync(outDir(outPath), { recursive: true });
 writeFileSync(outPath, html);
 console.log("wrote", outPath);

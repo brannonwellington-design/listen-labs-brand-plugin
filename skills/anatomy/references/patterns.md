@@ -63,7 +63,7 @@ Before building, propose **two or three concepts**. The person picks one; don't 
 Prefer a world that belongs to the study's subject (a stadium for a halftime show, a store for shopping, a track for
 running shoes) over a generic machine, and only when the mapping stays honest.
 
-## Lineup config (`studies/<slug>/scene.json`)
+## Lineup config (`scenes/<slug>/scene.json`)
 
 Like the crowd config (study, segments, figure, tension, page, tour, assert, countFacts), plus:
 - `scale`: `{ min, max, high, low, lowLabel, highLabel }`. `high` and `low` define the "at or above" and "at or below"
@@ -79,7 +79,7 @@ Facts include:
 
 Tour beats take `cond`, `group`, `follow: "swing"`, `tension`, and `quote: "why:<cond>:<group>"`.
 
-## Crowd config (`studies/<slug>/scene.json`)
+## Crowd config (`scenes/<slug>/scene.json`)
 
 ```jsonc
 {

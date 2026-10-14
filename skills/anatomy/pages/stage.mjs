@@ -2,8 +2,8 @@
 // The figure takes the left, the caption column the right; the credit, n and study id are always on screen.
 // Open it in a browser with #play=<script> to preview; tools/record.mjs drives it on a virtual clock.
 // usage: node pages/stage.mjs <object> <spec.json> <out.html>
-import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript, glScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
@@ -108,5 +108,6 @@ new MutationObserver(fit).observe(capEl, { subtree: true, childList: true, chara
 </script>
 </body>
 </html>`;
+mkdirSync(outDir(outPath), { recursive: true });
 writeFileSync(outPath, html);
 console.log("wrote", outPath);

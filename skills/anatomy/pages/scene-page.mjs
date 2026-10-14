@@ -2,7 +2,8 @@
 // from the shared builder, a rail of the object's facts (each one shows itself in the scene), the tour's quotes, and
 // the method notes. A new pattern or world gets a finished page with no page code of its own.
 // usage: node pages/scene-page.mjs <object[@world]> <spec.json> <out.html>
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { dirname as outDir } from "node:path";
 const S = await import("./shared.mjs");
 const { buildScene } = await import("./scene.mjs");
 const [objArg, specPath, outPath] = process.argv.slice(2);
@@ -72,5 +73,6 @@ rows.forEach((b) => b.addEventListener("click", () => { window.${scene.API}.scen
 `).replace(/<\/(script)/gi, "<\\/$1")}
 </script>
 </body></html>`;
+mkdirSync(outDir(outPath), { recursive: true });
 writeFileSync(outPath, html);
 console.log("wrote", outPath);

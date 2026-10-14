@@ -1,6 +1,6 @@
 # Visual QA: what to look for in the screenshots
 
-`node tools/qa.mjs <page>` runs the automated checks and writes screenshots (desktop light and dark, phone, blueprint,
+`node "$A/tools/qa.mjs" <page>` runs the automated checks and writes screenshots (desktop light and dark, phone, blueprint,
 apart). Open every screenshot and check it against this list before anything is shared. These rules were learned from
 real review passes; each one names the failure it prevents.
 

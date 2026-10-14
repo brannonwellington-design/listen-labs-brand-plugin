@@ -2,7 +2,7 @@
 // exits 1 if anything fails. Nothing ships (or gets published) until this passes and the screenshots are reviewed
 // against references/vqa.md.
 //
-// usage: node tools/qa.mjs <page.html> [--out <dir>] [--api STAD]
+// usage: node tools/qa.mjs <page.html> [--out <dir>] [--api STAD]   (the scene API is read from the page when omitted)
 //   1. lines (reduced motion and with motion): every texture line ends on something
 //   2. console: no errors in light or dark
 //   3. phone: no horizontal scroll at 390 px
@@ -18,7 +18,10 @@ const page = args[0];
 if (!page) { console.error("usage: node tools/qa.mjs <page.html> [--out dir] [--api STAD]"); process.exit(2); }
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
 const out = opt("--out", join(dirname(page), "qa", basename(page, ".html")));
-const api = opt("--api", "STAD");
+// the scene's runtime API: a scene page marks it with data-api; the older shells assign window.<API>
+const source = readFileSync(page, "utf8");
+const api = opt("--api", (source.match(/data-api="([A-Z]+)"/) || source.match(/window\.([A-Z]{2,8}) ?=/) || [])[1]);
+if (!api) { console.error("qa: cannot find the scene API in the page; pass --api <NAME>"); process.exit(2); }
 mkdirSync(out, { recursive: true });
 const S = join(dirname(fileURLToPath(import.meta.url)), "..", "scripts");
 const run = (script, a) => { const r = spawnSync(process.execPath, [join(S, script), ...a], { encoding: "utf8", timeout: 240000 }); return (r.stdout || "") + (r.stderr || ""); };

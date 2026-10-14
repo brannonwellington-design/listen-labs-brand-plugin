@@ -1,7 +1,7 @@
 // One-pager page shell (research-artifacts anatomy §1) wrapped around an anatomy object.
 // usage: node pages/onepager.mjs <object> <spec.json> <out.html>
-import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
@@ -450,5 +450,6 @@ ${(kitScript() + live + panelScript).replace(/<\/(script)/gi, "<\\/$1")}
 </body>
 </html>`;
 
+mkdirSync(outDir(outPath), { recursive: true });
 writeFileSync(outPath, html);
 console.log("wrote", outPath);

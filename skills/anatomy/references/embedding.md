@@ -4,13 +4,13 @@ A scene is built once and placed anywhere: in a one-pager, a report, the product
 never rebuilds or retypes it. It takes the **bundle**:
 
 ```
-node tools/bundle.mjs <object[@world]> studies/<slug>/specs/<spec>.json studies/<slug>/bundle --share internal|shareable [--video]
+node "$A/tools/bundle.mjs" <object[@world]> scenes/<slug>/specs/<spec>.json scenes/<slug>/bundle --share internal|shareable [--video]
 ```
 
 | File | Use |
 |---|---|
 | `embed.html` | The figure card with its own controls (switch, follow, play, blueprint), styles and script. Paste it once into a Listen Labs page. |
-| `preview.html` | The embed alone on a branded page. QA it with `node tools/qa.mjs <bundle>/preview.html --api <API>`. |
+| `preview.html` | The embed alone on a branded page. QA it with `node "$A/tools/qa.mjs" <bundle>/preview.html`. |
 | `stage.html` | The 16:9 frame the recorder films. |
 | `stills/beat-NN.png` | A finished 16:9 slide per tour beat: drawing, caption, quote, credit and n. |
 | `stills/figure-NN.png`, `figure-NN.svg` | The drawing alone per beat. The SVG is vector with every style flattened to plain attributes, so PowerPoint, Keynote and print read it without CSS. |

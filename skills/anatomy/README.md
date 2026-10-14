@@ -17,7 +17,7 @@ study ─► coding (per respondent, verbatim evidence) ─► spec ─► world
 | `objects/` | Live runtimes (camera, parts, blueprint, follow, tension, scripts) and the earlier sorter and workbench objects, not yet on the engine. |
 | `pages/` | `scene.mjs` (the one builder every host uses), `scene-page.mjs` (a finished page for any scene), the older shells `onepager`, `scrolly`, `dashboard`, `stadium`, and `stage` (16:9 for video). |
 | `scripts/`, `tools/` | Line check, browser driver, recorder; `tools/dev/` holds engine regression checks. |
-| `studies/` | **Git-ignored.** Specs, codes, quotes and renders. Study data never enters this repository: some studies are internal or customer-confidential, and this repository is public. |
+| `scenes/<slug>/` | **Not in this folder.** A study's specs, codes, quotes and renders live in the working folder of whoever builds it, kept out of git (the plugin folder is replaced on every update). Study data never enters this repository: some studies are internal or customer-confidential, and this repository is public. A local `studies/` folder here is git-ignored for development. |
 
 ## Rules every scene keeps
 

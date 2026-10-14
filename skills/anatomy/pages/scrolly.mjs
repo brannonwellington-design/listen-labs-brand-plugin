@@ -1,8 +1,8 @@
 // Scrollytelling page shell (research-artifacts anatomy: interactive data story) around an anatomy object.
 // The object exposes a global with go(stepIndex); this page drives it from scroll position.
 // usage: node pages/scrolly.mjs <object> <spec.json> <out.html>
-import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
@@ -266,5 +266,6 @@ ${(kitScript() + live + pageScript).replace(/<\/(script)/gi, "<\\/$1")}
 </script>
 </body>
 </html>`;
+mkdirSync(outDir(outPath), { recursive: true });
 writeFileSync(outPath, html);
 console.log("wrote", outPath);

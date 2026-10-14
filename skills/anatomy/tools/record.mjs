@@ -66,7 +66,9 @@ async function main() {
   const url = pathToFileURL(resolve(target)).href + "#play=" + script;
 
   const profile = mkdtempSync(join(tmpdir(), "ll-record-"));
-  const chrome = spawn(chromePath(), ["--headless=new", "--remote-debugging-port=0", `--user-data-dir=${profile}`, "--no-first-run", "--hide-scrollbars", "--allow-file-access-from-files", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "about:blank"]);
+  const binary = chromePath();
+  if (!binary) { console.error("No Chrome found. Set CHROME_PATH to a Chrome or Chromium binary."); process.exit(1); }
+  const chrome = spawn(binary, ["--headless=new", "--remote-debugging-port=0", `--user-data-dir=${profile}`, "--no-first-run", "--hide-scrollbars", "--allow-file-access-from-files", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "about:blank"]);
   const port = await chromePort(chrome, profile);
   let ff = null;
   const finish = (code) => { chrome.kill("SIGKILL"); try { rmSync(profile, { recursive: true, force: true }); } catch {} process.exit(code); };

@@ -4,7 +4,7 @@ A scene puts real people on screen, so it needs each respondent's own answer, no
 gives totals; the coding gives people. The coding never gets tuned to match the report. The difference is reconciled
 and printed on the page.
 
-Everything lives in `studies/<slug>/`, which is git-ignored.
+Everything lives in `scenes/<slug>/` in the working folder, kept out of git (see the path convention in `SKILL.md`).
 
 ## 1. Find who to code
 
@@ -46,7 +46,7 @@ Split respondents into batches of about 18. Start one subagent per batch, all in
 
 ## 4. Validate, then verify every quote
 
-- `node tools/coding/check.mjs studies/<slug>` checks structure and evidence links, then prints the reconciliation. It
+- `node "$A/tools/coding/check.mjs" scenes/<slug>` checks structure and evidence links, then prints the reconciliation. It
   writes `codes/merged.json` only when there are no problems.
 - Any quote a coder checked by eye rather than by script goes to a verifier subagent. It confirms each quote appears
   verbatim in the answer its link points to, fixes the **batch file** (never `merged.json`, which is rebuilt), and
