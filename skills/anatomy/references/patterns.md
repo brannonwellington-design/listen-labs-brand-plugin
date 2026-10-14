@@ -64,6 +64,28 @@ pick, and write why in `concepts.md` so they can overrule it. Each concept is:
 Prefer a world that belongs to the study's subject (a stadium for a halftime show, a store for shopping, a track for
 running shoes) over a generic machine, and only when the mapping stays honest.
 
+## Journey config (`scenes/<slug>/scene.json`)
+
+A full synthetic config is in `examples/journey/`. The report gives each stage's count; the coding puts people on it.
+- `world`: `conveyor` (a machine) or `aisle` (`conveyor@aisle` on the page: a store). `study.n` is the report's base.
+- `stations`: 3–5, in order, the first being where people arrive. Each: `key`, `name`, `prop` (its role: `hopper`
+  first, then `bin-rack`, `photo-eye`, `labeler`, `threshold-gate`), `count` (the report's), `code` (the coded
+  dimension that means this person stopped here), `statement` ("found it easy to start": completes "N of n …"),
+  `readout`, `implication`, optional `contrast: { count, statement }`, `quote` and `source` (a report quote; it is
+  credited to the coded respondent its link points to), `camera` (optional: defaults to framing the station).
+  In the aisle, `fixture` (a library or study prop with a footprint, at most 56×40) replaces the station's shop fitting.
+- Station codes are `true` / `false`. If the coding uses other values, list the ones that mean a stop in `codeOn`; a
+  coded `none` never counts.
+- `people`: `{ filter, prefix, fields: { lastOrder: "<closed key>" }, method }` puts the coded respondents on the line.
+- `arrival`: `{ code, on, off, lastLabel, endLabel }`: how a followed respondent's journey starts and ends, in words.
+- `page.who` (`{ one, many }`, default respondent / respondents) and `page.stop` (`{ on, off, at }`, default "Stopped
+  here" / "No stop coded here" / "stopped at"): the study's own words for its people and its stops.
+- `tension`: `{ label, event: "stall", target: { station }, numbers: ["@stations.<key>.finding", …] }`.
+- `scripts.tour.beats`: `{ hold, station?, camera?: "wide", title, caption, sub?, quote? }`; captions and quotes are
+  `@references` (`@stations.<key>.finding`, `.contrast`, `.quote`, `@page.dek`), resolved at build time.
+- The page prints the reconciliation (the codebook's `report` rows) as a table, and its source line says how many
+  interviews were coded as well as the report's n.
+
 ## Lineup config (`scenes/<slug>/scene.json`)
 
 Like the crowd config (study, segments, figure, tension, page, tour, assert, countFacts), plus:

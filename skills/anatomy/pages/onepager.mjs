@@ -5,7 +5,7 @@ import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
 const k = await import(join(ANATOMY, "kit/iso-kit.mjs"));
 const { kitScript } = await import(join(ANATOMY, "scripts/inline-kit.mjs"));
-const { LL_TOKENS: SHARED_TOKENS, applyWorld, headerHtml, HEADER_CSS, cameraCardCss, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS, reconHtml, RECON_CSS, whoOf, stopOf } = await import("./shared.mjs");
+const { LL_TOKENS: SHARED_TOKENS, applyWorld, headerHtml, HEADER_CSS, cameraCardCss, TIP_CSS, TIP_SCRIPT, viewToolsHtml, titleBlockHtml, viewToolsScript, BLUEPRINT_CSS, resolveScripts, captionHtml, playScript, PLAY_CSS, resolveTension, TENSION_CSS, reconHtml, RECON_CSS, whoOf, stopOf, labelFor } = await import("./shared.mjs");
 
 const [objArg, specPath, outPath] = process.argv.slice(2);
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
@@ -434,7 +434,7 @@ ${PLAY_CSS}
       <p class="exit__lead">${t(page.exitLead)}</p>
       <blockquote class="quote">
         <p>${t("“" + spec.exit.quote + "”")}</p>
-        <footer>Participant · <a href="${esc(spec.exit.source)}" target="_blank" rel="noopener">Source</a></footer>
+        <footer>${esc(labelFor(spec, spec.exit.source))} · <a href="${esc(spec.exit.source)}" target="_blank" rel="noopener">Source</a></footer>
       </blockquote>
     </div>
   </section>
@@ -444,7 +444,7 @@ ${PLAY_CSS}
   <section class="method">
     <h2>Read before sharing</h2>
     <ul>${notes}</ul>
-    <p class="method__source">Source: <a href="${esc(spec.study.url)}" target="_blank" rel="noopener">${t(spec.study.title)}</a> · Listen Labs study ${esc(spec.study.id)} · n&nbsp;=&nbsp;${N}</p>
+    <p class="method__source">Source: <a href="${esc(spec.study.url)}" target="_blank" rel="noopener">${t(spec.study.title)}</a> · Listen Labs study ${esc(spec.study.id)} · n&nbsp;=&nbsp;${N} in the report${spec.study.coded ? ` · ${spec.study.coded} coded` : ""}</p>
   </section>
 </main>
 <script type="module">

@@ -1,0 +1,35 @@
+{
+  "_example": "Synthetic: the validator's codebook for the journey example.",
+  "study": "00000000-example-journey",
+  "closed": [
+    "last_visit"
+  ],
+  "checks": {
+    "closed": {
+      "last_visit": {
+        "in": [
+          "this week",
+          "this month"
+        ]
+      }
+    }
+  },
+  "exclusive": {},
+  "multi": {},
+  "report": [
+    {
+      "label": "Found it easy to start",
+      "count": [
+        {
+          "dim": "easy_start",
+          "eq": true
+        }
+      ],
+      "base": [],
+      "report": [
+        13,
+        16
+      ]
+    }
+  ]
+}

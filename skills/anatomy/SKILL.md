@@ -48,7 +48,7 @@ type, write it with the shell.
    claims whose `assert` fails. Fix the copy, not the check.
 5. **Build.** Any scene: `node "$A/pages/scene-page.mjs" <object> scenes/<slug>/specs/scene.figure.json scenes/out/<slug>.html`
    (`lineup`, `stadium` …; the stadium also has its own richer page, `$A/pages/stadium.mjs`). For
-   the other patterns, use `$A/pages/onepager.mjs` (journey, `conveyor` or `conveyor@aisle`), `$A/pages/dashboard.mjs`
+   journeys, `scene-page.mjs conveyor` (or `conveyor@aisle`) works; `$A/pages/onepager.mjs` is the richer page (journey), `$A/pages/dashboard.mjs`
    (comparison) or `$A/pages/scrolly.mjs` (sort).
 6. **QA.** Run `node "$A/tools/qa.mjs" scenes/out/<slug>.html`.
    It must pass. Then open every screenshot it wrote and review it against `$A/references/vqa.md`. Fix and re-run until

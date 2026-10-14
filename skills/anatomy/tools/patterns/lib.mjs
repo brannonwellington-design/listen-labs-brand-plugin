@@ -114,6 +114,7 @@ export function runReportPattern(dir, { name, validate, attach }) {
   const keep = extra.keep || [];
   const filled = fillTree(Object.fromEntries(Object.entries(draft).filter(([k]) => !keep.includes(k) && k !== "assert" && k !== "people" && k !== "pattern" && k !== "reportFacts" && k !== "wavesFrom")), fill);
   const spec = { ...filled, ...Object.fromEntries(keep.map((k) => [k, draft[k]])) };
+  if (cfg.props) spec.propSource = readPropSource(dir, cfg);   // the study's own props (references/props.md)
   spec.reconciliation = recon.map((x) => ({ label: x.label, transcript: x.transcript, base: x.base, report: x.report, reportBase: x.reportBase, ...(x.derived ? { derived: x.derived } : {}) }));
   spec._source = `pattern ${name} · config ${join(dir, "scene.json")}${cfg.people ? ` · coding ${join(dir, codesFile)}` : ""}`;
   mkdirSync(join(dir, "specs"), { recursive: true });

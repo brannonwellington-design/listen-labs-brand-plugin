@@ -34,7 +34,18 @@ function aisleGeometry(k, spec, P, opts = {}) {
   const c = makeCtx(k, P);
   const PART = { hopper: "hopper", "bin-rack": "rack", "photo-eye": "eye", labeler: "labeler", "threshold-gate": "gate" };
   const floor = PROPS["store-floor"].build(c, { plan: PLATE });
-  const props = stations.map((s, i) => ({ i, key: PART[s.prop], built: PROPS[AISLE_ROLE[s.prop]].build(c, { x: STATION_X[i] }) }));
+  // a station can name its own fitting (s.fixture: a library or study prop with a footprint), standing on the far side
+  // of the aisle at the station; otherwise its role's shop fitting
+  const props = stations.map((s, i) => {
+    if (s.fixture) {
+      const f = PROPS[s.fixture];
+      if (!f) throw new Error("aisle: unknown fixture prop " + s.fixture);
+      if (!f.footprint) throw new Error("aisle: fixture " + s.fixture + " declares no footprint");
+      if (f.footprint[0] > 56 || f.footprint[1] > 40) throw new Error(`aisle: fixture ${s.fixture} is ${f.footprint.join("×")}; a station takes 56×40 at most`);
+      return { i, key: PART[s.prop], built: f.build(c, { ...(s.fixtureOpts || {}), x: STATION_X[i], y: -24, part: PART[s.prop] }) };
+    }
+    return { i, key: PART[s.prop], built: PROPS[AISLE_ROLE[s.prop]].build(c, { x: STATION_X[i] }) };
+  });
   const strip = BUMP ? PROPS["threshold-strip"].build(c, { bump: BUMP }) : { items: [] };
   const tote = PROPS.tote.build(c, { plan: TOTE });
   const carts = Array.from({ length: 10 }, (_, i) => PROPS["shopping-cart"].build(c, { i }).svg).join("");
