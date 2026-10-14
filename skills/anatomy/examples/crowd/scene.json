@@ -1,0 +1,170 @@
+{
+  "_example": "Synthetic: a fictional festival study for learning the crowd config. No real study, people or quotes. Copy it into scenes/<slug>/ and replace everything.",
+  "pattern": "crowd",
+  "world": "stadium",
+  "labelPrefix": "F",
+  "study": {
+    "id": "00000000-example-crowd",
+    "title": "Example: festival crowd",
+    "url": "https://listenlabs.ai/p/example-crowd",
+    "reportN": 18
+  },
+  "people": {
+    "filter": [
+      {
+        "complete": true
+      }
+    ]
+  },
+  "segments": {
+    "closed": "attended",
+    "groups": [
+      {
+        "key": "first",
+        "name": "First-timers",
+        "scale": "first visit",
+        "filter": [
+          {
+            "closed": "attended",
+            "eq": "first"
+          }
+        ]
+      },
+      {
+        "key": "returning",
+        "name": "Returning",
+        "scale": "been before",
+        "filter": [
+          {
+            "closed": "attended",
+            "eq": "returning"
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": [
+    {
+      "key": "opening",
+      "name": "the opening act",
+      "when": "Opening act",
+      "dim": "open_feel",
+      "dressing": "backline",
+      "report": [
+        9,
+        17
+      ]
+    },
+    {
+      "key": "headliner",
+      "name": "the headliner",
+      "when": "Headliner",
+      "dim": "head_feel",
+      "dressing": "hopes",
+      "report": [
+        9,
+        18
+      ]
+    }
+  ],
+  "hopes": {
+    "dim": "wants",
+    "base": [
+      {
+        "complete": true
+      }
+    ],
+    "items": [
+      {
+        "key": "visuals",
+        "name": "Big visuals",
+        "prop": "led-wall",
+        "propName": "LED wall"
+      },
+      {
+        "key": "flags",
+        "name": "Flags and colour",
+        "prop": "flags",
+        "propName": "Flags"
+      }
+    ]
+  },
+  "assert": [
+    "recon.0.transcript == recon.0.report",
+    "block.returning.headliner.positive > block.returning.opening.positive"
+  ],
+  "figure": {
+    "fig": "Fig 1",
+    "title": "Opener to headliner",
+    "hint": "Switch the act, or follow one fan",
+    "label": "An isometric stadium with a stage in the centre; {n} small figures sit in the stands, one per interview, standing when they were positive about the act on stage.",
+    "caption": "One figure per interview ({n}). Standing: positive about the act on stage. Seated: neutral or negative. Faded: not asked.",
+    "titleBlock": [
+      [
+        "Drawing",
+        "Example stadium"
+      ],
+      [
+        "Study",
+        "Example \u00b7 synthetic"
+      ],
+      [
+        "Base",
+        "n = {n}"
+      ],
+      [
+        "Method",
+        "Synthetic data"
+      ],
+      [
+        "Scale",
+        "{lit:1} figure = {lit:1} interview"
+      ]
+    ]
+  },
+  "tension": {
+    "label": "The headliner brings the returning crowd to its feet",
+    "act": "headliner",
+    "numbers": [
+      "Returning: {block.returning.headliner.positive} of {block.returning.size} standing"
+    ]
+  },
+  "page": {
+    "frame": "Example study \u00b7 {n} synthetic interviews",
+    "headline": "An example crowd, built from synthetic data",
+    "dek": "This page is built from the example config in examples/crowd. Every number comes from the facts.",
+    "blocksHeading": "By visit",
+    "hopesHeading": "What they hope to see",
+    "standPhrase": "on their feet for",
+    "hopePhrase": "hoped for",
+    "headlineStats": [
+      {
+        "value": "{up.headliner}",
+        "base": "of {n} on their feet for the headliner (our coding)"
+      },
+      {
+        "value": "{report.headliner.count}",
+        "base": "of {report.headliner.base} positive about the headliner (report)"
+      }
+    ],
+    "notes": [
+      "Synthetic data: nothing on this page describes real people.",
+      "Directional: {n} interviews."
+    ]
+  },
+  "tour": [
+    {
+      "hold": 5,
+      "act": "opening",
+      "title": "The opening act",
+      "caption": "{up.opening} of {asked.opening} asked are on their feet."
+    },
+    {
+      "hold": 6,
+      "act": "headliner",
+      "tension": true,
+      "title": "The headliner",
+      "caption": "{up.headliner} of {asked.headliner} are on their feet."
+    }
+  ]
+}

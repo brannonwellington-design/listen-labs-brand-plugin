@@ -3,7 +3,8 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname as outDir } from "node:path";
 const ANATOMY = new URL("..", import.meta.url).pathname;
-const { LL_TOKENS, esc, curly, t, headerHtml, HEADER_CSS } = await import("./shared.mjs");
+const S = await import("./shared.mjs");
+const { LL_TOKENS, esc, curly, t, headerHtml, HEADER_CSS } = S;
 const [specPath, outPath] = process.argv.slice(2);
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
 // the figure (drawing, act switch, follow, play, blueprint) comes from the shared scene builder, like every host
@@ -109,6 +110,7 @@ p { margin: 0; text-wrap: pretty; }
 .quote p { font-size: 16px; line-height: 24px; }
 .quote footer { margin-top: 8px; font-size: 13px; line-height: 20px; color: var(--content-secondary); }
 .link-btn { appearance: none; font: inherit; font-size: 14px; background: none; border: 0; padding: 0; color: var(--content-brand); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 44px; justify-self: start; }
+${S.RECON_CSS}
 .method { margin-top: 72px; max-width: 760px; }
 .method h2 { font-size: 20px; line-height: 28px; margin-bottom: 16px; }
 .method ul { margin: 0; padding-left: 18px; display: grid; gap: 10px; font-size: 14px; line-height: 20px; color: var(--content-secondary); }
@@ -131,7 +133,7 @@ const html = `<!doctype html>
 </head>
 <body class="iso">
 <header class="ll-header"><span class="ll-brand">Listen Labs</span> / <span class="ll-title">${t(spec.study.title)}</span></header>
-<main class="page">
+<main class="page" data-scene-page>
   ${headerHtml(spec.page)}
   <section class="workspace">
     <div class="ws-figure">${figure}</div>
@@ -153,6 +155,7 @@ const html = `<!doctype html>
       <div class="detail" data-r="detail" aria-live="polite"></div>
     </aside>
   </section>
+  ${S.reconHtml(spec, t)}
   <section class="method">
     <h2>Read before sharing</h2>
     <ul>${notes}</ul>

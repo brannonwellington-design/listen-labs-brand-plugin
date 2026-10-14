@@ -1,0 +1,17 @@
+[
+ {
+  "label": "Returning festivalgoers",
+  "transcript": 12,
+  "base": 18,
+  "report": 12,
+  "reportBase": 18
+ },
+ {
+  "label": "Positive about the headliner",
+  "transcript": 8,
+  "base": 18,
+  "report": 9,
+  "reportBase": 18,
+  "derived": "50% of 18"
+ }
+]

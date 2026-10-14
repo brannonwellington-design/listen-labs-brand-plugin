@@ -135,10 +135,28 @@ it.
 }
 ```
 
+**Crowd notes** (a full synthetic config is in `examples/crowd/`):
+- Each condition's `dim` is coded exactly `positive`, `neutral`, `negative` or `none` (not asked: drawn faded, never as
+  negative). Standing means positive.
+- `people.filter` leaves coded rows out of the crowd (an interview that never reached the questions). Every remaining
+  row must fall in a segment group; a group may match people never asked the segment question (a `not` / `any`
+  filter) and is named as such ("Country not asked").
+- Rail wording: `page.standPhrase` ("on their feet for"), `page.hopePhrase` ("hoped for"), `page.hopesHeading`. Write
+  them for the study: two questions about one product aren't "acts", so "said yes to" may read better than "on their feet".
+- Quotes need at least 50 characters (40 for hopes); the shortest qualifying quote is picked by rule.
+- `headlineStats` values are facts: ours (`{up.<cond>}`, `{block.<key>.<cond>.positive}`) or the report's
+  (`{report.<cond>.count}`, `{reportFacts.<name>.value}`), with "report" said in the base text.
+- A report number stated only as a percentage goes in the codebook's report row as `{ "pct": 40, "of": 50 }`; the table
+  shows the derived count and says it came from the percentage.
+
 **Hope props.** `prop` names a stage prop from `props/stage.js` (`led-wall`, `dance-floor`, `guest-lift`, `flags`,
 `mic-stand`, `line-array`: each has its own spot on the stage) or any prop from the study's own `props` files with a
-footprint of at most 30×24. Those stand on the field beside the stage, up to four, built with `{ x, y, lit, part,
+footprint of at most 30×24. Those stand in a row across the front of the field, up to four, in the order of `items`
+(the stage keeps its backline when every hope is a field prop), built with `{ x, y, lit, part,
 ...propOpts }`: `lit` is true while that hope is selected, so the prop's main solid takes the accent (it carries data).
+
+**Figure titles are short:** the title shares the card's top edge with the controls, so about 17 to 25 characters fit
+depending on the controls. QA's "nothing cut off" check fails a title that's clipped; shorten it.
 
 **Copy rules the builder enforces:**
 - Numbers enter copy only as `{facts}` (see the `facts` object in `crowd.mjs`). A literal digit fails the build, except

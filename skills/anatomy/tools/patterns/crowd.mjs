@@ -19,7 +19,8 @@ import { holds, all, makeCopy, readPropSource } from "./lib.mjs";
 const dir = process.argv[2];
 if (!dir) { console.error("usage: node tools/patterns/crowd.mjs <study dir>"); process.exit(2); }
 const cfg = JSON.parse(readFileSync(join(dir, "scene.json"), "utf8"));
-const rows = JSON.parse(readFileSync(join(dir, "codes/merged.json"), "utf8")).sort((a, b) => a.readable_id - b.readable_id);
+// people.filter leaves coded rows out of the crowd (an interview that never reached the questions); they stay in the coding
+const rows = JSON.parse(readFileSync(join(dir, "codes/merged.json"), "utf8")).filter((r) => all(r, cfg.people?.filter || [])).sort((a, b) => a.readable_id - b.readable_id);
 const recon = JSON.parse(readFileSync(join(dir, "codes/merged-recon.json"), "utf8"));
 const FEELS = ["positive", "neutral", "negative"];
 
@@ -75,6 +76,10 @@ const facts = {
   top: hopes.slice().sort((a, b) => b.count - a.count)[0] || null,
   swing: { count: swingList.length, label: swing ? swing.f.label : "" },
   recon: Object.fromEntries(recon.map((x, i) => [i, x])),
+  // the report's own numbers, for headline stats and notes: each condition's stated count, and any other number the
+  // report states by name (reportFacts: { <name>: { value, base?, from } }, never matched by value alone)
+  report: Object.fromEntries(conds.filter((c) => c.report).map((c) => [c.key, { count: c.report[0], base: c.report[1] }])),
+  reportFacts: cfg.reportFacts || {},
   coded: Object.fromEntries(Object.entries(cfg.countFacts || {}).map(([k, f]) => [k, rows.filter((r) => all(r, f)).length])),
 };
 facts.study = cfg.study;
@@ -113,9 +118,13 @@ const spec = {
     frame: fill(page.frame, "page.frame"), headline: fill(page.headline, "page.headline", { title: true }), dek: fill(page.dek, "page.dek"),
     blocksHeading: fill(page.blocksHeading, "page.blocksHeading"), hopesHeading: fill(page.hopesHeading, "page.hopesHeading"),
     segmentNote: page.segmentNote ? page.segmentNote.replace(/\{lit:([^}]*)\}/g, "$1") : "",
-    headlineStats: page.headlineStats,   // the report's own numbers, copied from get_study_analysis
+    // headline numbers come from facts like every other number: the coding, or the report's own ({report.<cond>.count},
+    // {reportFacts.<name>.value}) with "report" said in the base text; a typed digit fails the build
+    headlineStats: (page.headlineStats || []).map((h, i) => ({ value: fill(String(h.value), `page.headlineStats[${i}].value`), base: fill(h.base, `page.headlineStats[${i}].base`) })),
+    standPhrase: page.standPhrase || "on their feet for", hopePhrase: page.hopePhrase || "hoped for",
     notes: fillAll(page.notes, "page.notes"),
   },
+  reconciliation: recon.map((x) => ({ label: x.label, transcript: x.transcript, base: x.base, report: x.report, reportBase: x.reportBase, ...(x.derived ? { derived: x.derived } : {}) })),
   scripts: cfg.tour ? { tour: { title: "The tour", label: "The tour", beats: cfg.tour.map(beat).filter(Boolean) } } : {},
 };
 mkdirSync(join(dir, "specs"), { recursive: true });
