@@ -20,7 +20,7 @@ export const controls = (spec) => [
   { kind: "select", label: "Follow…", call: "follow", get: "following", none: null, options: spec.people.map((p, i) => ({ value: i, label: "Follow " + p.label })) },
 ];
 export const facts = (spec) => spec.conds.flatMap((c, ci) => spec.groups.map((g, gi) => ({
-  key: `median.${c.key}.${g.key}`, value: spec.groupStats[gi][c.key].median, base: spec.scale.max, label: `median comfort, ${g.name.toLowerCase()}, ${c.name.toLowerCase()} (n = ${spec.groupStats[gi][c.key].n})`,
+  key: `median.${c.key}.${g.key}`, value: spec.groupStats[gi][c.key].median, base: spec.scale.max, label: `median, ${g.name.toLowerCase()} (n = ${spec.groupStats[gi][c.key].n})`,   // the condition is the group heading
   group: c.name, scene: { cond: ci, group: gi } })));
 export function prepare(spec, curly = (s) => s) {
   if (!spec.tension) return;

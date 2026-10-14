@@ -21,6 +21,8 @@ const SCENE_CSS = `
 .ll-scene { container-type: inline-size; }
 .ll-scene .iso-figure { margin: 0; }
 .ll-scene .iso-legend { font-size: 12px; line-height: 16px; }
+/* the figure's title never runs under its toolbar: it truncates to the room the toolbar leaves (set by the script) */
+.ll-scene .iso-plate-corner[data-corner="fig"] { max-width: calc(100% - var(--tools-w, 0px) - 40px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fig-seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--surface-secondary); }
 .fig-seg button { white-space: nowrap; appearance: none; font: inherit; font-size: 12px; line-height: 16px; min-height: 32px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--content-secondary); cursor: pointer; }
 .fig-seg button[aria-checked="true"] { background: var(--surface-highlight); color: var(--content-primary); }
@@ -51,6 +53,9 @@ const controlsScript = (api, list) => `
       else el.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(String(v) === b.dataset.v)));
     });
   }
+  const tools = document.querySelector(".ll-scene .fig-tools"), plateEl = tools && tools.closest(".iso-plate");
+  const fitTitle = () => { if (tools && plateEl) plateEl.style.setProperty("--tools-w", (getComputedStyle(tools).position === "absolute" ? tools.offsetWidth : 0) + "px"); };
+  new ResizeObserver(fitTitle).observe(plateEl || document.body); fitTitle();
   ["click", "keyup", "played", "view", "stadium", "station", "replay", "lineup", "scene"].forEach((t) => document.addEventListener(t, () => requestAnimationFrame(sync)));
   sync();
 })();
