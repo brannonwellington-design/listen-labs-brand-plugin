@@ -43,8 +43,8 @@ const studyDirs = ["scenes", "skills/anatomy/studies"].filter((d) => existsSync(
 for (const d of studyDirs) for (const f of ["scene.json", "codebook.json", "scene.base.json"]) { const j = read(join(d, f)); if (j) walk(j, d.split("/").pop()); }
 const ex = join(root, "skills/anatomy/examples");
 if (existsSync(ex)) for (const d of readdirSync(ex)) for (const f of ["scene.json", "codebook.json"]) { const j = read(join(ex, d, f)); if (j) walk(j, "__example"); }
-// generic words that happen to be one study's fingerprint and are the engine's or the web's own vocabulary
-const GENERIC = new Set(["google", "marketplace", "conveyor", "embedded", "embedding", "smallest", "strongest", "speaker arrays"]);
+// generic words that happen to be one study's fingerprint and are the engine's or the web's own vocabulary, or that the system word list lacks
+const GENERIC = new Set(["google", "marketplace", "conveyor", "embedded", "embedding", "smallest", "strongest", "speaker arrays", "boxes"]);
 const fingerprints = [...prints].filter(([fp]) => !GENERIC.has(fp)).filter(([, s]) => !s.has("__example") && s.size === 1).map(([fp, s]) => [fp, [...s][0]]);
 
 const tracked = execSync("git ls-files", { cwd: root, encoding: "utf8" }).split("\n").filter((f) => f && !f.startsWith("skills/anatomy/examples/") && !/\.(png|jpe?g|gif|svg|ico|woff2?|pdf|zip)$/i.test(f));

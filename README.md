@@ -211,6 +211,8 @@ To add a **second brand** to `/research-artifacts`, copy `skills/research-artifa
 
 **Claude Code.** The plugin's version is the git commit SHA of `main`, so every push is a new version. Claude Code checks the marketplace for plugin updates shortly after each session starts (within about ten minutes) and loads the new version on the next launch, or immediately if you run `/reload-plugins`. Nothing to reinstall. To pull an update right now: `claude plugin update listen-labs-brand@listen-labs`.
 
+Auto-update is off by default for marketplaces other than Anthropic's. The quick installer turns it on for you. If you installed another way and updates aren't arriving, turn it on once: run `/plugin`, open **Marketplaces**, select **listen-labs**, and choose **Enable auto-update**.
+
 **Claude Desktop.** The MCP server launches through `run.sh`, which does a `git pull` from `main` before starting, so the brand tools are current every session.
 
 ## Manual Setup
